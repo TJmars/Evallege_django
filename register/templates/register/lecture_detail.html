@@ -1,0 +1,44 @@
+{% extends 'register/base.html' %}
+{% block content %}
+<h1>{{lecture.lecture_name}}</h1>
+<div class="row">
+  <div class="col-md-4 mt-5">
+    <div style="text-align: center">
+      <h5>成績<h5>
+    </div>
+    <img src="data:image/png;base64, {{ grade_chart }}" width=350 height=280>
+  </div>
+  <div class="col-md-4 mt-5">
+    <div style="text-align: center">
+      <h5>満足度<h5>
+    </div>
+    <img src="data:image/png;base64, {{ eva_chart }}" width=350 height=280>
+  </div>
+  <div class="col-md-4 mt-5">
+    <div style="text-align: center">
+      <h5>難易度<h5>
+    </div>
+    <img src="data:image/png;base64, {{ dif_chart }}" width=350 height=280>
+  </div>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>コメント一覧</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for eva in eva_list %}
+    <tr>
+      <td>{{eva.eva_comment}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if lecture in user_lecture_list %}
+{% if eva_count == 0 %}
+<a href="{% url 'register:evaluate' pk %}" class="btn btn-dark py-4 my-3">評価を回答</a>
+{% endif %}
+{% endif %}
+{% endblock%}

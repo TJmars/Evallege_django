@@ -1,0 +1,12 @@
+{% extends 'register/base.html' %}
+{% block header %}
+{% if user.is_authenticated %}
+<meta http-equiv="refresh"content="0;URL={% url 'register:top' %}">
+{% endif %}
+{% endblock %}
+{% block content %}
+<div style="text-align: center">
+  <h3>We work toward providing all the information about the lecture.</h3>
+</div>
+
+{% endblock%}

@@ -1,0 +1,30 @@
+{% extends "register/base.html" %}
+{% block content %}
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="col-md-9">
+    {% if lecture_list %}
+      {% for lecture in lecture_list %}
+        <div class="card">
+         <div class="card-body">
+           <h4 class="card-title">{{lecture.lecture_name}}</h4>
+           <p class="card-text">担当教員：{{lecture.teacher_name}}　　作成日：{{lecture.created_at}}</p>
+           <a href="{% url 'register:detail' lecture.pk %}" class="btn btn-dark">詳細を表示</a>
+         </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="card">
+        <div class="card-body">
+          「講義を探す」ボタンから履修中の講義を登録してください
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  <div class="col-md-3">
+    
+  </div>
+</div>
+{% endif %}
+{% include 'register/page5.html' %}
+{% endblock %}

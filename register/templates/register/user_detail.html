@@ -1,0 +1,19 @@
+{% extends "register/base.html" %}
+{% block content %}
+<table class="table">
+    <tbody>
+        <tr>
+            <th>メールアドレス</th>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <th>ユーザーネーム</th>
+            <td>{{ user.user_name }}</td>
+        </tr>
+        <tr>
+            <th>大学</th>
+            <td>{{ user.college_name }}</td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
