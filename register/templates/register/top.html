@@ -1,5 +1,13 @@
 {% extends "register/base.html" %}
+
 {% block content %}
+{% if messages %}
+	<ul class="messages_ul">
+		{% for message in messages %}
+			<li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %} alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ message }}</li>
+		{% endfor %}
+	</ul>
+{% endif %}
 {% if user.is_authenticated %}
 <div class="row">
   <div class="col-md-9">
@@ -9,7 +17,16 @@
          <div class="card-body">
            <h4 class="card-title">{{lecture.lecture_name}}</h4>
            <p class="card-text">担当教員：{{lecture.teacher_name}}　　作成日：{{lecture.created_at}}</p>
-           <a href="{% url 'register:detail' lecture.pk %}" class="btn btn-dark">詳細を表示</a>
+           <div style="display:inline-flex">
+             <a href="{% url 'register:detail' lecture.pk %}" class="btn btn-outline-dark">詳細を表示</a>
+						 <a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark mx-4">チャット</a>
+             <form action="{% url 'register:top' %}" method='POST'> <!-- ここを変更 -->
+                {% if lecture in user_lecture_list %}
+                <button class="btn btn-outline-danger mx-1" name="lecture" value="{{ lecture.id }}">登録解除</button>
+                {% endif %}
+                {% csrf_token %}
+            </form>
+         </div>
          </div>
         </div>
       {% endfor %}
@@ -22,7 +39,7 @@
     {% endif %}
   </div>
   <div class="col-md-3">
-    
+
   </div>
 </div>
 {% endif %}

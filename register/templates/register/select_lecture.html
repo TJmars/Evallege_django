@@ -1,5 +1,12 @@
 {% extends "register/base.html" %}
 {% block content %}
+{% if messages %}
+	<ul class="messages_ul">
+		{% for message in messages %}
+			<li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %} alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ message }}</li>
+		{% endfor %}
+	</ul>
+{% endif %}
 <div class="row">
   <div class="col-md-9">
     <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:select_lecture' %}">
@@ -12,12 +19,13 @@
          <h4 class="card-title">{{lecture.lecture_name}}</h4>
          <p class="card-text">担当教員：{{lecture.teacher_name}}　　作成日：{{lecture.created_at}}</p>
          <div style="display:inline-flex">
-           <a href="{% url 'register:detail' lecture.pk %}" class="btn btn-dark">詳細を表示</a>
+           <a href="{% url 'register:detail' lecture.pk %}" class="btn btn-outline-dark">詳細を表示</a>
+					 <a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark mx-4">チャット</a>
            <form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
               {% if lecture in user_lecture_list %}
-              <button class="btn btn-dark mx-lg-5" name="lecture" value="{{ lecture.id }}">登録解除</button>
+              <button class="btn btn-outline-danger mx-lg-1" name="lecture" value="{{ lecture.id }}">登録解除</button>
               {% else %}
-              <button class="btn btn-dark mx-lg-5" name="lecture" value="{{ lecture.id }}">登録</button>
+              <button class="btn btn-outline-success mx-lg-1" name="lecture" value="{{ lecture.id }}">登録</button>
               {% endif %}
               {% csrf_token %}
           </form>
@@ -27,33 +35,9 @@
     {% endfor %}
   </div>
   <div class="col-md-3">
-    <div style="text-align: center">
-    <table class="table">
-      <thead class="thead-light">
-        <tr>
-          <th>RANKING</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><a href="{% url 'register:select_lecture' %}" class="">平均GPAが高い順</a></td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'register:select_lecture' %}" class="">満足度が高い順</a></td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'register:select_lecture' %}" class="">難易度が高い順</a></td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'register:select_lecture' %}" class="">難易度が低い順</a></td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'register:select_lecture' %}" class="">落単率が低い順</a></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+
   </div>
 </div>
 {% include 'register/page5.html' %}
+
 {% endblock %}

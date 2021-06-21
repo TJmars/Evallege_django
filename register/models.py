@@ -25,6 +25,8 @@ class Lecture(models.Model):
                     on_delete=models.PROTECT,blank=False
                )
 
+
+
     created_at = models.DateTimeField('作成日', default=timezone.now)
 
 
@@ -75,6 +77,11 @@ class User(AbstractBaseUser, PermissionsMixin):
                     on_delete=models.PROTECT,blank=False
                )
     lecture_list = models.ManyToManyField(Lecture,through='UserLectureList', verbose_name='履修講義名',blank=True)
+
+    user_point = models.IntegerField(
+        verbose_name='ユーザーポイント',
+        default=0,
+    )
 
 
 
@@ -161,9 +168,16 @@ class LectureEva(models.Model):
         (2, 'やや難しい'),
         (1, '難しい'),
     )
+    GAKUNEN_LANK = (
+        (1,'１年'),
+        (2,'２年'),
+        (3,'３年'),
+        (4,'４年'),
+    )
     grade_lank = models.IntegerField(verbose_name='成績',choices=GRADE_LANK, blank=False)
     eva_lank = models.IntegerField(verbose_name='課題量',choices=EVA_LANK, blank=False)
     dif_lank = models.IntegerField(verbose_name='授業の難易度',choices=DIF_LANK, blank=False)
+    gakunen_lank = models.IntegerField(verbose_name='学年',choices=GAKUNEN_LANK, blank=False)
 
     eva_comment = models.TextField(
         verbose_name='コメント(空欄可)',
@@ -184,5 +198,25 @@ class UserLectureList(models.Model):
 
     user = models.ForeignKey(
            User, verbose_name='ユーザー',on_delete=models.PROTECT
+    )
+    created_at = models.DateTimeField('登録日', default=timezone.now)
+
+
+#チャット用のモデル
+class LectureChat(models.Model):
+
+
+    lecture = models.ForeignKey(
+         Lecture,verbose_name='講義名',
+         on_delete=models.PROTECT,blank=False
+    )
+    user = models.ForeignKey(
+           User, verbose_name='ユーザー',on_delete=models.PROTECT
+    )
+
+    chat_text = models.TextField(
+    verbose_name='投稿',
+
+    max_length=1000,
     )
     created_at = models.DateTimeField('登録日', default=timezone.now)

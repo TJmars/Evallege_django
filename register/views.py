@@ -16,11 +16,12 @@ from django.views import generic
 from django.db.models import Q
 from .forms import (
     LoginForm, UserCreateForm, UserUpdateForm, MyPasswordChangeForm,
-    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm
+    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm
 )
-from .models import Lecture, LectureEva,UserLectureList
+from .models import Lecture, LectureEva,UserLectureList, LectureChat
 import base64
 import datetime
+from django.contrib import messages
 
 User = get_user_model()
 
@@ -35,8 +36,39 @@ class Top(generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        lectures = list(self.request.user.lecture_list.all().values_list('lecture_name', flat=True))
-        return Lecture.objects.filter(lecture_name__in=lectures)
+        lectures = self.request.user.lecture_list.all()
+        return lectures
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_lecture_list'] = self.request.user.lecture_list.all()
+        return context
+
+    def post(self, request):
+        lecture_id = request.POST['lecture']
+        check_lecture = self.request.user.lecture_list.filter(id=lecture_id)
+        lecture = Lecture.objects.get(id=lecture_id)
+        if not check_lecture:
+            self.request.user.lecture_list.add(lecture)
+        else:
+            user_lecture_list = UserLectureList.objects.filter(user=self.request.user).filter(lecture=lecture)
+            time = user_lecture_list[0].created_at
+            JST = datetime.timezone(datetime.timedelta(hours=9), "JST")
+            elapsed_time = datetime.datetime.now(JST)-time
+            if elapsed_time.days < 30:
+                self.request.user.lecture_list.remove(lecture)
+            else:
+                eva = LectureEva.objects.filter(user=self.request.user).filter(lecture=lecture).count()
+                if eva != 0:
+                    self.request.user.lecture_list.remove(lecture)
+                else:
+                    messages.warning(request, 'この講義の履修を解除するには、授業評価を投稿する必要があります。')
+                    return redirect('register:top')
+
+
+
+        return redirect('register:top')
+
 
 
 class SelectLecture(generic.ListView):
@@ -44,7 +76,7 @@ class SelectLecture(generic.ListView):
 
     model = Lecture
     template_name = 'register/select_lecture.html'
-    paginate_by = 10
+    paginate_by = 1
 
     def get_queryset(self):
         college = self.request.user.college_name.id
@@ -78,6 +110,9 @@ class SelectLecture(generic.ListView):
                 eva = LectureEva.objects.filter(user=self.request.user).filter(lecture=lecture).count()
                 if eva != 0:
                     self.request.user.lecture_list.remove(lecture)
+                else:
+                    messages.warning(request, 'この講義の履修を解除するには、授業評価を投稿する必要があります。')
+                    return redirect('register:select_lecture')
 
         return redirect('register:select_lecture')
 
@@ -93,8 +128,13 @@ class LectureCreate(generic.CreateView):
         college = self.request.user.college_name
         lecture = form.save(commit=False)
         lecture.college_name = college
-        lecture.save()
-        return redirect('register:select_lecture')
+        lecture_list = Lecture.objects.filter(college_name=college).filter(lecture_name=lecture.lecture_name).filter(teacher_name=lecture.teacher_name)
+        if lecture_list.count()==0:
+            lecture.save()
+            return redirect('register:select_lecture')
+        else:
+            messages.warning(self.request, '講義名、担当教員が一致する授業が存在しています。「講義を探す」より講義名、または担当教員名で検索してください。')
+            return redirect('register:create_lecture')
 
 
 class DetailView(generic.DetailView):
@@ -109,10 +149,17 @@ class DetailView(generic.DetailView):
         context['grade_chart'] = grade_chart(self.kwargs['pk'])
         context['eva_chart'] = eva_chart(self.kwargs['pk'])
         context['dif_chart'] = dif_chart(self.kwargs['pk'])
+        context['gakunen_chart'] = gakunen_chart(self.kwargs['pk'])
         lecture = Lecture.objects.get(id=self.kwargs['pk'])
-        context['eva_list'] = LectureEva.objects.filter(lecture=lecture)
         eva_comment=''
-        context['eva_count'] = LectureEva.objects.filter(user=self.request.user).filter(lecture=lecture).filter(eva_comment=eva_comment).count()
+        eva_list = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="").count()
+        if eva_list > 11:
+            context['eva_list'] = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="").order_by('-created_at')[:9]
+        else:
+            context['eva_list'] = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="")
+
+
+        context['eva_count'] = LectureEva.objects.filter(user=self.request.user).filter(lecture=lecture).count()
         return context
 
 
@@ -133,7 +180,6 @@ def grade_chart(pk):
     grade_D = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=1).count()
 
     datas = [grade_S, grade_A, grade_B, grade_C, grade_D]
-    print(datas)
     label1 = ['S', 'A', 'B', 'C', 'D']
     colors = ['lime', 'aqua', 'skyblue', 'magenta', 'yellow']
     ax = plt.subplot()
@@ -219,6 +265,41 @@ def dif_chart(pk):
     plt.close()
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
 
+
+def gakunen_chart(pk):
+    import matplotlib
+    #バックエンドを指定
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import io
+    from django.http import HttpResponse
+
+    lecture = Lecture.objects.get(id=pk)
+    dif_A = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=4).count()
+    dif_B = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=3).count()
+    dif_C = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=2).count()
+    dif_D = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=1).count()
+
+    datas = [dif_A, dif_B, dif_C, dif_D]
+    label3 = ['freshman', 'sophomore', 'junior', 'senior']
+    colors = ['magenta', 'skyblue', 'aqua', 'lime']
+    print(datas)
+    ax = plt.subplot()
+    ax.axis("equal")
+    pie = ax.pie(datas, #データ
+                 startangle=90, #円グラフ開始軸を指定
+                 labels=label3, #ラベル
+                 colors=colors, #色指定
+                 counterclock=False, #逆時計回り
+                 labeldistance=None,
+                 )
+    buf = io.BytesIO()
+    plt.legend()
+    plt.savefig(buf, format='png', dpi=200)
+    plt.close()
+    return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
+
+
 class Evaluate(generic.CreateView):
     """授業評価投稿ページ"""
     model = LectureEva
@@ -232,7 +313,51 @@ class Evaluate(generic.CreateView):
         eva.user = user
         eva.lecture = lecture
         eva.save()
+
+        user.user_point = user.user_point+1
+        user.save()
         return redirect('register:select_lecture')
+
+
+
+class ChatList(generic.ListView,generic.edit.ModelFormMixin):
+    """コメント一覧/投稿ページ"""
+    model = LectureChat
+    form_class = ChatForm
+    template_name = 'register/chat.html'
+    paginate_by = 15
+
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pk'] = self.kwargs['pk']
+        lecture = Lecture.objects.get(id=self.kwargs['pk'])
+        chat_list = LectureChat.objects.filter(lecture=lecture)
+        if chat_list.count() > 21:
+            context['chat_list'] = LectureChat.objects.filter(lecture=lecture).order_by('-created_at')[:19]
+        else:
+            context['chat_list'] = LectureChat.objects.filter(lecture=lecture).order_by('-created_at')
+
+        return context
+
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        self.object_list = self.get_queryset()
+        form = self.get_form()
+        if form.is_valid():
+            user = self.request.user
+            lecture = Lecture.objects.get(id=self.kwargs['pk'])
+            chat = form.save(commit=False)
+            chat.user = user
+            chat.lecture = lecture
+            chat.save()
+            return self.form_invalid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class Login(LoginView):
@@ -243,7 +368,7 @@ class Login(LoginView):
 
 class Logout(LogoutView):
     """ログアウトページ"""
-    template_name = 'register/top.html'
+    template_name = 'register/login.html'
 
 
 class UserCreate(generic.CreateView):

@@ -1,13 +1,16 @@
 from django.urls import path
 from . import views
+from projectB import settings
+from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 app_name = 'register'
 
 urlpatterns = [
     #ログイン、ユーザー登録関係
-    path('',views.first.as_view(), name='first'),
+    path('/nn',views.first.as_view(), name='first'),
     path('top/', views.Top.as_view(), name='top'),
-    path('login/', views.Login.as_view(), name='login'),
+    path('', views.Login.as_view(), name='login'),
     path('logout/', views.Logout.as_view(), name='logout'),
     path('user_create/', views.UserCreate.as_view(), name='user_create'),
     path('user_create/done/', views.UserCreateDone.as_view(), name='user_create_done'),
@@ -30,9 +33,15 @@ urlpatterns = [
     path('create_lecture/', views.LectureCreate.as_view(), name='create_lecture'),
     #講義詳細画面
     path('detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
+    path('projectB/register/gakunen_chart/<int:pk>', views.gakunen_chart,name="gakunen_chart"),
     path('projectB/register/grade_chart/<int:pk>', views.grade_chart,name="grade_chart"),
     path('projectB/register/eva_chart/<int:pk>', views.eva_chart,name="eva_chart"),
     path('projectB/register/dif_chart/<int:pk>', views.dif_chart,name="dif_chart"),
     #授業評価投稿画面
     path('evaluate/<int:pk>/', views.Evaluate.as_view(), name='evaluate'),
+    #チャット画面
+    path('chat/<int:pk>/', views.ChatList.as_view(), name='chat'),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from django.contrib.messages import constants as messages
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +29,8 @@ SECRET_KEY = 'qg8wj%&+enffck-xsjq*mfcm9uvm)bng!n@5s6vg_d^rj(zs38'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+STATIC_ROOT = '/home/ubuntu/projectB/static'
 
 
 # Application definition
@@ -76,8 +81,11 @@ WSGI_APPLICATION = 'projectB.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'evallege', #　作成したデータベース名
+        'USER': 'root', # ログインユーザー名
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -100,6 +108,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+MESSAGE_TAGS = {
+    messages.DEBUG: 'dark',
+    messages.ERROR: 'danger',
+}
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -127,5 +143,10 @@ AUTH_USER_MODEL = 'register.User'
 LOGIN_URL = 'register:login'
 LOGIN_REDIRECT_URL = 'register:top'
 
-# メールをコンソールに表示する
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#メール
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'evallege.public@gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'spam@gmail.com'
+EMAIL_HOST_PASSWORD = 'Yachiyo871'
+EMAIL_USE_TLS = True

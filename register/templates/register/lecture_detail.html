@@ -4,15 +4,15 @@
 <div class="row">
   <div class="col-md-4 mt-5">
     <div style="text-align: center">
-      <h5>成績<h5>
+      <h5>学年比率<h5>
     </div>
-    <img src="data:image/png;base64, {{ grade_chart }}" width=350 height=280>
+    <img src="data:image/png;base64, {{ gakunen_chart }}" width=350 height=280>
   </div>
   <div class="col-md-4 mt-5">
     <div style="text-align: center">
-      <h5>満足度<h5>
+      <h5>成績<h5>
     </div>
-    <img src="data:image/png;base64, {{ eva_chart }}" width=350 height=280>
+    <img src="data:image/png;base64, {{ grade_chart }}" width=350 height=280>
   </div>
   <div class="col-md-4 mt-5">
     <div style="text-align: center">
@@ -21,24 +21,33 @@
     <img src="data:image/png;base64, {{ dif_chart }}" width=350 height=280>
   </div>
 </div>
-<table class="table">
-  <thead>
-    <tr>
-      <th>コメント一覧</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for eva in eva_list %}
-    <tr>
-      <td>{{eva.eva_comment}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="row">
+<div class="col-md-4 mt-5">
+  <div style="text-align: center">
+    <h5>課題量<h5>
+  </div>
+  <img src="data:image/png;base64, {{ eva_chart }}" width=350 height=280>
+</div>
+<div class="col-md-8 mt-5">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>コメント一覧</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for eva in eva_list %}
+      <tr>
+        <td>{{eva.eva_comment}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
 
-{% if lecture in user_lecture_list %}
+
 {% if eva_count == 0 %}
-<a href="{% url 'register:evaluate' pk %}" class="btn btn-dark py-4 my-3">評価を回答</a>
-{% endif %}
+<a href="{% url 'register:evaluate' pk %}" class="btn btn-outline-dark py-4 my-3">評価を回答</a>
 {% endif %}
 {% endblock%}
