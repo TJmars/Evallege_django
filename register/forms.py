@@ -118,7 +118,7 @@ class EvaForm(forms.ModelForm):
 
     class Meta:
         model = LectureEva
-        fields = ('gakunen_lank','grade_lank','eva_lank','dif_lank','eva_comment')
+        fields = ('gakunen_lank','grade_lank','eva_lank','dif_lank','place','eva_comment')
 
 class ChatForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

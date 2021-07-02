@@ -22,6 +22,8 @@ from .models import Lecture, LectureEva,UserLectureList, LectureChat
 import base64
 import datetime
 from django.contrib import messages
+import random, string
+
 
 User = get_user_model()
 
@@ -30,6 +32,8 @@ class first(generic.TemplateView):
     template_name = 'register/first.html'
 
 class Top(generic.ListView):
+
+
     """履修中講義一覧ページ"""
     model = Lecture
     template_name = 'register/top.html'
@@ -42,6 +46,12 @@ class Top(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user_lecture_list'] = self.request.user.lecture_list.all()
+        context['user_lecture_eva_list'] = []
+        #評価した講義以外は「評価回答ボタン」を表示
+        user_lecture_eva_list = LectureEva.objects.filter(user=self.request.user)
+        for i in user_lecture_eva_list:
+            context['user_lecture_eva_list'].append(i.lecture)
+
         return context
 
     def post(self, request):
@@ -76,7 +86,7 @@ class SelectLecture(generic.ListView):
 
     model = Lecture
     template_name = 'register/select_lecture.html'
-    paginate_by = 1
+    paginate_by = 10
 
     def get_queryset(self):
         college = self.request.user.college_name.id
@@ -91,6 +101,11 @@ class SelectLecture(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user_lecture_list'] = self.request.user.lecture_list.all()
+        context['user_lecture_eva_list'] = []
+        #評価した講義以外は「評価回答ボタン」を表示
+        user_lecture_eva_list = LectureEva.objects.filter(user=self.request.user)
+        for i in user_lecture_eva_list:
+            context['user_lecture_eva_list'].append(i.lecture)
         return context
 
     def post(self, request):
@@ -142,29 +157,34 @@ class DetailView(generic.DetailView):
     model = Lecture
     template_name = 'register/lecture_detail.html'
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
         context['user_lecture_list'] = self.request.user.lecture_list.all()
-        context['grade_chart'] = grade_chart(self.kwargs['pk'])
-        context['eva_chart'] = eva_chart(self.kwargs['pk'])
-        context['dif_chart'] = dif_chart(self.kwargs['pk'])
-        context['gakunen_chart'] = gakunen_chart(self.kwargs['pk'])
+        context['gakunen_chart'] = gakunen_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['grade_chart'] = grade_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['eva_chart'] = eva_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['dif_chart'] = dif_chart(self.kwargs['pk'],self.kwargs['place'])
         lecture = Lecture.objects.get(id=self.kwargs['pk'])
         eva_comment=''
-        eva_list = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="").count()
-        if eva_list > 11:
-            context['eva_list'] = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="").order_by('-created_at')[:9]
+        if self.kwargs['place'] == 0:
+            eva_list = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="")
+        elif self.kwargs['place'] == 1:
+            eva_list = LectureEva.objects.filter(lecture=lecture).filter(place=1).exclude(eva_comment__exact="")
         else:
-            context['eva_list'] = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="")
+            eva_list = LectureEva.objects.filter(lecture=lecture).filter(place=2).exclude(eva_comment__exact="")
+
+        if eva_list.count() > 11:
+            context['eva_list'] = eva_list.order_by('-created_at')[:9]
+        else:
+            context['eva_list'] = eva_list
 
 
         context['eva_count'] = LectureEva.objects.filter(user=self.request.user).filter(lecture=lecture).count()
         return context
 
-
-#グラフ
-def grade_chart(pk):
+def gakunen_chart(pk,place):
     import matplotlib
     #バックエンドを指定
     matplotlib.use('Agg')
@@ -173,11 +193,72 @@ def grade_chart(pk):
     from django.http import HttpResponse
 
     lecture = Lecture.objects.get(id=pk)
-    grade_S = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=5).count()
-    grade_A = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=4).count()
-    grade_B = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=3).count()
-    grade_C = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=2).count()
-    grade_D = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=1).count()
+
+    if place == 0:
+        dif_A = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=1).count()
+        dif_B = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=2).count()
+        dif_C = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=3).count()
+        dif_D = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=4).count()
+    elif place == 1:
+        dif_A = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=1).filter(place=1).count()
+        dif_B = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=2).filter(place=1).count()
+        dif_C = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=3).filter(place=1).count()
+        dif_D = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=4).filter(place=1).count()
+    else:
+        dif_A = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=1).filter(place=2).count()
+        dif_B = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=2).filter(place=2).count()
+        dif_C = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=3).filter(place=2).count()
+        dif_D = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=4).filter(place=2).count()
+
+    datas = [dif_A, dif_B, dif_C, dif_D]
+    label3 = ['freshman', 'sophomore', 'junior', 'senior']
+    colors = ['magenta', 'skyblue', 'aqua', 'lime']
+    ax = plt.subplot()
+    ax.axis("equal")
+    pie = ax.pie(datas, #データ
+                 startangle=90, #円グラフ開始軸を指定
+                 labels=label3, #ラベル
+                 colors=colors, #色指定
+                 counterclock=False, #逆時計回り
+                 labeldistance=None,
+                 )
+    buf = io.BytesIO()
+    plt.legend()
+    plt.savefig(buf, format='png', dpi=200)
+    plt.close()
+    return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
+
+
+
+#グラフ
+def grade_chart(pk,place):
+    import matplotlib
+    #バックエンドを指定
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import io
+    from django.http import HttpResponse
+
+    lecture = Lecture.objects.get(id=pk)
+
+    if place == 0:
+        grade_S = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=5).count()
+        grade_A = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=4).count()
+        grade_B = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=3).count()
+        grade_C = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=2).count()
+        grade_D = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=1).count()
+    elif place == 1:
+        grade_S = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=5).filter(place=1).count()
+        grade_A = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=4).filter(place=1).count()
+        grade_B = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=3).filter(place=1).count()
+        grade_C = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=2).filter(place=1).count()
+        grade_D = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=1).filter(place=1).count()
+    else:
+        grade_S = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=5).filter(place=2).count()
+        grade_A = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=4).filter(place=2).count()
+        grade_B = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=3).filter(place=2).count()
+        grade_C = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=2).filter(place=2).count()
+        grade_D = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=1).filter(place=2).count()
 
     datas = [grade_S, grade_A, grade_B, grade_C, grade_D]
     label1 = ['S', 'A', 'B', 'C', 'D']
@@ -198,7 +279,7 @@ def grade_chart(pk):
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
 
 
-def eva_chart(pk):
+def eva_chart(pk,place):
     import matplotlib
     #バックエンドを指定
     matplotlib.use('Agg')
@@ -207,11 +288,25 @@ def eva_chart(pk):
     from django.http import HttpResponse
 
     lecture = Lecture.objects.get(id=pk)
-    eva_S = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=5).count()
-    eva_A = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=4).count()
-    eva_B = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=3).count()
-    eva_C = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=2).count()
-    eva_D = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=1).count()
+
+    if place == 0:
+        eva_S = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=5).count()
+        eva_A = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=4).count()
+        eva_B = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=3).count()
+        eva_C = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=2).count()
+        eva_D = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=1).count()
+    elif place == 1:
+        eva_S = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=5).filter(place=1).count()
+        eva_A = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=4).filter(place=1).count()
+        eva_B = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=3).filter(place=1).count()
+        eva_C = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=2).filter(place=1).count()
+        eva_D = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=1).filter(place=1).count()
+    else:
+        eva_S = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=5).filter(place=2).count()
+        eva_A = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=4).filter(place=2).count()
+        eva_B = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=3).filter(place=2).count()
+        eva_C = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=2).filter(place=2).count()
+        eva_D = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=1).filter(place=2).count()
 
     datas = [eva_S, eva_A, eva_B, eva_C, eva_D]
     label2 = ['Very much', 'much', 'Neutral', 'little', 'Very little']
@@ -232,7 +327,7 @@ def eva_chart(pk):
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
 
 
-def dif_chart(pk):
+def dif_chart(pk,place):
     import matplotlib
     #バックエンドを指定
     matplotlib.use('Agg')
@@ -241,49 +336,28 @@ def dif_chart(pk):
     from django.http import HttpResponse
 
     lecture = Lecture.objects.get(id=pk)
-    dif_S = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=5).count()
-    dif_A = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=4).count()
-    dif_B = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=3).count()
-    dif_C = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=2).count()
-    dif_D = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=1).count()
+    if place == 0:
+        dif_S = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=5).count()
+        dif_A = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=4).count()
+        dif_B = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=3).count()
+        dif_C = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=2).count()
+        dif_D = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=1).count()
+    elif place == 1:
+        dif_S = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=5).filter(place=1).count()
+        dif_A = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=4).filter(place=1).count()
+        dif_B = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=3).filter(place=1).count()
+        dif_C = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=2).filter(place=1).count()
+        dif_D = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=1).filter(place=1).count()
+    else:
+        dif_S = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=5).filter(place=2).count()
+        dif_A = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=4).filter(place=2).count()
+        dif_B = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=3).filter(place=2).count()
+        dif_C = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=2).filter(place=2).count()
+        dif_D = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=1).filter(place=2).count()
 
     datas = [dif_S, dif_A, dif_B, dif_C, dif_D]
     label3 = ['Very easy', 'Easy', 'Normal', 'Hard', 'Very hard']
     colors = ['lime', 'aqua', 'skyblue', 'magenta', 'yellow']
-    ax = plt.subplot()
-    ax.axis("equal")
-    pie = ax.pie(datas, #データ
-                 startangle=90, #円グラフ開始軸を指定
-                 labels=label3, #ラベル
-                 colors=colors, #色指定
-                 counterclock=False, #逆時計回り
-                 labeldistance=None,
-                 )
-    buf = io.BytesIO()
-    plt.legend()
-    plt.savefig(buf, format='png', dpi=200)
-    plt.close()
-    return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
-
-
-def gakunen_chart(pk):
-    import matplotlib
-    #バックエンドを指定
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-    import io
-    from django.http import HttpResponse
-
-    lecture = Lecture.objects.get(id=pk)
-    dif_A = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=4).count()
-    dif_B = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=3).count()
-    dif_C = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=2).count()
-    dif_D = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=1).count()
-
-    datas = [dif_A, dif_B, dif_C, dif_D]
-    label3 = ['freshman', 'sophomore', 'junior', 'senior']
-    colors = ['magenta', 'skyblue', 'aqua', 'lime']
-    print(datas)
     ax = plt.subplot()
     ax.axis("equal")
     pie = ax.pie(datas, #データ
@@ -359,6 +433,19 @@ class ChatList(generic.ListView,generic.edit.ModelFormMixin):
         else:
             return self.form_invalid(form)
 
+class Help_top(generic.TemplateView):
+    template_name = 'register/help_top.html'
+
+class Help_contents(generic.TemplateView):
+    template_name = 'register/help_contents.html'
+
+    def get_context_data(self, **kwargs,):
+        context = super().get_context_data(**kwargs)
+        with open('register/templates/register/help_text/register.txt') as f:
+            context['text_contents']=f.read()
+            context['help_pk'] = self.kwargs['pk']
+        return context
+
 
 class Login(LoginView):
     """ログインページ"""
@@ -376,11 +463,27 @@ class UserCreate(generic.CreateView):
     template_name = 'register/user_create.html'
     form_class = UserCreateForm
 
+
     def form_valid(self, form):
         """仮登録と本登録用メールの発行."""
         # 仮登録と本登録の切り替えは、is_active属性を使うと簡単です。
         # 退会処理も、is_activeをFalseにするだけにしておくと捗ります。
+        def randomname(n):
+            return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
+
+        code = ""
+
+        while True:
+            def randomname(n):
+                return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
+            code = randomname(6)
+            user = User.objects.filter(invi_code=code).count()
+            if user == 0:
+                break
+
+
         user = form.save(commit=False)
+        user.invi_code = code
         user.is_active = False
         user.save()
 

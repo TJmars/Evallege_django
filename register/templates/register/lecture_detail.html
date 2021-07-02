@@ -1,6 +1,20 @@
 {% extends 'register/base.html' %}
 {% block content %}
-<h1>{{lecture.lecture_name}}</h1>
+
+<div style="display: flex;">
+        <div> <h1>{{lecture.lecture_name}}</h1></div>
+        <div class="dropdown mx-5 mt-1">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            授業方式
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 0 %}">全ての方式</a>
+            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 1 %}">対面</a>
+            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 2 %}">オンライン</a>
+          </div>
+        </div>
+</div>
+
 <div class="row">
   <div class="col-md-4 mt-5">
     <div style="text-align: center">
@@ -45,9 +59,4 @@
   </table>
 </div>
 </div>
-
-
-{% if eva_count == 0 %}
-<a href="{% url 'register:evaluate' pk %}" class="btn btn-outline-dark py-4 my-3">評価を回答</a>
-{% endif %}
 {% endblock%}

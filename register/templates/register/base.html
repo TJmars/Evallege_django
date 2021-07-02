@@ -4,6 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Evallegeはシラバスでは知ることのできない、講義に関するさまざまな情報を新たに提供します。自分が受けたい授業、自分にあっている授業をEvallegeを使って探しましょう。">
     {% block header %}{% endblock %}
 
     <!-- Bootstrap CSS -->
@@ -11,7 +12,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
           integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 
-    <title>MyCollege</title>
+    <title>Evallege - 大学講義の情報を検索</title>
 </head>
 <body style="padding-bottom: 200px;">
     <!-- ナビバー -->
@@ -32,6 +33,9 @@
           </li>
           <li>
             <a class="nav-item nav-link mx-2" href="{% url 'register:create_lecture' %}">講義を作成</a>
+          </li>
+          <li>
+            <a class="nav-item nav-link mx-2" href="{% url 'register:help_top' %}">使い方ガイド</a>
           </li>
           <li>
            <div class="dropdown">

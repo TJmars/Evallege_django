@@ -84,6 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
 
+    invi_code = models.CharField('招待コード',max_length=200,blank=False)
 
 
     is_staff = models.BooleanField(
@@ -147,6 +148,12 @@ class LectureEva(models.Model):
            User, verbose_name='評価者',on_delete=models.PROTECT
     )
 
+    PLACE = (
+       (1, '対面'),
+       (2, 'オンライン'),
+    )
+
+
     GRADE_LANK = (
         (5, 'S'),
         (4, 'A'),
@@ -178,6 +185,7 @@ class LectureEva(models.Model):
     eva_lank = models.IntegerField(verbose_name='課題量',choices=EVA_LANK, blank=False)
     dif_lank = models.IntegerField(verbose_name='授業の難易度',choices=DIF_LANK, blank=False)
     gakunen_lank = models.IntegerField(verbose_name='学年',choices=GAKUNEN_LANK, blank=False)
+    place = models.IntegerField(verbose_name='授業方式',choices=PLACE, blank=False)
 
     eva_comment = models.TextField(
         verbose_name='コメント(空欄可)',
@@ -189,7 +197,7 @@ class LectureEva(models.Model):
     created_at = models.DateTimeField('作成日', default=timezone.now)
 
 
-#ユーザーと履修講義の中間フィールド
+#ユーザーと履修講義の中間フィールド(講義を履修したdateを記録)
 class UserLectureList(models.Model):
     lecture = models.ForeignKey(
          Lecture,verbose_name='講義名',

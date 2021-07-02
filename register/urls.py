@@ -3,6 +3,8 @@ from . import views
 from projectB import settings
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls import url
+from django.views.static import serve
 
 app_name = 'register'
 
@@ -32,15 +34,19 @@ urlpatterns = [
     #新規講義作成画面
     path('create_lecture/', views.LectureCreate.as_view(), name='create_lecture'),
     #講義詳細画面
-    path('detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
-    path('projectB/register/gakunen_chart/<int:pk>', views.gakunen_chart,name="gakunen_chart"),
-    path('projectB/register/grade_chart/<int:pk>', views.grade_chart,name="grade_chart"),
-    path('projectB/register/eva_chart/<int:pk>', views.eva_chart,name="eva_chart"),
-    path('projectB/register/dif_chart/<int:pk>', views.dif_chart,name="dif_chart"),
+    path('detail/<int:pk>/<int:place>/', views.DetailView.as_view(), name='detail'),
+    path('projectB/register/gakunen_chart/<int:pk>/<int:place>', views.gakunen_chart,name="gakunen_chart"),
+    path('projectB/register/grade_chart/<int:pk>/<int:place>', views.grade_chart,name="grade_chart"),
+    path('projectB/register/eva_chart/<int:pk>/<int:place>', views.eva_chart,name="eva_chart"),
+    path('projectB/register/dif_chart/<int:pk>/<int:place>', views.dif_chart,name="dif_chart"),
     #授業評価投稿画面
     path('evaluate/<int:pk>/', views.Evaluate.as_view(), name='evaluate'),
     #チャット画面
     path('chat/<int:pk>/', views.ChatList.as_view(), name='chat'),
+    #ヘルプ画面
+    path('help/top/',views.Help_top.as_view(), name='help_top'),
+    path('help/contents/<int:pk>/',views.Help_contents.as_view(), name='help_contents'),
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -7,37 +7,61 @@
 		{% endfor %}
 	</ul>
 {% endif %}
-<div class="row">
-  <div class="col-md-9">
+
     <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:select_lecture' %}">
       <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="keyword">
       <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
     </form>
     {% for lecture in lecture_list %}
       <div class="card">
+				{% if request.user_agent.is_mobile %}
        <div class="card-body">
+         <h4 class="card-title">{{lecture.lecture_name}}</h4>
+         <p class="card-text">担当教員：{{lecture.teacher_name}}<br>作成日：{{lecture.created_at}}</p>
+         <div style="display:inline-flex">
+					 <div class="btn-group" role="group" aria-label="Basic example">
+							<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">詳細を表示</a>
+							<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">チャット</a>
+							{% if lecture not in user_lecture_eva_list %}
+							<a href="{% url 'register:evaluate' lecture.pk %}" class="btn btn-outline-dark">授業評価</a>
+							{% endif %}
+					</div>
+       </div>
+			 <form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
+					{% if lecture in user_lecture_list %}
+					<button class="btn btn-outline-danger mt-3" name="lecture" value="{{ lecture.id }}">登録解除</button>
+					{% else %}
+					<button class="btn btn-outline-success mt-3" name="lecture" value="{{ lecture.id }}">登録</button>
+					{% endif %}
+					{% csrf_token %}
+			</form>
+       </div>
+			 {% else %}
+			 <div class="card-body">
          <h4 class="card-title">{{lecture.lecture_name}}</h4>
          <p class="card-text">担当教員：{{lecture.teacher_name}}　　作成日：{{lecture.created_at}}</p>
          <div style="display:inline-flex">
-           <a href="{% url 'register:detail' lecture.pk %}" class="btn btn-outline-dark">詳細を表示</a>
-					 <a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark mx-4">チャット</a>
-           <form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
-              {% if lecture in user_lecture_list %}
-              <button class="btn btn-outline-danger mx-lg-1" name="lecture" value="{{ lecture.id }}">登録解除</button>
-              {% else %}
-              <button class="btn btn-outline-success mx-lg-1" name="lecture" value="{{ lecture.id }}">登録</button>
-              {% endif %}
-              {% csrf_token %}
-          </form>
+					 <div class="btn-group" role="group" aria-label="Basic example">
+							<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">詳細を表示</a>
+							<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">チャット</a>
+							{% if lecture not in user_lecture_eva_list %}
+							<a href="{% url 'register:evaluate' lecture.pk %}" class="btn btn-outline-dark">授業評価</a>
+							{% endif %}
+					</div>
        </div>
+			 <form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
+					{% if lecture in user_lecture_list %}
+					<button class="btn btn-outline-danger mx-lg-1" name="lecture" value="{{ lecture.id }}">登録解除</button>
+					{% else %}
+					<button class="btn btn-outline-success mx-lg-1" name="lecture" value="{{ lecture.id }}">登録</button>
+					{% endif %}
+					{% csrf_token %}
+			</form>
        </div>
+			 {% endif %}
       </div>
     {% endfor %}
-  </div>
-  <div class="col-md-3">
 
-  </div>
-</div>
 {% include 'register/page5.html' %}
 
 {% endblock %}
