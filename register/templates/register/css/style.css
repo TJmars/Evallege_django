@@ -15,3 +15,26 @@ footer{
     color: #fff;
     text-align: center;
 }
+
+
+a{
+  position: relative;
+  display: inline-block;
+  transition: .3s;
+}
+
+a::after {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  content: '';
+  width: 0;
+  height: 2px;
+  background-color: #31aae2;
+  transition: .3s;
+  transform: translateX(-50%);
+}
+
+a:hover::after{
+  width: 100%;
+}

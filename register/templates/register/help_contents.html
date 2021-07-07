@@ -1,26 +1,48 @@
 {% extends "register/base.html" %}
 {% block content %}
 {% if help_pk == 0 %}
-<div class="row">
-  <div class="col-md-4">
-    <div class="card">
-  <img style="max-width:100%;height:auto;" src="/media/images/help_1.png" alt="Card image">
-  <div class="card-body"> 授業を探して登録する </div>
+
+  <h1><span style="text-decoration: underline">Evallegeの使い方</span></h1>
+  <div class="row mt-5">
+  <div class="col-md-6">
+  <h3>１.　授業の評価をみる</h3>
+  <img style="max-width:100%;height:auto;" src="/media/images/help_0_1.png">
+  <p>
+    「自分の興味のある授業を受けたい！」「卒業するために楽な単位が欲しい！」
+    などといったことを講義の評価を参考に履修登録を組み、授業を登録しましょう。<br>
+     また、一度登録した講義は登録してから１ヶ月間、解除が可能です。
+   </p>
   </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card">
-  <img style="max-width:100%;height:auto;" src="/media/images/help_3.png" alt="Card image">
-  <div class="card-body"> チャットで授業内容や課題について質問、回答 </div>
-  </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card">
-  <img style="max-width:100%;height:auto;" src="/media/images/help_5.png" alt="Card image">
-  <div class="card-body"> 成績が出たら、授業評価を投稿</div>
-  </div>
-  </div>
-</div>
+    <div class="col-md-6">
+    <h3>２．授業内チャットを活用する</h3>
+    <img style="max-width:100%;height:auto;" src="/media/images/help_0_2.png">
+    <p>
+      授業内のチャットで課題を質問するなど、様々な用途で使用可能です。
+      投稿内容は全生徒に公開されるため、内容には十分にお気をつけください。<br>
+     </p>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-md-6 mt-5">
+    <h3>３．授業の評価をする</h3>
+    <img style="max-width:100%;height:auto;" src="/media/images/help_0_3.png">
+    <p>
+      登録されて３０日以上経過した講義は授業評価しないと、登録の解除ができません。必ず、講義が終了したときには評価の記入をお願いします。
+同じ講義の評価は１度しかできません。
+随時、過去に受けていた授業の評価もよろしくお願いします。
+     </p>
+    </div>
+      <div class="col-md-6 mt-5">
+      <h3>４．教科書を売買する</h3>
+      <p>
+        新たな授業に向けて必要な教科書を出品者から購入することができます。購入する際には「eポイント」での割引も可能です。(現在実装中)
+また、授業を終えて不要になった教科書を、新たな履修者にむけて出品することができます。ただし、自分が評価した授業内でしか売ることはできません。
+<br>
+※近日実装予定です。
+
+       </p>
+      </div>
+      </div>
 {% elif help_pk == 1 %}
 <div class="card">
   <div class="card-body">
@@ -235,6 +257,22 @@
     <p class="card-text">
       現在、Evallegeサイト内に問い合わせフォーム等はございません。
       ご不便をおかけいたしますが、問い合わせ等は上記のメールアドレスへお願いいたします。</p>
+  </div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-header">
+公式SNS
+  </div>
+  <div class="card-body">
+    <td style="display:flex">
+      <img src="/media/images/instagram.png" width="50" height="auto">
+      <a href="https://www.instagram.com/Evallage_official/"><h4>https://www.instagram.com/Evallage_official/</h4></a><hr>
+    </td>
+    <td style="display:flex">
+      <img src="/media/images/twitter.png" width="50" height="auto">
+      <a href="https://twitter.com/Evallage"><h4>https://twitter.com/Evallage</h4></a><hr>
+    </td>
   </div>
 </div>
 {% endif %}

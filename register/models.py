@@ -84,7 +84,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
 
-    invi_code = models.CharField('招待コード',max_length=200,blank=False)
+    invi_code = models.CharField('自分の招待コード',max_length=200,blank=False)
+    input_invi_code = models.CharField('招待コード',max_length=200,blank=True)
+
+    invi_point = models.IntegerField(
+        verbose_name='被招待ポイント',
+        default=0,
+    )
 
 
     is_staff = models.BooleanField(

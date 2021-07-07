@@ -91,11 +91,29 @@ class SelectLecture(generic.ListView):
     def get_queryset(self):
         college = self.request.user.college_name.id
         keyword = self.request.GET.get('keyword')
+        keyword2 = self.request.GET.get('keyword2')
         queryset = Lecture.objects.filter(college_name=college)
         if keyword:
             queryset = queryset.filter(
             Q(lecture_name__icontains=keyword) | Q(teacher_name__icontains=keyword)
             )
+
+        if keyword2:
+            keyword_list = keyword2.split('\n')[0:-1]
+            result_lecture_list = []
+            result_teacher_list = []
+            for word in keyword_list:
+                split_list = word.split('\t')
+                lecture = split_list[2]
+                lecture = lecture[:lecture.find('[')].strip(' ')
+                result_lecture_list.append(lecture)
+
+                teacher = split_list[3]
+                teacher = teacher.replace('\u3000', ' ')
+                result_teacher_list.append(teacher)
+
+            queryset=Lecture.objects.filter(lecture_name__in=result_lecture_list).filter(teacher_name__in=result_teacher_list)
+
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -441,9 +459,7 @@ class Help_contents(generic.TemplateView):
 
     def get_context_data(self, **kwargs,):
         context = super().get_context_data(**kwargs)
-        with open('register/templates/register/help_text/register.txt') as f:
-            context['text_contents']=f.read()
-            context['help_pk'] = self.kwargs['pk']
+        context['help_pk'] = self.kwargs['pk']
         return context
 
 
@@ -481,11 +497,23 @@ class UserCreate(generic.CreateView):
             if user == 0:
                 break
 
-
         user = form.save(commit=False)
         user.invi_code = code
         user.is_active = False
-        user.save()
+
+        input_invi_code = form.cleaned_data['input_invi_code']
+        if input_invi_code != "":
+            invi_user=User.objects.filter(invi_code=input_invi_code)
+            if invi_user:
+                invi_user[0].invi_point = invi_user[0].invi_point+1
+                invi_user[0].save()
+                user.save()
+            else:
+                messages.warning(self.request, '該当する招待コードが存在しません。')
+                return redirect('register:user_create')
+        else:
+            user.save()
+
 
         # アクティベーションURLの送付
         current_site = get_current_site(self.request)

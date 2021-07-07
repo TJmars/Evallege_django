@@ -1,5 +1,12 @@
 {% extends "register/base.html" %}
 {% block content %}
+{% if messages %}
+	<ul class="messages_ul">
+		{% for message in messages %}
+			<li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %} alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ message }}</li>
+		{% endfor %}
+	</ul>
+{% endif %}
 <form action="" method="POST">
     {{ form.non_field_errors }}
     {% for field in form %}
@@ -10,7 +17,7 @@
     </div>
     {% endfor %}
     {% csrf_token %}
-    
+
     <button type="submit" class="btn btn-outline-dark btn-lg">送信</button>
 </form>
 {% endblock %}

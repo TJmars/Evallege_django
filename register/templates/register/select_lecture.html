@@ -8,6 +8,10 @@
 	</ul>
 {% endif %}
 
+<div class="row">
+    <!-- 左側、ログインエリア -->
+    <div class="col-md-8">
+
     <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:select_lecture' %}">
       <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="keyword">
       <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
@@ -48,20 +52,39 @@
 							<a href="{% url 'register:evaluate' lecture.pk %}" class="btn btn-outline-dark">授業評価</a>
 							{% endif %}
 					</div>
+					<form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
+	 					{% if lecture in user_lecture_list %}
+	 					<button class="btn btn-outline-danger mx-lg-1" name="lecture" value="{{ lecture.id }}">登録解除</button>
+	 					{% else %}
+	 					<button class="btn btn-outline-success mx-lg-1" name="lecture" value="{{ lecture.id }}">登録</button>
+	 					{% endif %}
+	 					{% csrf_token %}
+	 			</form>
        </div>
-			 <form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
-					{% if lecture in user_lecture_list %}
-					<button class="btn btn-outline-danger mx-lg-1" name="lecture" value="{{ lecture.id }}">登録解除</button>
-					{% else %}
-					<button class="btn btn-outline-success mx-lg-1" name="lecture" value="{{ lecture.id }}">登録</button>
-					{% endif %}
-					{% csrf_token %}
-			</form>
        </div>
 			 {% endif %}
       </div>
     {% endfor %}
+</div>
+<div class="col-md-4">
+	<div class="card mt-4">
+  <div class="card-header">
+    <h5>一括検索</h5>
+  </div>
+  <div class="card-body">
+    <p class="card-text">武蔵3sから講義をコピーして一括検索ができます。</p>
+		<a href="#">詳しい使い方をみる</a>
+  </div>
+</div>
 
+ <div class="form-group">
+	 <form class="form-inline mt-4" method="GET" action="{% url 'register:select_lecture' %}">
+		 <textarea id="textarea1" class="form-control" name="keyword2" style="width:100%;height:300px;" placeholder="コピーを貼り付け"></textarea>
+ 		<button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
+ 	</form>
+</div>
+
+</div>
 {% include 'register/page5.html' %}
 
 {% endblock %}

@@ -42,7 +42,7 @@ class UserCreateForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('email','college_name','user_name')
+        fields = ('email','college_name','user_name','input_invi_code')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
