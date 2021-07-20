@@ -277,3 +277,283 @@
 </div>
 {% endif %}
 {% endblock %}
+
+
+{% block content1 %}
+{% if help_pk == 0 %}
+
+  <h1><span style="text-decoration: underline">Evallegeの使い方</span></h1>
+  <div class="row mt-5">
+  <div class="col-md-6">
+  <h3>１.　授業の評価をみる</h3>
+  <img style="max-width:100%;height:auto;" src="/media/images/help_0_1.png">
+  <p>
+    「自分の興味のある授業を受けたい！」「卒業するために楽な単位が欲しい！」
+    などといったことを講義の評価を参考に履修登録を組み、授業を登録しましょう。<br>
+     また、一度登録した講義は登録してから１ヶ月間、解除が可能です。
+   </p>
+  </div>
+    <div class="col-md-6">
+    <h3>２．授業内チャットを活用する</h3>
+    <img style="max-width:100%;height:auto;" src="/media/images/help_0_2.png">
+    <p>
+      授業内のチャットで課題を質問するなど、様々な用途で使用可能です。
+      投稿内容は全生徒に公開されるため、内容には十分にお気をつけください。<br>
+     </p>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-md-6 mt-5">
+    <h3>３．授業の評価をする</h3>
+    <img style="max-width:100%;height:auto;" src="/media/images/help_0_3.png">
+    <p>
+      登録されて３０日以上経過した講義は授業評価しないと、登録の解除ができません。必ず、講義が終了したときには評価の記入をお願いします。
+同じ講義の評価は１度しかできません。
+随時、過去に受けていた授業の評価もよろしくお願いします。
+     </p>
+    </div>
+      <div class="col-md-6 mt-5">
+      <h3>４．教科書を売買する</h3>
+      <p>
+        新たな授業に向けて必要な教科書を出品者から購入することができます。購入する際には「eポイント」での割引も可能です。(現在実装中)
+また、授業を終えて不要になった教科書を、新たな履修者にむけて出品することができます。ただし、自分が評価した授業内でしか売ることはできません。
+<br>
+※近日実装予定です。
+
+       </p>
+      </div>
+      </div>
+{% elif help_pk == 1 %}
+<div class="card">
+  <div class="card-body">
+    <p class="card-text"><h3>履修講義の登録/解除について</h3></p>
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 mt-5">
+        <img style="max-width:100%;height:auto;" src="/media/images/help_1.png" alt="Card image">
+      </div>
+      <div class="col-md-6 mt-5">
+        <p class="card-text">
+          <ul class="list-group">
+            <li class="list-group-item">① 画面上部の「講義を探す」タブをプッシュ</li>
+            <li class="list-group-item">② 授業名、または教員名を入力して検索</li>
+            <li class="list-group-item">③ 登録ボタンをプッシュ</li>
+            <li class="list-group-item">④ 画面上部の「履修講義一覧」をプッシュすると、履修中の講義が見れます</li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% elif help_pk == 2 %}
+<div class="card">
+  <div class="card-body">
+    <p class="card-text"><h3>履修している講義がない場合</h3></p>
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 mt-5">
+        <img style="max-width:100%;height:auto;" src="/media/images/help_2.png" alt="Card image">
+      </div>
+      <div class="col-md-6 mt-5">
+        <p class="card-text">
+          <ul class="list-group">
+            <li class="list-group-item">① 画面上部の「新しい講義を作成」タブをプッシュ</li>
+            <li class="list-group-item">② 授業名、教員名を入力して講義を作成</li>
+            <li class="list-group-item">＊ 授業名、教員名がともに一致する講義がある場合、作成することができません。
+              講義を作成する前に検索ページで該当する講義がないか確認してください。
+            </li>
+            <li class="list-group-item">④ ＊ 授業は登録されている講義名を参考に、正式名を入力してください。
+              教員名は、姓名の間にスペースを入れてください。
+            </li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% elif help_pk == 3 %}
+<div class="card">
+  <div class="card-body">
+    <p class="card-text"><h3>チャット機能について</h3></p>
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 mt-5">
+        <img style="max-width:100%;height:auto;" src="/media/images/help_3.png" alt="Card image">
+      </div>
+      <div class="col-md-6 mt-5">
+        <p class="card-text">
+          <ul class="list-group">
+            <li class="list-group-item">① 講義リストの「チャット」ボタンをプッシュ</li>
+            <li class="list-group-item">② チャット画面で授業に関するさまざまな質問ができます。ぜひお気軽に質問してください。</li>
+            <li class="list-group-item">＊ 投稿内容には十分お気をつけください。不適切な投稿であると判断された場合、
+              ユーザーの許可を得ず、投稿の削除、ユーザーの抹消等の措置を行います。
+            </li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% elif help_pk == 4 %}
+<div class="card">
+  <div class="card-body">
+    <p class="card-text"><h3>詳細画面・グラフの見方について</h3></p>
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 mt-5">
+        <img style="max-width:100%;height:auto;" src="/media/images/help_4.png" alt="Card image">
+      </div>
+      <div class="col-md-6 mt-5">
+        <p class="card-text">
+          <ul class="list-group">
+            <li class="list-group-item"><h5>
+              ① 学年比率グラフ</h5><br>
+              　　当該講義を履修した生徒の学年を表示します。
+            </li>
+            <li class="list-group-item"><h5>② 成績グラフ</h5><br>
+            　　当該講義を履修した生徒の成績比率を表示します。</li>
+            <li class="list-group-item"><h5>③ 難易度グラフ</h5><br>
+              　　当該授業の履修生の難易度に関する回答結果を表示します。
+            </li>
+            <li class="list-group-item"><h5>④ 課題量グラフ</h5><br>
+              　　当該授業の履修生の難易度に関する回答結果を表示します。
+            </li>
+            <li class="list-group-item"><h5>④ 授業方式切り替え</h5><br>
+              　　対面、またはオンラインを選択することで、授業方式を限定したグラフを表示することができます。
+            </li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% elif help_pk == 5 %}
+<div class="card">
+  <div class="card-body">
+    <p class="card-text"><h3>授業評価について</h3></p>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 mt-5">
+        <img style="max-width:100%;height:auto;" src="/media/images/help_4.png" alt="Card image">
+      </div>
+      <div class="col-md-6 mt-5">
+        <p class="card-text">
+          <ul class="list-group">
+            <li class="list-group-item"><h5>
+              学年</h5><br>
+              　　当該講義を履修した学年を選択してください。
+            </li>
+            <li class="list-group-item"><h5>成績</h5><br>
+            　　当該講義の成績を選択してください。(該当する成績がない場合、Dとしてください。)</li>
+            <li class="list-group-item"><h5>課題量</h5><br>
+              　　課題の量について体感に最も近いものを選択してください。
+            </li>
+            <li class="list-group-item"><h5>授業の難易度</h5><br>
+              　　当該授業の難易度について体感に最も近いものを選択してください。
+            </li>
+            <li class="list-group-item"><h5>授業方式</h5><br>
+              　　当該授業を履修した方式を選択してください。
+            </li>
+            <li class="list-group-item"><h5>コメント</h5><br>
+              　　その他、履修に関する有益な情報等ございましたら、入力してください。
+            </li>
+            <li style="color:red"class="list-group-item">
+              　　＊　同一の講義に対する評価は一度しか行えません。また、履修登録後1ヶ月が経過した講義は、
+              評価を投稿するまで解除することができません。
+            </li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% elif help_pk == 6 %}
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">ユーザー情報閲覧について</h5>
+  </div>
+  <div class="card-body">
+    <p class="card-text">現在登録されているユーザー情報が閲覧できます。<br>
+      ユーザーポイントは、今後実装予定のさまざまな機能に活用できる予定です。このポイントは授業評価を投稿することにより獲得できます。
+    </p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">ユーザーネーム変更について</h5>
+  </div>
+  <div class="card-body">
+    <p class="card-text">新しいユーザーネームを入力し、送信ボタンをプッシュしてください。
+      ユーザーネームはチャット画面での投稿者名として表示されます。
+    </p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">メールアドレス変更について</h5>
+  </div>
+  <div class="card-body">
+    <p class="card-text">新しいメールアドレスを入力し、送信ボタンをプッシュしてください。
+      新しいメールアドレスに送信されたURLをタップすることで変更が適用されます。
+    </p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">パスワード変更について</h5>
+  </div>
+  <div class="card-body">
+    <p class="card-text">現在のパスワードと新しいパスワードを入力し、送信ボタンをプッシュしてください。
+    </p>
+  </div>
+</div>
+{% elif help_pk == 7 %}
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">教科書売買機能</h5>
+  </div>
+  <div class="card-body">
+    <p class="card-text">講義で使用した教科書を売買する機能です。(8月頃実装予定)
+    </p>
+  </div>
+</div>
+{% elif help_pk == 8 %}
+<div class="card">
+  <div class="card-header">
+    問い合わせ先メールアドレス
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">evallege.public@gmail.com</h4>
+    <p class="card-text">
+      現在、Evallegeサイト内に問い合わせフォーム等はございません。
+      ご不便をおかけいたしますが、問い合わせ等は上記のメールアドレスへお願いいたします。</p>
+  </div>
+</div>
+
+<div class="card mt-5">
+  <div class="card-header">
+公式SNS
+  </div>
+  <div class="card-body">
+    <td style="display:flex">
+      <img src="/media/images/instagram.png" width="50" height="auto">
+      <a href="https://www.instagram.com/Evallage_official/"><h4>https://www.instagram.com/Evallage_official/</h4></a><hr>
+    </td>
+    <td style="display:flex">
+      <img src="/media/images/twitter.png" width="50" height="auto">
+      <a href="https://twitter.com/Evallage"><h4>https://twitter.com/Evallage</h4></a><hr>
+    </td>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

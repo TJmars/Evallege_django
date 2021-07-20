@@ -1,5 +1,14 @@
 {% extends "register/base.html" %}
-{% block content %}
+{% block content2 %}
+<p>
+    本登録が完了しました。<br>
+    登録されたメールアドレスとパスワードでログインしてください。<br>
+    <a class="btn btn-primary btn-lg" href="{% url 'register:login' %}">ログイン</a>
+</p>
+{% endblock %}
+
+
+{% block content3 %}
 <p>
     本登録が完了しました。<br>
     登録されたメールアドレスとパスワードでログインしてください。<br>

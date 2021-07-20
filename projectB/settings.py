@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_user_agents',
+
 ]
 
 # キャッシュを使うとdjango-user-agentsを素早く働かせることができる
@@ -165,3 +166,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'spam@gmail.com'
 EMAIL_HOST_PASSWORD = 'Yachiyo871'
 EMAIL_USE_TLS = True
+
+#stripe
+STRIPE_PUBLIC_KEY = 'pk_test_51JD0jTIgYT735lZYT66wVTXNA49n43evg0BJ1Ut3KTz5FV97tSKAvjs8FniCBvq7uUuWP0es2cnhiFM5VMT9CVgy009l2BNvbC'
+STRIPE_SECRET_KEY = 'sk_test_51JD0jTIgYT735lZYkJvAhjOfpcmqdin1OGcAbdSzAZE07Yvhaqy0HaF0CIoWhyMLJ5ictA8xqjwd6hGsuv7NUoTm00WFOBTZfS'

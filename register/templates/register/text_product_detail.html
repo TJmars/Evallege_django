@@ -1,0 +1,68 @@
+{% extends 'register/base.html' %}
+
+{% block content %}
+<p>{{ message }}</p>
+
+<div class="card">
+  <div class="card-body">
+    <img src="/media/images/IMG_2702.jpeg" width="200px" height=auto>
+    <h3>{{ text_product.product_name }}</h3>
+    <h4>¥{{ text_product.price }}</h4>
+    <p>{{ text_product.description | linebreaksbr }}<p>
+    <p>出品者：{{ text_product.sale_user.user_name }}</p>
+    <p>出品日：{{ text_product.created_at }}</p>
+
+    {% if user.is_authenticated %}
+    <form action="" method="POST">
+      <script
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="{{ publick_key }}"
+          data-amount="{{ text_product.price }}"
+          data-name="Evallege"
+          data-description="{{ text_product.product_name }}"
+          data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+          data-locale="ja"
+          data-currency="jpy"
+          data-email="{{ user.email }}">
+      </script>
+      {% csrf_token %}
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+{% block content1 %}
+<p>{{ message }}</p>
+
+<div class="card">
+  <div class="card-body">
+    <img src="/media/images/IMG_2702.jpeg" width="200px" height=auto>
+    <h3>{{ text_product.product_name }}</h3>
+    <h4>¥{{ text_product.price }}</h4>
+    <p>{{ text_product.description | linebreaksbr }}<p>
+    <p>出品者：{{ text_product.sale_user.user_name }}</p>
+    <p>出品日：{{ text_product.created_at }}</p>
+
+    {% if user.is_authenticated %}
+    <form action="" method="POST">
+      <script
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="{{ publick_key }}"
+          data-amount="{{ text_product.price }}"
+          data-name="Evallege"
+          data-description="{{ text_product.product_name }}"
+          data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+          data-locale="ja"
+          data-currency="jpy"
+          data-email="{{ user.email }}">
+      </script>
+      {% csrf_token %}
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+
+<!-- 購入ボタン・フォームの作成 -->
+
+{% endblock %}

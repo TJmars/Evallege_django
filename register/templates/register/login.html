@@ -8,38 +8,52 @@
 }
 </style>
 {% endblock %}
-{% block content %}
 
-{% if request.user_agent.is_mobile %}
+{% block content2 %}
+<div style="text-align: center">
+    <div style="margin-top:80px">
+     <img src="/media/images/logo.png" width="230" height="230">
+     </div>
+    <div style="margin-top:50px">
+     <img style="max-width:100%;height:auto;" src="/media/images/title.png">
+    </div>
+</div>
 
-      <div style="text-align: center">
-          <div style="margin-top:80px">
-           <img src="/media/images/logo.png" width="230" height="230">
-           </div>
-          <div style="margin-top:50px">
-           <img style="max-width:100%;height:auto;" src="/media/images/title.png">
-          </div>
-      </div>
+<div class="card-body">
+    <form action="{% url 'register:login' %}" method="POST">
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            {{ field }}
+            {{ field.errors }}
+            <hr>
+        {% endfor %}
+        <button type="submit" class="btn btn-outline-dark btn-lg btn-block">ログイン</button>
+        <input type="hidden" name="next" value="{{ next }}" />
+        {% csrf_token %}
+    </form>
+</div>
+<div class="card-body">
+    <a href="{% url 'register:user_create' %}" class="btn btn-outline-dark btn-lg btn-block" >会員登録</a>
+    <a href="{% url 'register:password_reset' %}" class="btn btn-outline-dark btn-lg btn-block" >パスワードを忘れた方</a>
+</div>
+<div style="text-align: center">
+<div style="margin-top:50px;margin-bottom:20px">
+  <div class="card">
+    <div class="card-header">
+      問い合わせ
+    </div>
+    <div class="card-body">
+      <h5 class="card-text">evallege.public@gmail.com</h5>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
 
-      <div class="card-body">
-          <form action="{% url 'register:login' %}" method="POST">
-              {{ form.non_field_errors }}
-              {% for field in form %}
-                  {{ field }}
-                  {{ field.errors }}
-                  <hr>
-              {% endfor %}
-              <button type="submit" class="btn btn-outline-dark btn-lg btn-block" >ログイン</button>
-              <input type="hidden" name="next" value="{{ next }}" />
-              {% csrf_token %}
-          </form>
-      </div>
-      <div class="card-body">
-          <a href="{% url 'register:user_create' %}" class="btn btn-outline-dark btn-lg btn-block" >会員登録</a>
-          <a href="{% url 'register:password_reset' %}" class="btn btn-outline-dark btn-lg btn-block" >パスワードを忘れた方</a>
-      </div>
 
-{% else %}
+
+
+{% block content3 %}
 <div class="row">
     <!-- 左側、ログインエリア -->
     <div class="col-md-6">
@@ -76,7 +90,7 @@
 
     </div><!-- 右側、会員登録エリアおわり -->
 </div>
-{% endif %}
+
 <div style="text-align: center">
 <div style="margin-top:50px;margin-bottom:20px">
   <div class="card">

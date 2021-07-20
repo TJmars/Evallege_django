@@ -93,6 +93,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
 
+
+
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -234,3 +236,14 @@ class LectureChat(models.Model):
     max_length=1000,
     )
     created_at = models.DateTimeField('登録日', default=timezone.now)
+
+class Text_product(models.Model):
+    """教科書の製品モデル"""
+    product_name = models.CharField('教科書名', max_length=200)
+    price = models.IntegerField(verbose_name='価格')
+    description = models.TextField('商品の詳細説明')
+    created_at = models.DateTimeField('出品日', default=timezone.now)
+    sale_user = models.ForeignKey(User, verbose_name='出品者', on_delete=models.PROTECT, related_name='sale_user')
+    buy_user = models.ForeignKey(User, verbose_name='購入者', on_delete=models.PROTECT, related_name='buy_user',blank=True, null=True)
+    on_sale = models.BooleanField(verbose_name='販売中かチェック', default=True)
+    lecture = models.ForeignKey(Lecture, verbose_name='講義', on_delete=models.PROTECT)

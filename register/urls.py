@@ -46,6 +46,10 @@ urlpatterns = [
     #ヘルプ画面
     path('help/top/',views.Help_top.as_view(), name='help_top'),
     path('help/contents/<int:pk>/',views.Help_contents.as_view(), name='help_contents'),
+    #テキスト売買画面
+    path('text_product_list/', views.Text_product_list.as_view(), name='text_product_list'),
+    path('text_product_detail/<int:pk>/', views.Text_product_detail.as_view(), name='text_product_detail'),
+    path('text_sale/', views.Text_sale.as_view(), name='text_sale'),
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 

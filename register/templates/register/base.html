@@ -12,8 +12,68 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
           integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 
-
     <title>Evallege - 大学講義の情報を検索</title>
+
+    <style>
+    section ul {
+    	list-style: none;
+    }
+    section1 li {
+    	padding-left: 45px;
+    	line-height: 2.5em;
+    	background: url(/media/images/list_1.png) left 0px top 10px no-repeat;
+    	background-size: 25px auto;
+    }
+    section2 li {
+    	padding-left: 45px;
+    	line-height: 2.5em;
+    	background: url(/media/images/list_2.png) left 0px top 10px no-repeat;
+    	background-size: 25px auto;
+    }
+    section3 li {
+    	padding-left: 45px;
+    	line-height: 2.5em;
+    	background: url(/media/images/list_3.png) left 0px top 10px no-repeat;
+    	background-size: 23px auto;
+    }
+    section4 li {
+    	padding-left: 45px;
+    	line-height: 2.5em;
+    	background: url(/media/images/list_4.png) left 0px top 10px no-repeat;
+    	background-size: 25px auto;
+    }
+    section5 li {
+    	padding-left: 45px;
+    	line-height: 2.5em;
+    	background: url(/media/images/list_5.png) left 0px top 10px no-repeat;
+    	background-size: 23px auto;
+    }
+    section6 li {
+    	padding-left: 45px;
+    	line-height:2.53em;
+    	background: url(/media/images/list_6.png) left 0px top 10px no-repeat;
+    	background-size: 25px auto;
+    }
+
+
+    .btn-right-radius {
+    position: relative;
+    display: inline-block;
+    padding: 0.2em;
+    text-decoration: none;
+    color: #00BCD4;
+    border-radius: 0 15px 15px 0;
+    transition: .4s;
+  }
+
+  .btn-right-radius:hover {
+    background: #D9E5FF;
+    text-decoration: none;
+  }
+
+    </style>
+
+
 </head>
 <body style="padding-bottom: 200px;">
     <!-- ナビバー -->
@@ -24,8 +84,9 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {% if user.is_authenticated %}
+        {% if request.user_agent.is_mobile %}
         <ul class="navbar-nav mr-auto">
-          {% if user.is_authenticated %}
           <li>
             <a class="nav-item nav-link mx-2" href="{% url 'register:top' %}">履修講義一覧</a>
           </li>
@@ -36,15 +97,19 @@
             <a class="nav-item nav-link mx-2" href="{% url 'register:create_lecture' %}">講義を作成</a>
           </li>
           <li>
+            <a class="nav-item nav-link mx-2" href="{% url 'register:text_product_list' %}">教科書販売/購入</a>
+          </li>
+          <li>
             <a class="nav-item nav-link mx-2" href="{% url 'register:user_detail' user.pk %}">ユーザー情報</a>
           </li>
           <li>
             <a class="nav-item nav-link mx-2" href="{% url 'register:help_top' %}">使い方ガイド</a>
           </li>
-          {% endif %}
         </ul>
+        {% endif %}
+        {% endif %}
 
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ml-auto">
           {% if user.is_authenticated %}
           <li>
             <!-- Button trigger modal -->
@@ -80,8 +145,43 @@
     </nav>
 
     <!-- メインコンテント -->
-    <div class="container mt-3">
-        {% block content %}{% endblock %}
+    <div class="mt-5 mx-0">
+
+      {% if user.is_authenticated %}
+      <!-- ユーザーがログインしている -->
+      {% if request.user_agent.is_mobile %}
+      <!-- スマホを使用中 -->
+      {% block content %}{% endblock %}
+      {% else %}
+      <!-- PCを使用中 -->
+      <div class="row">
+			    <div class="col-md-2">
+            <section>
+							<ul>
+							<section1><a class="btn-right-radius" href="{% url 'register:top' %}"><li style='color:gray'>履修講義一覧</li></a></section1>
+							<section2><a class="btn-right-radius" href="{% url 'register:select_lecture' %}"><li style='color:gray'>講義を探す</li></a></section2>
+							<section3><a class="btn-right-radius" href="{% url 'register:create_lecture' %}"><li style='color:gray'>講義を作成</li></a></section3>
+							<section4><a class="btn-right-radius" href="{% url 'register:text_product_list' %}"><li style='color:gray'>教科書売買</li></a></section4>
+							<section5><a class="btn-right-radius" href="{% url 'register:user_detail' user.pk %}"><li style='color:gray'>ユーザー情報</li></a></section5>
+							<section6><a class="btn-right-radius" href="{% url 'register:help_top' %}"><li style='color:gray'>使い方ガイド</li></a></section6>
+							</ul>
+						</section>
+          </div>
+          <div class="col-md-10">
+            {% block content1 %}{% endblock %}
+          </div>
+      </div>
+      {% endif %}<!-- 使用機器の判別 -->
+      {% else %}
+      <!-- ログインしていない -->
+      {% if request.user_agent.is_mobile %}
+      {% block content2 %}{% endblock %}
+      {% else %}
+      {% block content3 %}{% endblock %}
+      {% endif %}
+      {% endif %}<!-- ログインの判別 -->
+
+
     </div>
 
 

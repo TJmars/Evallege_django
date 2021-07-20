@@ -1,7 +1,6 @@
 {% extends "register/base.html" %}
 {% block content %}
 
-
 <table class="table mb-5">
   <thead class="thead-dark">
     <tr>
@@ -32,5 +31,44 @@
     <button type="submit" class="btn btn-outline-dark my-lg-4 my-4">チャットを投稿</button>
   </form>
 </footer>
+
+{% endblock %}
+
+
+
+{% block content1 %}
+<div class="mr-5">
+<table class="table mb-5">
+  <thead class="thead-dark">
+    <tr>
+      <th>Chat</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for chat in chat_list %}
+    <tr>
+      <td><span style="color:gray">{{chat.user.user_name}}  /  {{chat.created_at}}</span><br><p>{{chat.chat_text}}</P></td>
+    </tr>
+    {% empty %}
+    <td>課題やテストについてチャットで質問できます</td>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<footer style="position: fixed;bottom: 0; width: 80%;background-color: white;">
+  <form action="" method="POST">
+    {{form.non_field_errors}}
+    {% for field in form %}
+    <div class="form-group">
+      {{field}}
+      {{field.errors}}
+    </div>
+    {% endfor %}
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-dark my-lg-4 my-4">チャットを投稿</button>
+  </form>
+</footer>
+
 
 {% endblock %}

@@ -13,3 +13,19 @@
   <button type="submit" class="btn btn-outline-dark py-4 my-3">評価を投稿</button>
 </form>
 {% endblock %}
+
+
+{% block content1 %}
+<form action="" method="POST">
+  {{form.non_field_errors}}
+  {% for field in form %}
+  <div class="form-group">
+    <label for="{{field.id_for_label}}">{{field.label_tag}}</label>
+    {{field}}
+    {{field.errors}}
+  </div>
+  {% endfor %}
+  {% csrf_token %}
+  <button type="submit" class="btn btn-outline-dark py-4 my-3">評価を投稿</button>
+</form>
+{% endblock %}

@@ -16,13 +16,18 @@ from django.views import generic
 from django.db.models import Q
 from .forms import (
     LoginForm, UserCreateForm, UserUpdateForm, MyPasswordChangeForm,
-    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm
+    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm,TextSaleForm
 )
-from .models import Lecture, LectureEva,UserLectureList, LectureChat
+from .models import Lecture, LectureEva,UserLectureList, LectureChat, Text_product
 import base64
 import datetime
 from django.contrib import messages
 import random, string
+import re
+from django.shortcuts import render
+from django.views.generic import View
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 User = get_user_model()
@@ -96,25 +101,45 @@ class SelectLecture(generic.ListView):
         if keyword:
             queryset = queryset.filter(
             Q(lecture_name__icontains=keyword) | Q(teacher_name__icontains=keyword)
-            )
+            ).filter(college_name=college)
 
         if keyword2:
-            keyword_list = keyword2.split('\n')[0:-1]
+            keyword2=re.sub(r'開講曜日[\s　]+授業コード[\s　]+科目名[\s　]+教員氏名[\s　]+教室[\r\n]+','',keyword2)
+            keyword2=re.sub(r'開講区分[\s　]+授業コード[\s　]+科目名[\s　]+教員氏名[\s　]+教室[\s　]+単位[\s　]+エラー[\r\n]+','',keyword2)
+            keyword2=re.sub(r'開講曜日[\s　]+授業コード[\s　]+科目名[\s　]+教員氏名[\s　]+教室[\s　]+単位[\s　]+エラー[\r\n]+','',keyword2)
+            keyword2=keyword2.replace('集中講義／実習\r','')
+
+            #統一のため単位数を削除
+            keyword2=re.sub(r'\t\d\t+','',keyword2)
+            #改行&タブで分ける。
+            split_list = re.split('[\r\n\t]',keyword2)
+            data_split_list = []
             result_lecture_list = []
             result_teacher_list = []
-            for word in keyword_list:
-                split_list = word.split('\t')
-                lecture = split_list[2]
-                lecture = lecture[:lecture.find('[')].strip(' ')
-                result_lecture_list.append(lecture)
+            count=0
 
-                teacher = split_list[3]
-                teacher = teacher.replace('\u3000', ' ')
-                result_teacher_list.append(teacher)
+            #空白の要素を削除
+            for word in split_list:
+                if word != '':
+                    data_split_list.append(word)
+            for word in data_split_list:
+                if count%5==2:
+                    lecture = word
+                    # 「 [ 」の最初の位置を取得し、それ以前の文字情報を取得。かつ文字列前後の空白を削除 # マクロ経済学
+                    lecture = lecture[:lecture.find('[')].strip(' ')
+                    result_lecture_list.append(lecture)
+                elif count%5==3:
+                    teacher = word
+                    teacher=teacher.replace('\u3000', ' ') # 全角空白を半角空白へ変換
+                    result_teacher_list.append(teacher)
+                count+=1
 
-            queryset=Lecture.objects.filter(lecture_name__in=result_lecture_list).filter(teacher_name__in=result_teacher_list)
+            queryset=Lecture.objects.filter(lecture_name__in=result_lecture_list)
+            print(result_lecture_list)
+            print(queryset)
 
         return queryset
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -461,6 +486,69 @@ class Help_contents(generic.TemplateView):
         context = super().get_context_data(**kwargs)
         context['help_pk'] = self.kwargs['pk']
         return context
+
+
+class Text_product_list(generic.ListView):
+    model = Text_product
+    template_name = 'register/text_product_list.html'
+    def get_context_data(self, **kwargs,):
+        context = super().get_context_data(**kwargs)
+
+        keyword = self.request.GET.get('keyword')
+        queryset = Text_product.objects.filter(on_sale=True)
+        if keyword:
+            queryset = queryset.filter(product_name__icontains=keyword).filter(on_sale=True)
+
+        context['text_product_list'] = queryset
+        return context
+
+
+class Text_product_detail(generic.DetailView):
+    template_name = 'register/text_product_detail.html'
+    model = Text_product
+
+    def post(self, request, *args, **kwargs):
+        """購入時の処理"""
+        text_product = self.get_object()
+        token = request.POST['stripeToken']  # フォームでのサブミット後に自動で作られる
+        try:
+            # 購入処理
+            charge = stripe.Charge.create(
+                amount=text_product.price,
+                currency='jpy',
+                source=token,
+                description='メール:{} 書籍名:{}'.format(request.user.email, text_product.product_name),
+            )
+        except stripe.error.CardError as e:
+            # カード決済が上手く行かなかった(限度額超えとか)ので、メッセージと一緒に再度ページ表示
+            context = self.get_context_data()
+            context['message'] = 'このクレジットカードはご利用できません。限度額等をご確認ください。'
+            return render(request, 'register/text_product_detail.html', context)
+        else:
+            text_product.on_sale = False
+            text_product.buy_user = self.request.user
+            text_product.save()
+            return redirect('register:text_product_list')
+
+    def get_context_data(self, **kwargs):
+        """STRIPE_PUBLIC_KEYを渡したいだけ"""
+        context = super().get_context_data(**kwargs)
+        context['publick_key'] = settings.STRIPE_PUBLIC_KEY
+        return context
+
+
+class Text_sale(generic.CreateView):
+    model = Text_product
+    template_name = 'register/text_sale.html'
+    form_class = TextSaleForm
+
+    def form_valid(self, form):
+        user = self.request.user
+        text_product = form.save(commit=False)
+        text_product.sale_user = user
+
+        text_product.save()
+        return redirect('register:text_product_list')
 
 
 class Login(LoginView):

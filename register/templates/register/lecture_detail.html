@@ -42,6 +42,69 @@
   </div>
   <img src="data:image/png;base64, {{ eva_chart }}" width=350 height=280>
 </div>
+<div class="col-md-8 mt-5 mr-5">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>コメント一覧</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for eva in eva_list %}
+      <tr>
+        <td>{{eva.eva_comment}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+{% endblock%}
+
+
+{% block content1 %}
+
+<div style="display: flex;">
+        <div> <h1>{{lecture.lecture_name}}</h1></div>
+        <div class="dropdown mx-5 mt-1">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            授業方式
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 0 %}">全ての方式</a>
+            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 1 %}">対面</a>
+            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 2 %}">オンライン</a>
+          </div>
+        </div>
+</div>
+
+<div class="row">
+  <div class="col-md-4 mt-5">
+    <div style="text-align: center">
+      <h5>学年比率<h5>
+    </div>
+    <img src="data:image/png;base64, {{ gakunen_chart }}" width=350 height=280>
+  </div>
+  <div class="col-md-4 mt-5">
+    <div style="text-align: center">
+      <h5>成績<h5>
+    </div>
+    <img src="data:image/png;base64, {{ grade_chart }}" width=350 height=280>
+  </div>
+  <div class="col-md-4 mt-5">
+    <div style="text-align: center">
+      <h5>難易度<h5>
+    </div>
+    <img src="data:image/png;base64, {{ dif_chart }}" width=350 height=280>
+  </div>
+</div>
+<div class="row">
+<div class="col-md-4 mt-5">
+  <div style="text-align: center">
+    <h5>課題量<h5>
+  </div>
+  <img src="data:image/png;base64, {{ eva_chart }}" width=350 height=280>
+</div>
 <div class="col-md-8 mt-5">
   <table class="table">
     <thead>
