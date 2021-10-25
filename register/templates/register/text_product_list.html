@@ -1,8 +1,36 @@
 {% extends 'register/base.html' %}
 
+
+{% block header %}
+
+<style media="screen">
+.relative {
+    position: relative;
+    width: 120px;
+}
+.absolute {
+    position: absolute;
+    right:0px;
+    bottom: -15px;
+    width: 120px;
+    height: auto;
+}
+
+
+  .inline-block_test {
+    display: inline-block;      /* インラインブロック要素にする */
+    margin:  20px;             /* 余白指定 */
+    vertical-align:  top;    /* 要素を上下中央揃えにする */
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
 <a href="{% url 'register:text_sale' %}" class="btn btn-outline-dark mb-5">出品画面へ</a>
+<a href="{% url 'register:text_sale_buy_list' 0 %}" class="btn btn-outline-dark mb-5">出品リスト</a>
+<a href="{% url 'register:text_sale_buy_list' 1 %}" class="btn btn-outline-dark mb-5">購入リスト</a>
+
 <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:text_product_list' %}">
   <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="keyword">
   <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
@@ -14,7 +42,7 @@
     <div class="media">
     <!-- 1.画像の配置 -->
     <a class="media-left mr-5" href="#">
-        <img src="/media/images/IMG_2702.jpeg" width="120px" height=120px>
+        <img src="/media/{{ text_product.image }}" width="120px" height=120px>
     </a>
     <!-- 2.画像の説明 -->
     <div class="media-body">
@@ -32,6 +60,9 @@
 {% block content1 %}
 
 <a href="{% url 'register:text_sale' %}" class="btn btn-outline-dark mb-5">出品画面へ</a>
+<a href="{% url 'register:text_sale_buy_list' 0 %}" class="btn btn-outline-dark mb-5">出品リスト</a>
+<a href="{% url 'register:text_sale_buy_list' 1 %}" class="btn btn-outline-dark mb-5">購入リスト</a>
+
 <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:text_product_list' %}">
   <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="keyword">
   <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
@@ -43,7 +74,12 @@
     <div class="media">
     <!-- 1.画像の配置 -->
     <a class="media-left mr-5" href="#">
-        <img src="/media/images/IMG_2702.jpeg" width="120px" height=120px>
+      <div class="relative">
+        <img src="/media/{{ text_product.image }}" width="120px" height=120px>
+        {% if text_product.on_sale == False %}
+        <img src="/media/images/sold.png" class="absolute">
+        {% endif %}
+      </div>
     </a>
     <!-- 2.画像の説明 -->
     <div class="media-body">

@@ -5,17 +5,14 @@
 {% endif %}
 <style media="screen">
 
-}
+
 </style>
 {% endblock %}
 
 {% block content2 %}
 <div style="text-align: center">
-    <div style="margin-top:80px">
-     <img src="/media/images/logo.png" width="230" height="230">
-     </div>
     <div style="margin-top:50px">
-     <img style="max-width:100%;height:auto;" src="/media/images/title.png">
+     <img style="max-width:100%;height:auto;" src="/media/images/title1.png">
     </div>
 </div>
 
@@ -37,19 +34,10 @@
     <a href="{% url 'register:password_reset' %}" class="btn btn-outline-dark btn-lg btn-block" >パスワードを忘れた方</a>
 </div>
 <div style="text-align: center">
-<div style="margin-top:50px;margin-bottom:20px">
-  <div class="card">
-    <div class="card-header">
-      問い合わせ
-    </div>
-    <div class="card-body">
-      <h5 class="card-text">evallege.public@gmail.com</h5>
-    </div>
-  </div>
+<a href="#!">Evallegeとは？</a>
 </div>
-</div>
-{% endblock %}
 
+{% endblock %}
 
 
 
@@ -93,7 +81,7 @@
 
 <div style="text-align: center">
 <div style="margin-top:50px;margin-bottom:20px">
-  <div class="card">
+  <div class="card mx-2">
     <div class="card-header">
       問い合わせ
     </div>
@@ -101,6 +89,22 @@
       <h5 class="card-text">evallege.public@gmail.com</h5>
     </div>
   </div>
+  <div class="card mx-2 mt-5">
+    <div class="card-header">
+      公式SNS
+    </div>
+    <div class="card-body">
+        <td style="display: inline-block;">
+          <img src="/media/images/instagram.png" width="50" height="auto">
+          <a href="https://www.instagram.com/evallege_official"><h4>https://www.instagram.com/evallege_official</h4></a><hr>
+        </td>
+        <td style="display:flex">
+          <img src="/media/images/twitter.png" width="50" height="auto">
+          <a href="https://twitter.com/Evallege"><h4>https://twitter.com/Evallege</h4></a><hr>
+        </td>
+    </div>
+  </div>
+
 </div>
 </div>
 {% endblock %}

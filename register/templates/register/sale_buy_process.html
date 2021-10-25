@@ -1,0 +1,92 @@
+{% extends 'register/base.html' %}
+
+{% block header %}
+
+<style media="screen">
+  .sold_tag{
+    position: relative;
+  }
+  .sold_image{
+    position: absolute;
+    right: 85px; /*右から10px*/
+  	bottom: -35px; /*下からから10px*/
+  }
+
+
+  .inline-block_test {
+    display: inline-block;      /* インラインブロック要素にする */
+    margin:  20px;             /* 余白指定 */
+    vertical-align:  top;    /* 要素を上下中央揃えにする */
+}
+
+.sample input {
+    display: none;
+}
+.sample label{
+    display: block;
+    float: left;
+    cursor: pointer;
+    width:100px;
+    margin: 0;
+    padding: 10px;
+    background: #dcdcdc;
+    color: #696969;
+    font-size: 16px;
+    text-align: center;
+    line-height: 1;
+    transition: .2s;
+}
+.sample label:first-of-type{
+    border-radius: 3px 0 0 3px;
+}
+.sample label:last-of-type{
+    border-radius: 0 3px 3px 0;
+}
+.sample input[type="radio"]:checked + .switch-on {
+    background-color: #66cdaa;
+    color: #fff;
+}
+.sample input[type="radio"]:checked + .switch-off {
+    background-color: #ff4500;
+    color: #fff;
+}
+
+</style>
+{% endblock %}
+
+{% block context %}
+
+{% endblock %}
+
+
+{% block content1 %}
+<div class="card">
+  <div class="card-body">
+    <div class="inline-block_test">
+    <img src="/media/images/IMG_2702.jpeg" width="300px" height=auto>
+    </div>
+    <div class="inline-block_test">
+    <h3>{{ text_product.product_name }}</h3>
+    <h4>¥{{ text_product.price }}</h4>
+    <p>{{ text_product.description | linebreaksbr }}<p>
+    <p>出品者：{{ text_product.sale_user.user_name }}</p>
+    <p>出品日：{{ text_product.created_at }}</p>
+
+    {% if place == 1 %}
+    {% if text_product.sale_done == False %}
+    <form action="" method='POST'> <!-- ここを変更 -->
+      <div class="sample">
+      <input type="radio" name="s2" id="on" value="1" checked="">
+      <label for="on" class="switch-on">良い</label>
+      <input type="radio" name="s2" id="off" value="0">
+      <label for="off" class="switch-off">問題あり</label>
+      </div>
+   		<button class="btn btn-outline-danger mt-3" name="text_product" value="{{ text_product.id }}">商品受け取りを確認</button>
+   		{% csrf_token %}
+   </form>
+   {% endif %}
+    {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

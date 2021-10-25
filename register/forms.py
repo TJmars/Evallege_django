@@ -4,7 +4,7 @@ from django.contrib.auth.forms import (
     PasswordResetForm, SetPasswordForm
 )
 from django.contrib.auth import get_user_model
-from .models import Lecture, LectureEva, LectureChat, Text_product
+from .models import Lecture, LectureEva, LectureChat, Text_product, Text_chat
 
 User = get_user_model()
 
@@ -134,8 +134,6 @@ class ChatForm(forms.ModelForm):
 
 
 class TextSaleForm(forms.ModelForm):
-
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -143,4 +141,17 @@ class TextSaleForm(forms.ModelForm):
 
     class Meta:
         model = Text_product
-        fields = ('product_name','price','description','lecture')        
+        fields = ('product_name','price','description','lecture','image')
+
+
+class TextChatForm(forms.ModelForm):
+    """教科書販売のチャット"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+        self.fields["chat_text"].widget.attrs["style"] = "height:100px"
+
+    class Meta:
+        model = Text_chat
+        fields = ('chat_text',)

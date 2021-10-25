@@ -50,6 +50,10 @@ urlpatterns = [
     path('text_product_list/', views.Text_product_list.as_view(), name='text_product_list'),
     path('text_product_detail/<int:pk>/', views.Text_product_detail.as_view(), name='text_product_detail'),
     path('text_sale/', views.Text_sale.as_view(), name='text_sale'),
+    path('text_sale_buy_list/<int:pk>/', views.Text_sale_buy_list.as_view(), name='text_sale_buy_list'),
+    path('sale_buy_process/<int:pk>/<int:place>/', views.Sale_buy_process.as_view(), name='sale_buy_process'),
+    path('text_chat/<int:pk>/', views.Text_chat_page.as_view(), name='text_chat'),
+    path('text_sale_user/<int:userpk>/', views.TextSaleUser.as_view(), name='text_sale_user'),
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 

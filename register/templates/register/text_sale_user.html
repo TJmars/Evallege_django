@@ -1,0 +1,10 @@
+{% extends 'register/base.html' %}
+
+{% block content %}
+{% endblock %}
+
+{% block content1 %}
+{% for text_product in text_product_list %}
+<p>{{ text_product.product_name }}</p>
+{% endfor %}
+{% endblock %}

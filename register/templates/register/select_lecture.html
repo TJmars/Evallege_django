@@ -1,13 +1,48 @@
 {% extends "register/base.html" %}
 
 
+
 {% block content %}
-<div class="row">
-<div class="col-md-8">
-    <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:select_lecture' %}">
-      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="keyword">
-      <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
+
+  <div style="display: flex;">
+    <!-- Button trigger modal -->
+    <button type="button" style="font-size:10px;height:30px" class="btn btn-outline-secondary my-3" data-toggle="modal" data-target="#exampleModalScrollable">
+      一括検索
+    </button>
+    <!-- Modal -->
+<div class="modal" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content" stle="width:40%">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenteredLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <form class="form-inline my-3" method="GET" action="{% url 'register:select_lecture' %}">
+      <div style="display: flex;">
+      <input class="form-control mx-2" style="height:30px" type="text" placeholder="Search" aria-label="Search" name="keyword">
+      <div style="text-align: right">
+      <button class="btn btn-outline-success" style="height:30px" type="submit">
+        <i class="fas fa-search pb-3"></i>
+      </button>
+      </div>
+      </div>
     </form>
+  </div>
+
+
     {% for lecture in lecture_list %}
       <div class="card">
        <div class="card-body">
@@ -15,25 +50,40 @@
          <p class="card-text">担当教員：{{lecture.teacher_name}}<br>作成日：{{lecture.created_at}}</p>
          <div style="display:inline-flex">
 					 <div class="btn-group" role="group" aria-label="Basic example">
-							<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">詳細を表示</a>
-							<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">チャット</a>
+							<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">
+                <i class="fas fa-chart-pie"></i>
+              </a>
+							<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">
+                <i class="far fa-comment-dots"></i>
+              </a>
 							{% if lecture not in user_lecture_eva_list %}
-							<a href="{% url 'register:evaluate' lecture.pk %}" class="btn btn-outline-dark">授業評価</a>
+							<a href="{% url 'register:evaluate' lecture.pk %}" class="btn btn-outline-dark">
+                <i class="far fa-thumbs-up"></i>
+              </a>
 							{% endif %}
 					</div>
+
+          <form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
+             {% if lecture in user_lecture_list %}
+             <button class="btn btn-outline-danger ml-3" name="lecture" value="{{ lecture.id }}">
+               <i class="fas fa-minus"></i>
+             </button>
+             {% else %}
+             <button class="btn btn-outline-success ml-3" name="lecture" value="{{ lecture.id }}">
+               <i class="fas fa-plus"></i>
+             </button>
+             {% endif %}
+             {% csrf_token %}
+         </form>
        </div>
-			 <form action="{% url 'register:select_lecture' %}" method='POST'> <!-- ここを変更 -->
-					{% if lecture in user_lecture_list %}
-					<button class="btn btn-outline-danger mt-3" name="lecture" value="{{ lecture.id }}">登録解除</button>
-					{% else %}
-					<button class="btn btn-outline-success mt-3" name="lecture" value="{{ lecture.id }}">登録</button>
-					{% endif %}
-					{% csrf_token %}
-			</form>
+
        </div>
       </div>
     {% endfor %}
-</div>
+
+
+
+
 <div class="col-md-4">
 	<div class="card mt-4">
   <div class="card-header">
@@ -52,7 +102,8 @@
  	</form>
 </div>
 
-</div>
+
+
 </div>
 {% include 'register/page5.html' %}
 {% endblock %}

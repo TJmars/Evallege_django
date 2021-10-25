@@ -4,6 +4,7 @@ from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
 
 
 #大学モデル
@@ -247,3 +248,26 @@ class Text_product(models.Model):
     buy_user = models.ForeignKey(User, verbose_name='購入者', on_delete=models.PROTECT, related_name='buy_user',blank=True, null=True)
     on_sale = models.BooleanField(verbose_name='販売中かチェック', default=True)
     lecture = models.ForeignKey(Lecture, verbose_name='講義', on_delete=models.PROTECT)
+    image = models.FileField(upload_to='product_image/',verbose_name='商品画像',validators=[FileExtensionValidator(['pdf','jpg','jpeg','png','HEIC',])],)
+    sale_done = models.BooleanField(verbose_name='購買手続きが終了したかテェック', default=False)
+    trade_eva = models.BooleanField(verbose_name='取引の評価', default=True)
+    #product_ID = models.CharField('商品コード',max_length=200,blank=False)
+
+
+
+class Text_chat(models.Model):
+    """教科書のチャットモデル"""
+    product = models.ForeignKey(
+         Text_product,verbose_name='教科書',
+         on_delete=models.PROTECT,blank=False
+    )
+    user = models.ForeignKey(
+           User, verbose_name='ユーザー',on_delete=models.PROTECT
+    )
+
+    chat_text = models.TextField(
+    verbose_name='本文',
+
+    max_length=1000,
+    )
+    created_at = models.DateTimeField('登録日', default=timezone.now)
