@@ -1,5 +1,5 @@
 {% load mytag %}
-<div class="row mx-auto" style="width: 600px;">
+<div class="row mx-auto" style="width:100%;">
     <ul class="pagination">
         {% if page_obj.has_previous %}
         <li><a class="page-link text-primary d-inline-block" href="?{% url_replace request 'page' link_page %}">前</a></li>

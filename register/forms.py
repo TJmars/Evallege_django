@@ -4,7 +4,7 @@ from django.contrib.auth.forms import (
     PasswordResetForm, SetPasswordForm
 )
 from django.contrib.auth import get_user_model
-from .models import Lecture, LectureEva, LectureChat, Text_product, Text_chat
+from .models import Lecture, LectureEva, LectureChat, Text_product, Circle
 
 User = get_user_model()
 
@@ -35,6 +35,7 @@ class LoginForm(AuthenticationForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = field.label  # placeholderにフィールドのラベルを入れる
+
 
 
 class UserCreateForm(UserCreationForm):
@@ -103,18 +104,20 @@ class CreateLectureForm(forms.ModelForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
+
     class Meta:
         model = Lecture
         fields = ('lecture_name','teacher_name')
 
 
 class EvaForm(forms.ModelForm):
-    """新規講義作成フォーム"""
+    """評価フォーム"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
+            
 
     class Meta:
         model = LectureEva
@@ -126,7 +129,7 @@ class ChatForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
-        self.fields["chat_text"].widget.attrs["style"] = "height:100px"
+        self.fields["chat_text"].widget.attrs["style"] = "height:60px"
 
     class Meta:
         model = LectureChat
@@ -141,17 +144,16 @@ class TextSaleForm(forms.ModelForm):
 
     class Meta:
         model = Text_product
-        fields = ('product_name','price','description','lecture','image')
+        fields = ('product_name','price','pass_place','lecture','url')
 
 
-class TextChatForm(forms.ModelForm):
-    """教科書販売のチャット"""
+
+class CircleCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
-        self.fields["chat_text"].widget.attrs["style"] = "height:100px"
 
     class Meta:
-        model = Text_chat
-        fields = ('chat_text',)
+        model = Circle
+        fields = ('circle_name','image','genre','message','day_place','member_num','cost','sns_mail')

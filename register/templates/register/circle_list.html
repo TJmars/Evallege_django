@@ -1,0 +1,76 @@
+
+{% extends 'register/base.html' %}
+
+{% block content %}
+
+
+  <button type="button" class="btn btn-link my-1" style="padding-left:85%"
+    data-toggle="modal" data-target="#exampleModalScrollable">
+    <i class="fas fa-edit fa-2x"></i>
+  </button>
+  <div class="modal" id="exampleModalScrollable" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalScrollableLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content" stle="width:40%">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenteredLabel">ID/パスワード</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form class="form-inline mt-4" method="post" action="{% url 'register:circle_list' %}">
+        <div class="modal-body">
+            <p class="card-text">掲示板を編集するためには、ID、パスワードが必要です。</p>
+         <div class="form-group">
+             {% csrf_token %}
+             <textarea id="textarea1" class="form-control" name="ID" style="width:100%;height:40px;" placeholder="ID"></textarea>
+             <textarea id="textarea2" class="form-control" name="password" style="width:100%;height:40px;" placeholder="password"></textarea>
+        </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Edit</button>
+        </div>
+　　　　　</form>
+
+      </div>
+    </div>
+  </div>
+
+  <form class="my-3 form-inline pr-0" method="GET" action="{% url 'register:circle_list' %}">
+    <div class="form-group w-75 mb-0">
+      <input class="form-control" style="height:30px" type="text" placeholder="Search"
+        aria-label="Search" name="keyword">
+    </div>
+    <div style="width: 5%;"></div>
+    <button class="btn btn-outline-success " style="height:30px; width: 20%;" type="submit">
+      <i class="fas fa-search pb-3"></i>
+    </button>
+  </form>
+
+　<form action="{% url 'register:circle_list' %}" method="GET">
+  <div class="btn-group d-flex" role="group" aria-label="...">
+    <button type="button" class="btn btn-secondary flex-fill" name="ball" style="background: transparent;color:#000000">球技</button>
+    <button type="button" class="btn btn-secondary flex-fill" name="sports" style="background: transparent;color:#000000">スポーツ</button>
+    <button type="button" class="btn btn-secondary flex-fill" name="academic" style="background: transparent;color:#000000">学問</button>
+    <button type="button" class="btn btn-secondary flex-fill" name="another" style="background: transparent;color:#000000">その他</button>
+  </div>
+  </form>
+
+<div class="container">
+  <div class="row">
+    {% for circle in circle_list %}
+<div class="col px-1">
+<div class="card">
+  <a href="{% url 'register:circle_detail' circle.pk %}">
+    <img class="card-img-top m-0" style="object-fit:cover;width:100%;height:120px"src="/media/{{ circle.image }}" alt="Card image cap">
+  </a>
+  <div style="text-align: center">
+  <div class="card-body p-1" style="font-size:15px"> {{ circle.circle_name }} </div>
+  </div>
+</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

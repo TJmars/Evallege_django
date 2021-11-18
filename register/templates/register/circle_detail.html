@@ -1,0 +1,49 @@
+{% extends 'register/base.html' %}
+
+{% block content %}
+
+<img class="card-img-top m-0" style="object-fit:cover;width:100%;height:auto"src="/media/{{ circle.image }}" alt="Card image cap">
+<div style="text-align: center">
+  <p class="my-2"style="font-size:20px;font-weight: bold;">{{ circle.circle_name }}</P>
+</div>
+
+<div style="background-color: #f5f5f5">
+  <a><br></a>
+  <div class="mx-2 px-3 py-1"style="background-color: #dcdcdc;border-radius: 5px; ">
+    部活/サークル情報
+  </div>
+  <div class="mt-3 mx-2"　style="margin-bottom:1px">
+  <a style="font-size:8px;color:#808080">メッセージ</a>
+  </div>
+  <div class="mx-2 p-1"style="border: solid 0.5px #a9a9a9">
+    <P style="font-size:13px">{{ circle.message | linebreaksbr}}</P>
+  </div>
+
+  <div class="mt-4 mx-2"　style="margin-bottom:1px">
+  <a style="font-size:8px;color:#808080">基本情報</a>
+  </div>
+  <table class="table">
+  <thead>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="font-size:13px">日時/場所</td>
+      <td style="font-size:13px">{{ circle.day_place | linebreaksbr }}</td>
+    </tr>
+    <tr>
+      <td style="font-size:13px">所属人数</td>
+      <td style="font-size:13px">{{ circle.member_num | linebreaksbr}}</td>
+    </tr>
+    <tr>
+      <td style="font-size:13px">費用</td>
+      <td style="font-size:13px">{{ circle.cost | linebreaksbr }}</td>
+    </tr>
+    <tr>
+      <td style="font-size:13px">SNS/連絡先</td>
+      <td style="font-size:13px">{{ circle.sns_mail | linebreaksbr }}</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+{% endblock %}

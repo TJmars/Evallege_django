@@ -1,56 +1,64 @@
 {% extends "register/base.html" %}
 {% block content %}
-<div class="card mt-4">
-  <div class="card-header">
-    <h5>基本情報</h5>
-
-  </div>
+<p class="mb-0" style="font-size:15px;color:#808080">基本情報</p>
+<div class="card mt-0">
   <div class="card-body">
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>メールアドレス</th>
-                <td style="display:flex">
-                  <p>{{ user.email }}</p>
-                  <a href="{% url 'register:email_change' %}" class="mx-4"><img src="/media/images/edit.png" width="22" height="22"></a>
-                </td>
-            </tr>
-            <tr>
-                <th>ユーザーネーム</th>
-                <td style="display:flex">
-                  <p>{{ user.user_name }}</p>
-                  <a href="{% url 'register:user_update' user.pk %}" class="mx-4"><img src="/media/images/edit.png" width="22" height="22"></a>
-                </td>
-            </tr>
-            <tr>
-                <th>大学</th>
-                <td>{{ user.college_name }}</td>
-            </tr>
-            <tr>
-                <th>パスワード</th>
-                <td style="display:flex">
-                  <p>非表示</p>
-                  <a href="{% url 'register:password_change' %}" class="mx-4"><img src="/media/images/edit.png" width="22" height="22"></a>
-                </td>
-            </tr>
-            <tr>
-                <th>招待コード</th>
-                <td style="display:flex">
-                  <p>{{ user.invi_code }}</p>
-                  <a href="{% url 'register:help_contents' 0%}" class="mx-4"><img src="/media/images/question.png" width="33" height="33"></a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div style="display:flex">
+    <p class="mt-2 mb-0" style="color:#808080">name</p>
+    <p class="mt-2 mb-0" style="position: absolute; left:40%;">{{ user.user_name }}</p>
+    <a class="mr-3 mt-2"href="{% url 'register:user_update' user.pk %}" style="position: absolute; right:0;">
+      <i class="fas fa-edit"></i>
+    </a>
+    </div>
+    <hr class="my-0 py-0" color="#f5f5f5" style="width:100%;height:0.5px">
+
+    <div style="display:flex">
+    <p class="mt-4 mb-0" style="color:#808080">E-mail</p>
+    <p class="mt-4 mb-0" style="position: absolute; left:40%;">{{ user.email }}</p>
+    <a class="mr-3 mt-4"href="{% url 'register:email_change' %}" style="position: absolute; right:0;">
+      <i class="fas fa-edit"></i>
+    </a>
+    </div>
+    <hr class="my-0 py-0" color="#f5f5f5" style="width:100%;height:0.5px">
+
+    <div style="display:flex">
+    <p class="mt-4 mb-0" style="color:#808080">Univ./Col.</p>
+    <p class="mt-4 mb-0" style="position: absolute; left:40%;">{{ user.college_name }}</p>
+    </div>
+    <hr class="my-0 py-0" color="#f5f5f5" style="width:100%;height:0.5px">
+
+    <div style="display:flex">
+    <p class="mt-4 mb-0" style="color:#808080">password</p>
+    <p class="mt-4 mb-0" style="position: absolute; left:40%;">非表示</p>
+    <a class="mr-3 mt-4"href="{% url 'register:password_change' %}" style="position: absolute; right:0;">
+      <i class="fas fa-edit"></i>
+    </a>
+    </div>
+    <hr class="my-0 py-0" color="#f5f5f5" style="width:100%;height:0.5px">
+
+    <div style="display:flex">
+    <p class="mt-4 mb-0" style="color:#808080">code</p>
+    <p class="mt-4 mb-0" style="position: absolute; left:40%;">{{ user.invi_code }}</p>
+    </div>
+    <hr class="my-0 py-0" color="#f5f5f5" style="width:100%;height:0.5px">
 
   </div>
 </div>
 
-<div class="card mt-4">
-  <div class="card-header">
-    <h5>ポイント情報</h5>
-  </div>
+
+<p class="mt-4 mb-0" style="font-size:15px;color:#808080">ポイント情報</p>
+<div class="card mt-0">
   <div class="card-body">
+    <div style="display:flex">
+    <p class="mt-4 mb-0" style="color:#808080;font-size:13px">評価ポイント</p>
+    <p class="mt-4 mb-0" style="position: absolute; left:40%;">{{ user.user_point }}Pt</p>
+    <a class="mr-3 mt-4"href="{% url 'register:password_change' %}" style="position: absolute; right:0;">
+      <i class="far fa-question-circle"></i>
+    </a>
+    </div>
+    <hr class="my-0 py-0" color="#f5f5f5" style="width:100%;height:0.5px">
+
+
     <table class="table">
       <tbody>
           <tr>

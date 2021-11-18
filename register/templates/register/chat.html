@@ -1,13 +1,53 @@
+<head>
+<style>
+  .vertical-scroll-table{
+  	color: #5e5e5e;
+      max-height: 70%;
+  	overflow: auto;
+  	overflow-x: hidden;
+  }
+  .vertical-scroll-table table{
+  	width: 100%;
+  	border-collapse: collapse;
+  	border-spacing: 0;
+  }
+  .vertical-scroll-table table thead tr{
+  	font-weight: bold;
+  	text-align: center;
+    color: #ffffff;
+  	background-color: #333333;
+  }
+  .vertical-scroll-table table tbody tr:nth-child(even){
+  	background-color: #fafbfc;
+  }
+  .vertical-scroll-table table td{
+  	width: 100%;
+  	padding: 5px;
+  	border: 1px solid #ddd;
+  }
+
+
+
+</style>
+</head>
+
+
 {% extends "register/base.html" %}
 {% block content %}
 
-<table class="table mb-5">
+
+
+<div class="vertical-scroll-table">
+<table rules="rows">
   <thead class="thead-dark">
     <tr>
       <th>Chat</th>
     </tr>
   </thead>
+
   <tbody>
+    <div class="scroll">
+        <div id="scroll-inner">
     {% for chat in chat_list %}
     <tr>
       <td><span style="color:gray">{{chat.user.user_name}}  /  {{chat.created_at}}</span><br><p>{{chat.chat_text}}</P></td>
@@ -15,22 +55,25 @@
     {% empty %}
     <td>課題やテストについてチャットで質問できます</td>
     {% endfor %}
+  </div>
+  </div>
   </tbody>
 </table>
+</div>
 
-<footer style="position: fixed;bottom: 0;background-color: white;">
-  <form action="" method="POST">
-    {{form.non_field_errors}}
-    {% for field in form %}
-    <div class="form-group">
-      {{field}}
-      {{field.errors}}
-    </div>
-    {% endfor %}
-    {% csrf_token %}
-    <button type="submit" class="btn btn-outline-dark my-lg-4 my-4">チャットを投稿</button>
-  </form>
-</footer>
+<form action="" method="POST">
+  {{form.non_field_errors}}
+  {% for field in form %}
+  <div class="form-group" style="position:absolute;bottom:0;width:91.5%">
+    {{field}}
+    {{field.errors}}
+  </div>
+  {% endfor %}
+  {% csrf_token %}
+  <button type="submit" class="btn btn-link my-lg-4 my-1" style="position:absolute;bottom:15;right:15">
+    <i class="fas fa-paper-plane fa-lg"></i>
+  </button>
+</form>
 
 {% endblock %}
 

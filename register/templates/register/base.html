@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
     <title>Evallege - 大学講義の情報を検索</title>
 
-
+{% block style %}{% endblock %}
 
     <style>
     section ul {
@@ -90,6 +90,113 @@
       filter: invert(88%) sepia(61%) saturate(0%) hue-rotate(229deg) brightness(150%) contrast(101%);
   }
 
+  body {
+   margin: 0px;
+}
+
+/*　ハンバーガーボタン　*/
+.hamburger {
+  display : block;
+  position: fixed;
+  z-index : 3;
+  right : 13px;
+  top   : 0px;
+  width : 40px;
+  height: 40px;
+  cursor: pointer;
+  text-align: center;
+  -webkit-transition: 0.5s all;
+  -moz-transition   : 0.5s all;
+  transition        : 0.5s all;
+}
+.hamburger span {
+  display : block;
+  position: absolute;
+  width   : 30px;
+  height  : 2px ;
+  left    : 6px;
+  background : #ffffff;
+}
+.hamburger span:nth-child(1) {
+  top: 10px;
+}
+.hamburger span:nth-child(2) {
+  top: 20px;
+}
+.hamburger span:nth-child(3) {
+  top: 30px;
+}
+
+/* ナビ開いてる時のボタン */
+.hamburger.active{
+  -webkit-transform: rotate(360deg);
+  transform: rotate(360deg);
+}
+.hamburger.active span:nth-child(1) {
+  top : 16px;
+  left: 6px;
+  background : #fff;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform   : rotate(-45deg);
+  transform        : rotate(-45deg);
+}
+.hamburger.active span:nth-child(2) {
+  top: 16px;
+  background : #fff;
+  -webkit-transform: rotate(45deg);
+  -moz-transform   : rotate(45deg);
+  transform        : rotate(45deg);
+}
+.hamburger.active span:nth-child(3) {
+  opacity: 0;
+}
+
+nav.globalMenuSp {
+  position: fixed;
+  z-index : 2;
+  top  : 0;
+  left : 0;
+  color: #fff;
+  background: rgba(0,0,0,0.8);
+  text-align: center;
+  width: 100%;
+  opacity: 0;
+  transition: opacity .6s ease, visibility .6s ease;
+}
+
+nav.globalMenuSp ul {
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+}
+
+nav.globalMenuSp ul li {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+  transition: .4s all;
+}
+nav.globalMenuSp ul li:last-child {
+  padding-bottom: 0;
+}
+nav.globalMenuSp ul li:hover{
+  background :#ddd;
+}
+
+nav.globalMenuSp ul li a {
+  display: block;
+  color: #fff;
+  padding: 1em 0;
+  text-decoration :none;
+  margin-top: 40px
+}
+
+/* このクラスを、jQueryで付与・削除する */
+nav.globalMenuSp.active {
+  opacity: 100;
+
+}
+
     </style>
 
 
@@ -98,31 +205,36 @@
 <body>
 <!--スマホを使用している場合、start-->
 
+<nav class="globalMenuSp">
+    <ul>
+      <div style="display: flex;">
+        <li><a href="{% url 'register:top' %}"><div><i class="fas fa-list fa-2x mr-2"></i><p>Lecture list</p></div></a></li>
+        <li><a href="{% url 'register:select_lecture' %}"><div><i class="fas fa-search fa-2x mr-2"></i><p>Search</p></div></a></li>
+        <li><a href="{% url 'register:text_product_list' %}"><div><i class="fas fa-book-open fa-2x mr-2"></i><p>Textbook</p></div></a></li>
+      </div>
+      <div>
+        <div style="display: flex;">
+        <li><a href="{% url 'register:circle_list' %}"><div><i class="fas fa-file-alt fa-2x mr-2"></i><p>Circle board</p></div></a></li>
+        <li><a href="{% url 'register:user_detail' user.pk %}"><div><i class="fas fa-user fa-2x mr-2"></i><p>User detail</p></div></a></li>
+        <li><a href="{% url 'register:help_top' %}"><div><i class="fas fa-question-circle fa-2x mr-2"></i><p>Help list</p></div></a></li>
+        </div>
+      </div>
+    </ul>
+</nav>
 
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height:40px">
     <a href="#" class="navbar-brand">
-    <img src="../image/popase.gif" width="30" height="30" alt="">
-    Evallege
+    <p style="position:absolute;top:5px">Evallege</p>
     </a>
     {% if user.is_authenticated %}
-<div class="btn-group">
-  <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="dropdown-menu dropdown-menu-right bg-dark">
-    <a class="nav-item nav-link mx-2" href="{% url 'register:top' %}" style="font-size:13px;color: #ffffff">履修講義一覧</a>
-    <a class="nav-item nav-link mx-2" href="{% url 'register:select_lecture' %}" style="font-size:13px;color: #ffffff">講義を探す</a>
-    <a class="nav-item nav-link mx-2" href="{% url 'register:text_product_list' %}" style="font-size:13px;color: #ffffff">教科書販売/購入</a>
-    <a class="nav-item nav-link mx-2" href="#!" style="font-size:13px;color: #ffffff">サークル掲示板</a>
-    <a class="nav-item nav-link mx-2" href="#!" style="font-size:13px;color: #ffffff">ユーザー情報</a>
-    <a class="nav-item nav-link mx-2" href="{% url 'register:help_top' %}" style="font-size:13px;color: #ffffff">使い方ガイド</a>
-    <a class="nav-item nav-link mx-2" href="#!" style="font-size:13px;color: #ffffff" data-toggle="modal" data-target="#exampleModal">ログアウト</a>
 
-    <!-- Button trigger modal -->
+    <div class="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
 
-  </div>
-</div>
+
 {% endif %}
 </nav>
 
@@ -145,13 +257,15 @@
 
 
 <!-- メインコンテント -->
-<div class="my-3 mx-3">
+
 
   {% if user.is_authenticated %}
+  <div class="my-3 mx-1">
   <!-- ユーザーがログインしている -->
   {% if request.user_agent.is_mobile %}
   <!-- スマホを使用中 -->
   {% block content %}{% endblock %}
+
   {% else %}
   <!-- PCを使用中 -->
   <div class="wrapper">
@@ -173,7 +287,7 @@
         {% block content1 %}{% endblock %}
       </div>
   </div>
-
+</div>
   {% endif %}<!-- 使用機器の判別 -->
   {% else %}
   <!-- ログインしていない -->
@@ -185,7 +299,7 @@
   {% endif %}<!-- ログインの判別 -->
 
 
-</div>
+
 
 <!--スマホを使用している場合、last-->
 
@@ -203,7 +317,19 @@
         crossorigin="anonymous"></script>
 </body>
 
+<script>
+$(function() {
+    $('.hamburger').click(function() {
+        $(this).toggleClass('active');
 
+        if ($(this).hasClass('active')) {
+            $('.globalMenuSp').addClass('active');
+        } else {
+            $('.globalMenuSp').removeClass('active');
+        }
+    });
+});
+</script>
 
 
 

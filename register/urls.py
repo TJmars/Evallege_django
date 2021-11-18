@@ -48,12 +48,12 @@ urlpatterns = [
     path('help/contents/<int:pk>/',views.Help_contents.as_view(), name='help_contents'),
     #テキスト売買画面
     path('text_product_list/', views.Text_product_list.as_view(), name='text_product_list'),
-    path('text_product_detail/<int:pk>/', views.Text_product_detail.as_view(), name='text_product_detail'),
     path('text_sale/', views.Text_sale.as_view(), name='text_sale'),
-    path('text_sale_buy_list/<int:pk>/', views.Text_sale_buy_list.as_view(), name='text_sale_buy_list'),
-    path('sale_buy_process/<int:pk>/<int:place>/', views.Sale_buy_process.as_view(), name='sale_buy_process'),
-    path('text_chat/<int:pk>/', views.Text_chat_page.as_view(), name='text_chat'),
-    path('text_sale_user/<int:userpk>/', views.TextSaleUser.as_view(), name='text_sale_user'),
+    #サークル掲示板
+    path('circle_list/', views.CircleList.as_view(), name='circle_list'),
+    path('circle_create/<int:pk>/', views.CircleCreate.as_view(), name='circle_create'),
+    path('circle_detail/<int:pk>/',views.CircleDetail.as_view(),name='circle_detail'),
+
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 

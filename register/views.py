@@ -16,9 +16,9 @@ from django.views import generic
 from django.db.models import Q
 from .forms import (
     LoginForm, UserCreateForm, UserUpdateForm, MyPasswordChangeForm,
-    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm,TextSaleForm, TextChatForm
+    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm,TextSaleForm,CircleCreateForm
 )
-from .models import Lecture, LectureEva,UserLectureList, LectureChat, Text_product, Text_chat
+from .models import Lecture, LectureEva,UserLectureList, LectureChat, Text_product, Circle
 import base64
 import datetime
 from django.contrib import messages
@@ -513,100 +513,11 @@ class Text_product_list(generic.ListView):
 
         context['text_product_list'] = queryset
 
-        image_url_list = []
-        for product in queryset:
-            image_filepath = product.image
-            image_url = f"{settings.MEDIA_URL}/{image_filepath}"
-            target = '/'
-            idx = image_url.rfind(target)
-            image_url_list.append(image_url[idx+1:])
 
-        context['image_url'] = image_url_list
+        context['user_name'] = self.request.user
         return context
 
 
-class Text_product_detail(generic.DetailView):
-    template_name = 'register/text_product_detail.html'
-    model = Text_product
-
-    def post(self, request, *args, **kwargs):
-        """購入時の処理"""
-        text_product = self.get_object()
-        token = request.POST['stripeToken']  # フォームでのサブミット後に自動で作られる
-        try:
-            # 購入処理
-            charge = stripe.Charge.create(
-                amount=text_product.price,
-                currency='jpy',
-                source=token,
-                description='メール:{} 書籍名:{}'.format(request.user.email, text_product.product_name),
-            )
-        except stripe.error.CardError as e:
-            # カード決済が上手く行かなかった(限度額超えとか)ので、メッセージと一緒に再度ページ表示
-            context = self.get_context_data()
-            context['message'] = 'このクレジットカードはご利用できません。限度額等をご確認ください。'
-            return render(request, 'register/text_product_detail.html', context)
-        else:
-            text_product.on_sale = False
-            text_product.buy_user = self.request.user
-            text_product.save()
-            return redirect('register:text_product_list')
-
-    def get_context_data(self, **kwargs):
-        """STRIPE_PUBLIC_KEYを渡したいだけ"""
-        context = super().get_context_data(**kwargs)
-        context['publick_key'] = settings.STRIPE_PUBLIC_KEY
-        product = Text_product.objects.get(id=self.kwargs['pk'])
-        context['on_sale'] = product.on_sale
-        text_product = self.get_object()
-        return context
-
-class Text_chat_page(generic.ListView,generic.edit.ModelFormMixin):
-    """教科書チャット"""
-    model = Text_chat
-    form_class = TextChatForm
-    template_name = 'register/text_chat.html'
-
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['pk'] = self.kwargs['pk']
-        product = Text_product.objects.get(id=self.kwargs['pk'])
-        context['chat_list'] = Text_chat.objects.filter(product=product).order_by('-created_at')
-
-        return context
-
-
-    def post(self, request, *args, **kwargs):
-        self.object = None
-        self.object_list = self.get_queryset()
-        form = self.get_form()
-        if form.is_valid():
-            user = self.request.user
-            product = Text_product.objects.get(id=self.kwargs['pk'])
-            chat = form.save(commit=False)
-            chat.user = user
-            chat.product = product
-            chat.save()
-            return self.form_invalid(form)
-        else:
-            return self.form_invalid(form)
-
-
-def change_suffix(file_name, from_suffix, to_suffix):
-    # ファイルの拡張子を得る
-    sf = pathlib.PurePath(file_name).suffix
-    # 変更対象かどうか判定する
-    if sf == from_suffix:
-        # ファイル名(拡張子除く)を得る
-        st = pathlib.PurePath(file_name).stem
-        # 変更後のファイル名を得る
-        to_name = st + to_suffix
-        # ファイル名を変更する
-        shutil.move(file_name, to_name)
 
 
 class Text_sale(generic.CreateView):
@@ -620,102 +531,67 @@ class Text_sale(generic.CreateView):
         text_product = form.save(commit=False)
         text_product.sale_user = user
         text_product.save()
-        """image_filepath = text_product.image
-        print("一番{}".format(image_filepath))
-        image_url = f"{settings.MEDIA_URL}{image_filepath}"
-        print("二番{}".format(image_url))
-        sf = pathlib.PurePath(image_url).suffix
-        print("三番{}".format(sf))
-        st = "{}".format(text_product.pk)
-        print("四番{}".format(st))
-
-        to_suffix = ".jpeg"
-        to_name = st + to_suffix
-        print("五番{}".format(to_name))
-
-        image_url_str = str(image_url)
-        img = Image.open(image_url_str)
-
-        shutil.move(f'{settings.MEDIA_ROOT}/{image_filepath}', f'{settings.MEDIA_ROOT}/product_image/{to_name}')
-        image_url_data = f"product_image/{to_name}"
-        print("六番{}".format(image_url_data))
-        text_product.image = image_url_data
-        text_product.save()"""
-
-
-        #現在の画像のディレクトリを取得
-        image_filepath = text_product.image
-        image_url = f"{settings.MEDIA_URL}{image_filepath}"
-
-        #ディレクトリから拡張子を外したものを取得
-        image_url_str = str(image_url)
-        target = '.'
-        index = image_url_str.find(target)
-        image_url_no_extension = image_url_str[:index-1]
-
-        #jpegを定義
-
-        #Imageでopen
-        
-        img = Image.open(image_url_str)
-        #拡張子を変更して保存
-        image_url_input_str = image_url_no_extension + ".jpeg"
-        img.save(image_url_input_str, 'jpeg')
-        #djangoの方のディレクト英を変更
 
         return redirect('register:text_product_list')
 
 
-class Text_sale_buy_list(generic.ListView):
-    Model = Text_product
-    template_name = 'register/text_sale_buy_list.html'
 
 
-    def get_queryset(self, **kwargs):
-        queryset = Text_product.objects.all()
-        if self.kwargs['pk'] == 0:
-            queryset = Text_product.objects.filter(sale_user=self.request.user)
-        else:
-            queryset = Text_product.objects.filter(buy_user=self.request.user)
+class CircleList(generic.ListView):
+    model = Circle
+    template_name = 'register/circle_list.html'
+
+    def get_queryset(self):
+        college = self.request.user.college_name.id
+        keyword = self.request.GET.get('keyword')
+        queryset = Circle.objects.filter(college=college)
+        if keyword:
+            queryset = queryset.filter(circle_name__icontains=keyword).filter(college=college)
+
         return queryset
 
+
+    def post(self, request):
+        id = request.POST['ID']
+        password = request.POST['password']
+        circle = Circle.objects.filter(circle_id=id)[0]
+        if circle.circle_password == password:
+            pk = circle.pk
+            return redirect('register:circle_create',pk=pk)
+
+        return redirect('register:circle_list')
+
+
+
+
+class CircleDetail(generic.DetailView):
+    model = Circle
+    template_name = 'register/circle_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
+
         return context
 
 
-class Sale_buy_process(generic.DetailView):
-    model = Text_product
-    template_name = 'register/sale_buy_process.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['place'] = self.kwargs['place']
-        return context
 
 
-    def post(self, request,pk,place):
-        product_id = request.POST['text_product']
-        text_product = Text_product.objects.get(id=product_id)
-        text_product.sale_done = True
-        eva = request.POST['s2']
-        if eva == 1:
-            text_product.trade_eva = True
-        else:
-            text_product.trade_eva = False
+class CircleCreate(generic.CreateView):
+    model = Circle
+    template_name = 'register/circle_create.html'
+    form_class = CircleCreateForm
+
+
+    def form_valid(self, form):
+        user = self.request.user
+        text_product = form.save(commit=False)
+        text_product.sale_user = user
         text_product.save()
-        return redirect('register:top')
 
-class TextSaleUser(generic.ListView):
-    model = Text_product
-    template_name = 'register/text_sale_user.html'
+        return redirect('register:text_product_list')
 
-    def get_queryset(self,**kwargs):
-        user = User.objects.get(pk=self.kwargs['userpk'])
-        products = Text_product.objects.filter(sale_user=user)
-        return products
+
 
 
 

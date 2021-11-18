@@ -242,32 +242,39 @@ class Text_product(models.Model):
     """教科書の製品モデル"""
     product_name = models.CharField('教科書名', max_length=200)
     price = models.IntegerField(verbose_name='価格')
-    description = models.TextField('商品の詳細説明')
+    pass_place = models.TextField('受け渡し日時/場所',default='')
     created_at = models.DateTimeField('出品日', default=timezone.now)
-    sale_user = models.ForeignKey(User, verbose_name='出品者', on_delete=models.PROTECT, related_name='sale_user')
-    buy_user = models.ForeignKey(User, verbose_name='購入者', on_delete=models.PROTECT, related_name='buy_user',blank=True, null=True)
     on_sale = models.BooleanField(verbose_name='販売中かチェック', default=True)
     lecture = models.ForeignKey(Lecture, verbose_name='講義', on_delete=models.PROTECT)
-    image = models.FileField(upload_to='product_image/',verbose_name='商品画像',validators=[FileExtensionValidator(['pdf','jpg','jpeg','png','HEIC',])],)
-    sale_done = models.BooleanField(verbose_name='購買手続きが終了したかテェック', default=False)
-    trade_eva = models.BooleanField(verbose_name='取引の評価', default=True)
-    #product_ID = models.CharField('商品コード',max_length=200,blank=False)
+    url = models.URLField('商品URL',max_length=200)
 
 
+class Circle(models.Model):
+    """サークル掲示板のモデル"""
+    circle_name = models.CharField('団体名', max_length=200)
 
-class Text_chat(models.Model):
-    """教科書のチャットモデル"""
-    product = models.ForeignKey(
-         Text_product,verbose_name='教科書',
-         on_delete=models.PROTECT,blank=False
+    GENRE = (
+        (1,'球技'),
+        (2,'スポーツ'),
+        (3,'学問'),
+        (4,'音楽'),
+        (5,'その他'),
     )
-    user = models.ForeignKey(
-           User, verbose_name='ユーザー',on_delete=models.PROTECT
-    )
+    genre = models.IntegerField(verbose_name='ジャンル',choices=GENRE, blank=True)
+    message = models.TextField(verbose_name='活動紹介、メッセージ', blank=True)
+    day_place = models.TextField(verbose_name='活動日/場所', blank=True)
+    member_num = models.TextField(verbose_name='所属人数', blank=True)
+    cost = models.TextField(verbose_name='活動費用', blank=True)
+    sns_mail = models.TextField(verbose_name='SNS/連絡先', blank=True)
+    image = models.FileField(upload_to='circle_image/',verbose_name='画像',validators=[FileExtensionValidator(['pdf','jpg','jpeg','png','HEIC',])],blank=True)
 
-    chat_text = models.TextField(
-    verbose_name='本文',
+    college = models.ForeignKey(
+                    College, verbose_name='大学名',
+                    on_delete=models.PROTECT
+               )
+    administrator = models.ForeignKey(User, verbose_name='管理者', on_delete=models.PROTECT)
+    circle_id = models.IntegerField(verbose_name='ID')
+    circle_password = models.CharField('パスワード', max_length=20)
 
-    max_length=1000,
-    )
-    created_at = models.DateTimeField('登録日', default=timezone.now)
+    def __str__(self):
+        return self.circle_name

@@ -9,27 +9,37 @@
 		{% endfor %}
 	</ul>
 {% endif %}
+
+<h4 class="mt-4">こんにちは、{{ user_name}}さん</h4>
 {% if lecture_list %}
 {% for lecture in lecture_list %}
-<div class="card mr-5">
+<div class="card mt-4">
 	<div class="card-body">
 		<h4 class="card-title">{{lecture.lecture_name}}</h4>
 		<p class="card-text">担当教員：{{lecture.teacher_name}}<br>作成日：{{lecture.created_at}}</p>
 		<div style="display:inline-flex">
 		 <div class="btn-group" role="group" aria-label="Basic example">
-				<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">詳細を表示</a>
-				<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">チャット</a>
+				<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">
+					<i class="fas fa-chart-pie fa-lg"	></i>
+				</a>
+				<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">
+					<i class="far fa-comment-dots fa-lg"></i>
+				</a>
 				{% if lecture not in user_lecture_eva_list %}
-				<a href="{% url 'register:evaluate' lecture.pk%}" class="btn btn-outline-dark">授業評価</a>
+				<a href="{% url 'register:evaluate' lecture.pk%}" class="btn btn-outline-dark">
+					<i class="far fa-thumbs-up fa-lg"></i>
+				</a>
 				{% endif %}
 		</div>
-	</div>
  <form action="{% url 'register:top' %}" method='POST'> <!-- ここを変更 -->
 		{% if lecture in user_lecture_list %}
-		<button class="btn btn-outline-danger mt-3" name="lecture" value="{{ lecture.id }}">登録解除</button>
+		<button class="btn btn-outline-danger ml-3" name="lecture" value="{{ lecture.id }}">
+			<i class="fas fa-minus"></i>
+		</button>
 		{% endif %}
 		{% csrf_token %}
 </form>
+</div>
 	</div>
 	</div>
 {% endfor %}

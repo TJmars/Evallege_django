@@ -27,28 +27,26 @@
 
 {% block content %}
 
-<a href="{% url 'register:text_sale' %}" class="btn btn-outline-dark mb-5">出品画面へ</a>
-<a href="{% url 'register:text_sale_buy_list' 0 %}" class="btn btn-outline-dark mb-5">出品リスト</a>
-<a href="{% url 'register:text_sale_buy_list' 1 %}" class="btn btn-outline-dark mb-5">購入リスト</a>
-
-<form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:text_product_list' %}">
-  <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="keyword">
-  <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
+<a href="{% url 'register:text_sale' %}" class="btn btn-outline-dark mb-3">出品画面へ</a>
+<form class="form-inline my-2" method="GET" action="{% url 'register:text_product_list' %}">
+  <div style="display: flex;">
+    <input class="form-control" style="height:30px" type="text" placeholder="Search" aria-label="Search" name="keyword">
+    <button class="btn btn-outline-success" style="height:30px" type="submit">
+      <i class="fas fa-search fa-lg"></i>
+    </button>
+  </div>
 </form>
 {% for text_product in text_product_list %}
 <div class="card">
-  <div class="card-body">
+  <div class="card-body px-2 my-0">
 
     <div class="media">
     <!-- 1.画像の配置 -->
-    <a class="media-left mr-5" href="#">
-        <img src="/media/{{ text_product.image }}" width="120px" height=120px>
-    </a>
     <!-- 2.画像の説明 -->
     <div class="media-body">
-        <h2 class="media-heading"><a href="{% url 'register:text_product_detail' text_product.pk %}">{{ text_product.product_name }}</a></h2>
+        <h5 class="media-heading"><a href="{{ text_product.url }}">{{ text_product.product_name }}</a></h5>
+        {{ text_product.url }}
         <h5>¥{{ text_product.price }}</h5>
-        <h5>{{ text_product.lecture }}</h5>
     </div>
 　　</div>
   </div>
@@ -60,8 +58,6 @@
 {% block content1 %}
 
 <a href="{% url 'register:text_sale' %}" class="btn btn-outline-dark mb-5">出品画面へ</a>
-<a href="{% url 'register:text_sale_buy_list' 0 %}" class="btn btn-outline-dark mb-5">出品リスト</a>
-<a href="{% url 'register:text_sale_buy_list' 1 %}" class="btn btn-outline-dark mb-5">購入リスト</a>
 
 <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'register:text_product_list' %}">
   <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="keyword">

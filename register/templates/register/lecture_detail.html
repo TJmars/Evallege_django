@@ -1,20 +1,19 @@
 {% extends 'register/base.html' %}
 {% block content %}
-
-<div style="display: flex;">
-        <div> <h1>{{lecture.lecture_name}}</h1></div>
-        <div class="dropdown mx-5 mt-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            授業方式
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 0 %}">全ての方式</a>
-            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 1 %}">対面</a>
-            <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 2 %}">オンライン</a>
-          </div>
-        </div>
+<div style="text-align:right">
+<div class="dropdown mt-1">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    授業方式
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 0 %}">全ての方式</a>
+    <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 1 %}">対面</a>
+    <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 2 %}">オンライン</a>
+  </div>
 </div>
-
+</div>
+        <h5 class="mt-4 mb-0">{{lecture.lecture_name}}</h5>
+<hr class="mt-0" color="#808080" style="height:1px;width:200px"align="left">
 <div class="row">
   <div class="col-md-4 mt-5">
     <div style="text-align: center">
