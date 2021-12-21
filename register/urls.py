@@ -35,6 +35,7 @@ urlpatterns = [
     path('create_lecture/', views.LectureCreate.as_view(), name='create_lecture'),
     #講義詳細画面
     path('detail/<int:pk>/<int:place>/', views.DetailView.as_view(), name='detail'),
+    path('lecture_top/<int:pk>/<int:place>/', views.LectureTop.as_view(), name='lecture_top'),
     path('projectB/register/gakunen_chart/<int:pk>/<int:place>', views.gakunen_chart,name="gakunen_chart"),
     path('projectB/register/grade_chart/<int:pk>/<int:place>', views.grade_chart,name="grade_chart"),
     path('projectB/register/eva_chart/<int:pk>/<int:place>', views.eva_chart,name="eva_chart"),
@@ -53,6 +54,12 @@ urlpatterns = [
     path('circle_list/', views.CircleList.as_view(), name='circle_list'),
     path('circle_create/<int:pk>/', views.CircleCreate.as_view(), name='circle_create'),
     path('circle_detail/<int:pk>/',views.CircleDetail.as_view(),name='circle_detail'),
+    path('board_create/<int:pk>/',views.BoardCreate.as_view(),name='board_create'),
+    path('board_create_indi/',views.BoardCreateIndi.as_view(),name='board_create_indi'),
+
+
+    #ボード
+    path('board_list/',views.BoardList.as_view(),name='board_list'),
 
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

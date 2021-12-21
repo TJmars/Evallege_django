@@ -1,0 +1,106 @@
+{% extends "register/base.html" %}
+{% block header %}
+<style>
+  /*タブ切り替え全体のスタイル*/
+.tabs {
+  margin-top: 50px;
+  padding-bottom: 40px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  margin: 0 auto;}
+
+/*タブのスタイル*/
+.tab_item {
+  width: calc(100%/2);
+  height: 50px;
+  border-bottom: 3px solid #5ab4bd;
+  background-color: #d9d9d9;
+  line-height: 50px;
+  font-size: 16px;
+  text-align: center;
+  color: #565656;
+  display: block;
+  float: left;
+  text-align: center;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+.tab_item:hover {
+  opacity: 0.75;
+}
+
+/*ラジオボタンを全て消す*/
+input[name="tab_item"] {
+  display: none;
+}
+
+/*タブ切り替えの中身のスタイル*/
+.tab_content {
+  display: none;
+  clear: both;
+  overflow: hidden;
+}
+
+
+/*選択されているタブのコンテンツのみを表示*/
+#all:checked ~ #all_content,
+#programming:checked ~ #programming_content,
+#design:checked ~ #design_content {
+  display: block;
+}
+
+/*選択されているタブのスタイルを変える*/
+.tabs input:checked + .tab_item {
+  background-color: #5ab4bd;
+  color: #fff;
+}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="tabs">
+  <input id="all" type="radio" name="tab_item" checked>
+  <label class="tab_item" for="all">全て</label>
+  <input id="programming" type="radio" name="tab_item">
+  <label class="tab_item" for="programming">団体のみ</label>
+  <a href="{% url 'register:board_create_indi'%}" class="btn btn-outline-dark">投稿</a>
+  <div class="tab_content" id="all_content">
+    <div class="tab_content_description">
+      <p class="c-txtsp">
+        {% for board in board_list %}
+        <hr>
+        <p>{{ board.created_at }}</p>
+        <p>{{ board.title }}</P>
+        <p>{{ board.contents }}</P>
+        <img style="max-width:60%;height:auto;" src="/media/{{ board.image }}">
+        {% if user in board.good_user.all %}
+        <i class="fas fa-heart"></i>
+        {% else %}
+        <i class="far fa-heart"></i>
+        {% endif %}
+        {% endfor %}
+        </p>
+    </div>
+  </div>
+  <div class="tab_content" id="programming_content">
+    <div class="tab_content_description">
+      <p class="c-txtsp">
+        {% for board in board_list_only_college %}
+        <hr>
+        <p>{{ board.created_at }}</p>
+        <p>{{ board.title }}</P>
+        <p>{{ board.contents }}</P>
+        <img style="max-width:60%;height:auto;" src="/media/{{ board.image }}">
+        {% if user in board.good_user.all %}
+        <i class="fas fa-heart"></i>
+        {% else %}
+        <i class="far fa-heart"></i>
+        {% endif %}
+        {% endfor %}
+      </p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

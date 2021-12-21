@@ -22,20 +22,169 @@
     margin:  20px;             /* 余白指定 */
     vertical-align:  top;    /* 要素を上下中央揃えにする */
 }
+
+*,
+*::before,
+*::after {
+box-sizing: border-box;
+}
+
+$color: #e24040;
+
+body {
+height: 100vh;
+margin: 0;
+background: #DEDEDE;
+color: #5a6674;
+font-size: 13px;
+font-family: 'Roboto', sans-serif;
+overflow: hidden;
+}
+
+
+/*--------------------
+App
+--------------------*/
+.search-form {
+position: relative;
+top: 10px;
+left: 50%;
+width: 350px;
+height: 40px;
+border-radius: 40px;
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+transform: translate(-50%, -50%);
+background: #f5f5f5;
+transition: all 0.3s ease;
+
+&.focus {
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.15);
+}
+}
+
+.search-input {
+position: absolute;
+top: 10px;
+left: 38px;
+font-size: 14px;
+background: none;
+color: #5a6674;
+width: 195px;
+height: 20px;
+border: none;
+appearance: none;
+outline: none;
+
+&::-webkit-search-cancel-button {
+  appearance: none;
+}
+}
+
+.search-button {
+position: absolute;
+top: 10px;
+left: 15px;
+height: 20px;
+width: 20px;
+padding: 0;
+margin: 0;
+border: none;
+background: none;
+outline: none!important;
+cursor: pointer;
+
+& svg {
+  width: 20px;
+  height: 20px;
+  fill: #5a6674;
+}
+}
+
+.search-option {
+position: absolute;
+text-align: right;
+top: 10px;
+right: 15px;
+
+div {
+  position: relative;
+  display: inline-block;
+  margin: 0 1px;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.01;
+    cursor: pointer;
+  }
+
+  span {
+    position: absolute;
+    display: block;
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    background: #929AA3;
+    color: #fff;
+    font-size: 9px;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 4px 7px;
+    border-radius: 12px;
+    top: -18px;
+    transition: all .2s ease-in-out;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top: 4px solid #929AA3;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      transition: all .2s ease-in-out;
+    }
+  }
+
+  &:hover span {
+    opacity: 1;
+    top: -21px;
+  }
+
+
+  input:checked + label svg {
+    fill: $color;
+    opacity: .9;
+  }
+
+  input:checked + label span {
+    background: $color;
+
+    &::after {
+      border-top-color: $color;
+    }
+  }
+}
 </style>
 {% endblock %}
 
 {% block content %}
 
 <a href="{% url 'register:text_sale' %}" class="btn btn-outline-dark mb-3">出品画面へ</a>
-<form class="form-inline my-2" method="GET" action="{% url 'register:text_product_list' %}">
-  <div style="display: flex;">
-    <input class="form-control" style="height:30px" type="text" placeholder="Search" aria-label="Search" name="keyword">
-    <button class="btn btn-outline-success" style="height:30px" type="submit">
-      <i class="fas fa-search fa-lg"></i>
-    </button>
-  </div>
+
+<form class="search-form">
+  <input class="search-input" type="text" placeholder="Search"
+    aria-label="Search" name="keyword">
+  <button type="submit" class="search-button">
+    <i class="fas fa-search"></i>
+  </button>
 </form>
+
 {% for text_product in text_product_list %}
 <div class="card">
   <div class="card-body px-2 my-0">

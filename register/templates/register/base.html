@@ -1,284 +1,372 @@
 <!doctype html>
 <html lang="ja">
+
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Evallegeはシラバスでは知ることのできない、講義に関するさまざまな情報を新たに提供します。自分が受けたい授業、自分にあっている授業をEvallegeを使って探しましょう。">
-    {% block header %}{% endblock %}
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description"
+    content="Evallegeはシラバスでは知ることのできない、講義に関するさまざまな情報を新たに提供します。自分が受けたい授業、自分にあっている授業をEvallegeを使って探しましょう。">
+  {% block header %}{% endblock %}
 
-    <!-- Bootstrap CSS -->
+  <!-- Bootstrap CSS -->
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
-          integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+    integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-    <title>Evallege - 大学講義の情報を検索</title>
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+  <title>Evallege - 大学講義の情報を検索</title>
 
-{% block style %}{% endblock %}
+  {% block style %}{% endblock %}
 
-    <style>
+  <style>
     section ul {
-    	list-style: none;
-    }
-    section1 li {
-    	padding-left: 45px;
-    	line-height: 2.5em;
-    	background: url(/media/images/list_1.png) left 0px top 10px no-repeat;
-    	background-size: 25px auto;
-    }
-    section2 li {
-    	padding-left: 45px;
-    	line-height: 2.5em;
-    	background: url(/media/images/list_2.png) left 0px top 10px no-repeat;
-    	background-size: 25px auto;
-    }
-    section3 li {
-    	padding-left: 45px;
-    	line-height: 2.5em;
-    	background: url(/media/images/list_3.png) left 0px top 10px no-repeat;
-    	background-size: 23px auto;
-    }
-    section4 li {
-    	padding-left: 45px;
-    	line-height: 2.5em;
-    	background: url(/media/images/list_4.png) left 0px top 10px no-repeat;
-    	background-size: 25px auto;
-    }
-    section5 li {
-    	padding-left: 45px;
-    	line-height: 2.5em;
-    	background: url(/media/images/list_5.png) left 0px top 10px no-repeat;
-    	background-size: 23px auto;
-    }
-    section6 li {
-    	padding-left: 45px;
-    	line-height:2.53em;
-    	background: url(/media/images/list_6.png) left 0px top 10px no-repeat;
-    	background-size: 25px auto;
+      list-style: none;
     }
 
+    section1 li {
+      padding-left: 45px;
+      line-height: 2.5em;
+      background: url(/media/images/list_1.png) left 0px top 10px no-repeat;
+      background-size: 25px auto;
+    }
+
+    section2 li {
+      padding-left: 45px;
+      line-height: 2.5em;
+      background: url(/media/images/list_2.png) left 0px top 10px no-repeat;
+      background-size: 25px auto;
+    }
+
+    section3 li {
+      padding-left: 45px;
+      line-height: 2.5em;
+      background: url(/media/images/list_3.png) left 0px top 10px no-repeat;
+      background-size: 23px auto;
+    }
+
+    section4 li {
+      padding-left: 45px;
+      line-height: 2.5em;
+      background: url(/media/images/list_4.png) left 0px top 10px no-repeat;
+      background-size: 25px auto;
+    }
+
+    section5 li {
+      padding-left: 45px;
+      line-height: 2.5em;
+      background: url(/media/images/list_5.png) left 0px top 10px no-repeat;
+      background-size: 23px auto;
+    }
+
+    section6 li {
+      padding-left: 45px;
+      line-height: 2.53em;
+      background: url(/media/images/list_6.png) left 0px top 10px no-repeat;
+      background-size: 25px auto;
+    }
+
+    .p-relative {
+      position: relative;
+    }
 
     .btn-right-radius {
-    position: relative;
-    display: inline-block;
-    padding: 0.2em;
-    text-decoration: none;
-    color: #00BCD4;
-    border-radius: 0 15px 15px 0;
-    transition: .4s;
-  }
+      position: relative;
+      display: inline-block;
+      padding: 0.2em;
+      text-decoration: none;
+      color: #00BCD4;
+      border-radius: 0 15px 15px 0;
+      transition: .4s;
+    }
 
-  .btn-right-radius:hover {
-    background: #D9E5FF;
-    text-decoration: none;
-  }
-
-
-.wrapper {
-  display: flex;
-}
-.side {
-  width: 250px;
-}
-.main {
-  flex: 1;
-}
+    .btn-right-radius:hover {
+      background: #D9E5FF;
+      text-decoration: none;
+    }
 
 
-  .white {
+    .wrapper {
+      display: flex;
+    }
+
+    .side {
+      width: 250px;
+    }
+
+    .main {
+      flex: 1;
+    }
+
+
+    .white {
       filter: invert(88%) sepia(61%) saturate(0%) hue-rotate(229deg) brightness(150%) contrast(101%);
-  }
+    }
 
-  body {
-   margin: 0px;
-}
+    body {
+      margin: 0px;
+    }
 
-/*　ハンバーガーボタン　*/
-.hamburger {
-  display : block;
-  position: fixed;
-  z-index : 3;
-  right : 13px;
-  top   : 0px;
-  width : 40px;
-  height: 40px;
-  cursor: pointer;
-  text-align: center;
-  -webkit-transition: 0.5s all;
-  -moz-transition   : 0.5s all;
-  transition        : 0.5s all;
-}
-.hamburger span {
-  display : block;
-  position: absolute;
-  width   : 30px;
-  height  : 2px ;
-  left    : 6px;
-  background : #ffffff;
-}
-.hamburger span:nth-child(1) {
-  top: 10px;
-}
-.hamburger span:nth-child(2) {
-  top: 20px;
-}
-.hamburger span:nth-child(3) {
-  top: 30px;
-}
+    /*　ハンバーガーボタン　*/
+    .hamburger {
+      display: block;
+      position: fixed;
+      z-index: 3;
+      right: 13px;
+      top: 0px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      text-align: center;
+      z-index: 3000;
+    }
 
-/* ナビ開いてる時のボタン */
-.hamburger.active{
-  -webkit-transform: rotate(360deg);
-  transform: rotate(360deg);
-}
-.hamburger.active span:nth-child(1) {
-  top : 16px;
-  left: 6px;
-  background : #fff;
-  -webkit-transform: rotate(-45deg);
-  -moz-transform   : rotate(-45deg);
-  transform        : rotate(-45deg);
-}
-.hamburger.active span:nth-child(2) {
-  top: 16px;
-  background : #fff;
-  -webkit-transform: rotate(45deg);
-  -moz-transform   : rotate(45deg);
-  transform        : rotate(45deg);
-}
-.hamburger.active span:nth-child(3) {
-  opacity: 0;
-}
+    .hamburger span {
+      display: block;
+      position: absolute;
+      width: 30px;
+      height: 2px;
+      left: 6px;
+      background: #ffffff;
+      -webkit-transition: 0.5s ease-in-out;
+      -moz-transition: 0.5s ease-in-out;
+      transition: 0.5s ease-in-out;
+    }
 
-nav.globalMenuSp {
-  position: fixed;
-  z-index : 2;
-  top  : 0;
-  left : 0;
-  color: #fff;
-  background: rgba(0,0,0,0.8);
-  text-align: center;
-  width: 100%;
-  opacity: 0;
-  transition: opacity .6s ease, visibility .6s ease;
-}
+    .hamburger span:nth-child(1) {
+      top: 10px;
+    }
 
-nav.globalMenuSp ul {
-  margin: 0 auto;
-  padding: 0;
-  width: 100%;
-}
+    .hamburger span:nth-child(2) {
+      top: 20px;
+    }
 
-nav.globalMenuSp ul li {
-  list-style-type: none;
-  padding: 0;
-  width: 100%;
-  transition: .4s all;
-}
-nav.globalMenuSp ul li:last-child {
-  padding-bottom: 0;
-}
-nav.globalMenuSp ul li:hover{
-  background :#ddd;
-}
+    .hamburger span:nth-child(3) {
+      top: 30px;
+    }
 
-nav.globalMenuSp ul li a {
-  display: block;
-  color: #fff;
-  padding: 1em 0;
-  text-decoration :none;
-  margin-top: 40px
-}
+    /* ナビ開いてる時のボタン */
+    .hamburger.active span:nth-child(1) {
+      top: 16px;
+      left: 6px;
+      -webkit-transform: rotate(315deg);
+      -moz-transform: rotate(315deg);
+      transform: rotate(315deg);
+    }
 
-/* このクラスを、jQueryで付与・削除する */
-nav.globalMenuSp.active {
-  opacity: 100;
+    .hamburger.active span:nth-child(2),
+    .hamburger.active span:nth-child(3) {
+      top: 16px;
+      -webkit-transform: rotate(-315deg);
+      -moz-transform: rotate(-315deg);
+      transform: rotate(-315deg);
+    }
 
-}
+    .hamburger-over {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
 
-    </style>
+    nav.globalMenuSp {
+      position: fixed;
+      z-index: 2;
+      top: 0;
+      left: 0;
+      color: #000;
+      background: #fff;
+      text-align: center;
+      transform: translateX(100%);
+      transition: all 0.6s;
+      width: 100%;
+      z-index: 2000;
+    }
 
+    nav.globalMenuSp ul {
+      background: #ccc;
+      margin: 0 auto;
+      padding: 0;
+      width: 100%;
+    }
+
+    nav.globalMenuSp ul li {
+      list-style-type: none;
+      padding: 0;
+      width: 100%;
+      border-bottom: 1px solid #fff;
+    }
+
+    nav.globalMenuSp ul li:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    nav.globalMenuSp ul li:hover {
+      background: #ddd;
+    }
+
+    nav.globalMenuSp ul li a {
+      display: block;
+      color: #000;
+      padding: 1em 0;
+      text-decoration: none;
+    }
+
+    /* このクラスを、jQueryで付与・削除する */
+    nav.globalMenuSp.active {
+      transform: translateX(0%);
+    }
+
+    #content {
+      padding: 10px;
+    }
+
+    #dialog_back {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      background-color: #000;
+      opacity: 0.5;
+      z-index: 1000;
+      /* 要素をコンテンツより前面に（要調整） */
+    }
+
+    #dialog_body {
+      position: absolute;
+      border-radius: 6px 6px 6px 6px;
+      left: 75px;
+      top: 150px;
+      width: 200px;
+      height: 150px;
+      background-color: #FFF;
+      box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.4);
+      /* CSS3 */
+      padding: 50px;
+    }
+  </style>
 
 </head>
 
 <body>
-<!--スマホを使用している場合、start-->
+  <div id="hamburger-background"></div>
+  <!--スマホを使用している場合、start-->
 
-<nav class="globalMenuSp">
+  <div class="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <nav class="globalMenuSp">
     <ul>
       <div style="display: flex;">
-        <li><a href="{% url 'register:top' %}"><div><i class="fas fa-list fa-2x mr-2"></i><p>Lecture list</p></div></a></li>
-        <li><a href="{% url 'register:select_lecture' %}"><div><i class="fas fa-search fa-2x mr-2"></i><p>Search</p></div></a></li>
-        <li><a href="{% url 'register:text_product_list' %}"><div><i class="fas fa-book-open fa-2x mr-2"></i><p>Textbook</p></div></a></li>
+        <li><a href="{% url 'register:top' %}">
+            <div><i class="fas fa-list fa-2x"></i>
+              <p>Lecture</p>
+            </div>
+          </a></li>
+        <li><a href="{% url 'register:circle_list' %}">
+            <div><i class="fas fa-users fa-2x"></i>
+              <p>Circle</p>
+            </div>
+          </a></li>
+        <li><a href="{% url 'register:board_list' %}">
+              <div><i class="fas fa-clipboard-list fa-2x"></i>
+                <p>Board</p>
+              </div>
+            </a></li>
+
       </div>
-      <div>
-        <div style="display: flex;">
-        <li><a href="{% url 'register:circle_list' %}"><div><i class="fas fa-file-alt fa-2x mr-2"></i><p>Circle board</p></div></a></li>
-        <li><a href="{% url 'register:user_detail' user.pk %}"><div><i class="fas fa-user fa-2x mr-2"></i><p>User detail</p></div></a></li>
-        <li><a href="{% url 'register:help_top' %}"><div><i class="fas fa-question-circle fa-2x mr-2"></i><p>Help list</p></div></a></li>
-        </div>
+      {% if user.is_authenticated %}
+
+      <div style="display: flex;">
+        <li><a href="{% url 'register:user_detail' user.pk %}">
+            <div><i class="fas fa-user fa-2x"></i>
+              <p>User</p>
+            </div>
+          </a></li>
+        <li><a href="{% url 'register:user_detail' user.pk %}">
+            <div><i class="fas fa-question-circle fa-2x"></i>
+              <p>Help</p>
+            </div>
+          </a></li>
+        <li><a href="#!" data-toggle="modal" data-target="#exampleModal">
+            <div><i class="fas fa-sign-out-alt fa-2x"></i>
+              <p>Logout</p>
+            </div>
+          </a></li>
       </div>
+      {% endif %}
+
     </ul>
-</nav>
+  </nav>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height:40px">
+
+
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height:40px">
     <a href="#" class="navbar-brand">
-    <p style="position:absolute;top:5px">Evallege</p>
+      <p style="position:absolute;top:5px">Evallege</p>
     </a>
-    {% if user.is_authenticated %}
+  </nav>
 
-    <div class="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
-
-{% endif %}
-</nav>
-
-<!-- Modal -->
-<div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">ログアウトしますか?</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-footer">
-        <a href="{% url 'register:logout' %}" class="btn btn-outline-danger px-4">OK</a>
+  <!-- Modal -->
+  <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ログアウトしますか?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <a href="{% url 'register:logout' %}" class="btn btn-outline-danger px-4">OK</a>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 
-<!-- メインコンテント -->
+  <!-- メインコンテント -->
 
 
   {% if user.is_authenticated %}
   <div class="my-3 mx-1">
-  <!-- ユーザーがログインしている -->
-  {% if request.user_agent.is_mobile %}
-  <!-- スマホを使用中 -->
-  {% block content %}{% endblock %}
+    <!-- ユーザーがログインしている -->
+    {% if request.user_agent.is_mobile %}
+    <!-- スマホを使用中 -->
+    {% block content %}{% endblock %}
 
-  {% else %}
-  <!-- PCを使用中 -->
-  <div class="wrapper">
+    {% else %}
+    <!-- PCを使用中 -->
+    <div class="wrapper">
 
       <div class="side">
         <section>
           <ul>
-          <section1><a class="btn-right-radius" href="{% url 'register:top' %}"><li style='color:gray'>履修講義一覧</li></a></section1>
-          <section2><a class="btn-right-radius" href="{% url 'register:select_lecture' %}"><li style='color:gray'>講義を探す</li></a></section2>
-          <section3><a class="btn-right-radius" href="{% url 'register:create_lecture' %}"><li style='color:gray'>講義を作成</li></a></section3>
-          <section4><a class="btn-right-radius" href="{% url 'register:text_product_list' %}"><li style='color:gray'>教科書売買</li></a></section4>
-          <section5><a class="btn-right-radius" href="{% url 'register:user_detail' user.pk %}"><li style='color:gray'>ユーザー情報</li></a></section5>
-          <section6><a class="btn-right-radius" href="{% url 'register:help_top' %}"><li style='color:gray'>使い方ガイド</li></a></section6>
+            <section1><a class="btn-right-radius" href="{% url 'register:top' %}">
+                <li style='color:gray'>履修講義一覧</li>
+              </a></section1>
+            <section2><a class="btn-right-radius" href="{% url 'register:select_lecture' %}">
+                <li style='color:gray'>講義を探す</li>
+              </a></section2>
+            <section3><a class="btn-right-radius" href="{% url 'register:create_lecture' %}">
+                <li style='color:gray'>講義を作成</li>
+              </a></section3>
+            <section4><a class="btn-right-radius" href="{% url 'register:text_product_list' %}">
+                <li style='color:gray'>教科書売買</li>
+              </a></section4>
+            <section5><a class="btn-right-radius" href="{% url 'register:user_detail' user.pk %}">
+                <li style='color:gray'>ユーザー情報</li>
+              </a></section5>
+            <section6><a class="btn-right-radius" href="{% url 'register:help_top' %}">
+                <li style='color:gray'>使い方ガイド</li>
+              </a></section6>
           </ul>
         </section>
       </div>
@@ -286,9 +374,10 @@ nav.globalMenuSp.active {
       <div class="main">
         {% block content1 %}{% endblock %}
       </div>
+    </div>
   </div>
-</div>
-  {% endif %}<!-- 使用機器の判別 -->
+  {% endif %}
+  <!-- 使用機器の判別 -->
   {% else %}
   <!-- ログインしていない -->
   <!--{% if request.user_agent.is_mobile %}-->
@@ -296,42 +385,80 @@ nav.globalMenuSp.active {
   <!--{% else %}-->
   {% block content3 %}{% endblock %}
   <!--{% endif %}-->
-  {% endif %}<!-- ログインの判別 -->
+  {% endif %}
+  <!-- ログインの判別 -->
 
 
 
 
-<!--スマホを使用している場合、last-->
+  <!--スマホを使用している場合、last-->
 
 
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
-        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
-        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
-        crossorigin="anonymous"></script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+    integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+    integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+    crossorigin="anonymous"></script>
 </body>
 
 <script>
-$(function() {
-    $('.hamburger').click(function() {
-        $(this).toggleClass('active');
+  $(function () {
+    $('.hamburger').click(function () {
+      $(this).toggleClass('active');
 
-        if ($(this).hasClass('active')) {
-            $('.globalMenuSp').addClass('active');
-        } else {
-            $('.globalMenuSp').removeClass('active');
-        }
+      if ($(this).hasClass('active')) {
+        $('.globalMenuSp').addClass('active');
+        $('#hamburger-background').addClass('hamburger-over');
+        $('body').addClass('p-relative');
+      } else {
+        $('.globalMenuSp').removeClass('active');
+        $('#hamburger-background').removeClass('hamburger-over');
+        $('body').removeClass('p-relative');
+      }
     });
-});
+  });
+
+
+  // ダイアログを表示
+  function showDialog() {
+    var html = document.getElementById("content").innerHTML;
+
+    html = html + '<div id="dialog">' +
+      '<div id="dialog_back" style="height:' // ①のdiv
+      +
+      getBrowserHeight() + 'px;"></div>' +
+      '<div id="dialog_body">' // ②のdiv
+      +
+      '<input type="button" onclick="closeDialog()" value="閉じる">' +
+      '</div>' +
+      '</div>';
+
+    document.getElementById("content").innerHTML = html;
+  }
+  // 画面の高さを取得
+  function getBrowserHeight() {
+    if (window.innerHeight) {
+      return window.innerHeight;
+    } else if (document.documentElement &&
+      document.documentElement.clientHeight != 0) {
+      return document.documentElement.clientHeight;
+    } else if (document.body) {
+      return document.body.clientHeight;
+    }
+    return 0;
+  }
+  // ダイアログを閉じる
+  function closeDialog() {
+    var delNode = document.getElementById("dialog");
+    delNode.parentNode.removeChild(delNode);
+  }
 </script>
-
-
 
 
 </html>

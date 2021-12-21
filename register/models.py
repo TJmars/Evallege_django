@@ -25,8 +25,10 @@ class Lecture(models.Model):
                     College, verbose_name='大学名',
                     on_delete=models.PROTECT,blank=False
                )
-
-
+    contents = models.TextField(verbose_name='講義内容・難易度', blank=True)
+    homework = models.TextField(verbose_name='課題', blank=True)
+    Attendance = models.TextField(verbose_name='出席', blank=True)
+    others = models.TextField(verbose_name='その他', blank=True)
 
     created_at = models.DateTimeField('作成日', default=timezone.now)
 
@@ -250,7 +252,7 @@ class Text_product(models.Model):
 
 
 class Circle(models.Model):
-    """サークル掲示板のモデル"""
+    """サークル基本情報のモデル"""
     circle_name = models.CharField('団体名', max_length=200)
 
     GENRE = (
@@ -278,3 +280,21 @@ class Circle(models.Model):
 
     def __str__(self):
         return self.circle_name
+
+
+
+class Board(models.Model):
+    """サークルボード"""
+    title = models.TextField(verbose_name='タイトル')
+    contents = models.TextField(verbose_name='コンテンツ')
+    created_at = models.DateTimeField('投稿日', default=timezone.now)
+    image = models.FileField(upload_to='board_images/',verbose_name='画像',validators=[FileExtensionValidator(['pdf','jpg','jpeg','png','HEIC',])],blank=True)
+    good = models.IntegerField(verbose_name='いいね', default=0)
+    post_user = models.ForeignKey(User, verbose_name='投稿者',blank=True,null=True,on_delete=models.PROTECT,related_name = "post_user")
+    circle = models.ForeignKey(Circle, verbose_name='サークル',blank=True,null=True,on_delete=models.PROTECT)
+    college = models.ForeignKey(College, verbose_name='大学',blank=False,on_delete=models.PROTECT)
+    good_user = models.ManyToManyField(User, verbose_name='いいねしたユーザー', blank=True,null=True,related_name = "good_user")
+    status_num = models.IntegerField(verbose_name='ステータス', default=0)
+
+    def __str__(self):
+        return self.title

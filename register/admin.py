@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import College, Lecture, LectureEva, UserLectureList, LectureChat,Text_product,Circle
+from .models import College, Lecture, LectureEva, UserLectureList, LectureChat,Text_product,Circle,Board
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import ugettext_lazy as _
 from .models import User
@@ -26,3 +26,4 @@ admin.site.register(UserLectureList)
 admin.site.register(LectureChat)
 admin.site.register(Text_product)
 admin.site.register(Circle)
+admin.site.register(Board)

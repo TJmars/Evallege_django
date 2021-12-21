@@ -4,7 +4,7 @@ from django.contrib.auth.forms import (
     PasswordResetForm, SetPasswordForm
 )
 from django.contrib.auth import get_user_model
-from .models import Lecture, LectureEva, LectureChat, Text_product, Circle
+from .models import Lecture, LectureEva, LectureChat, Text_product, Circle, Board
 
 User = get_user_model()
 
@@ -117,11 +117,23 @@ class EvaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
-            
+
 
     class Meta:
         model = LectureEva
         fields = ('gakunen_lank','grade_lank','eva_lank','dif_lank','place','eva_comment')
+
+class LectureChatForm(forms.ModelForm):
+    """講義チャット"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+        self.fields["chat_text"].widget.attrs["style"] = "height:60px"
+
+    class Meta:
+        model = LectureChat
+        fields = ('chat_text',)
 
 class ChatForm(forms.ModelForm):
     """チャット"""
@@ -157,3 +169,23 @@ class CircleCreateForm(forms.ModelForm):
     class Meta:
         model = Circle
         fields = ('circle_name','image','genre','message','day_place','member_num','cost','sns_mail')
+
+class BoardCreateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+    class Meta:
+        model = Board
+        fields = ('title','contents','image')
+
+class BoardCreateIndiForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+    class Meta:
+        model = Board
+        fields = ('title','contents','image')

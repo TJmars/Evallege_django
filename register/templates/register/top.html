@@ -1,5 +1,48 @@
 {% extends "register/base.html" %}
 
+{% block header %}
+<style media="screen">
+	section {
+  max-width: 80px;
+	max-height:50px;
+  margin: 20px 10px auto auto;
+}
+a.btn_10 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  background: #fff;
+  position: relative;
+}
+a.btn_10 span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  background: #fff;
+  box-sizing: border-box;
+  color: #333;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  box-shadow: 0px 5px 12px #CAD4E2, -6px -6px 12px #FFF;
+  border-radius: 10px;
+  position: absolute;
+  top: -5px;
+  left: 0;
+  transition-duration: 0.2s;
+}
+a.btn_10:hover span {
+  left: 0;
+  top: 0;
+  box-shadow: 0 0 4px #CAD4E2, -2px -2px 4px #FFF;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 {% if messages %}
@@ -11,15 +54,20 @@
 {% endif %}
 
 <h4 class="mt-4">こんにちは、{{ user_name}}さん</h4>
+<section>
+  <a href="{% url 'register:select_lecture' %}" class="btn_10">
+		<span><i class="fas fa-plus" style="font-size:30px;align-items: center;display: flex;"></i></span></a>
+</section>
+
 {% if lecture_list %}
 {% for lecture in lecture_list %}
-<div class="card mt-4">
+<div class="card mt-2">
 	<div class="card-body">
 		<h4 class="card-title">{{lecture.lecture_name}}</h4>
 		<p class="card-text">担当教員：{{lecture.teacher_name}}<br>作成日：{{lecture.created_at}}</p>
 		<div style="display:inline-flex">
 		 <div class="btn-group" role="group" aria-label="Basic example">
-				<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">
+				<a href="{% url 'register:lecture_top' lecture.pk 0 %}" class="btn btn-outline-dark">
 					<i class="fas fa-chart-pie fa-lg"	></i>
 				</a>
 				<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">

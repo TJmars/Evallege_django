@@ -1,4 +1,4 @@
-{% extends 'register/base.html' %}
+{% extends "register/base.html" %}
 
 {% block header %}
 <style>
@@ -58,7 +58,6 @@ input[name="tab_item"] {
   color: #fff;
 }
 
-
 .acd-check{
     display: none;
 }
@@ -111,23 +110,51 @@ input[name="tab_item"] {
   border: 1px solid #ddd;
 }
 
+.vertical-scroll-table{
+  color: #5e5e5e;
+    max-height: 70%;
+  overflow: auto;
+  overflow-x: hidden;
+}
+.vertical-scroll-table table{
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.vertical-scroll-table table thead tr{
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: #333333;
+}
+.vertical-scroll-table table tbody tr:nth-child(even){
+  background-color: #fafbfc;
+}
+.vertical-scroll-table table td{
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ddd;
+}
+
 </style>
 {% endblock %}
 
-
-
-
 {% block content %}
+
+<h5 class="mt-4 mb-0">{{lecture.lecture_name}}</h5>
+<!-- タブ -->
 <div class="tabs">
     <input id="all" type="radio" name="tab_item" checked>
-    <label class="tab_item" for="all">総合</label>
+    <label class="tab_item" for="all">グラフ</label>
     <input id="programming" type="radio" name="tab_item">
-    <label class="tab_item" for="programming">プログラミング</label>
+    <label class="tab_item" for="programming">詳細</label>
     <input id="design" type="radio" name="tab_item">
-    <label class="tab_item" for="design">デザイン</label>
-    <div class="tab_content" id="all_content">
-      <!-- グラフ -->
-<div style="text-align:right">
+    <label class="tab_item" for="design">チャット</label>
+
+<div class="tab_content" id="all_content">
+  <!-- グラフページ -->
+  <!-- 授業方式切り替えボタン -->
+  <div style="text-align:right">
 <div class="dropdown mt-1">
 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
   授業方式
@@ -139,7 +166,7 @@ input[name="tab_item"] {
 </div>
 </div>
 </div>
-      <h5 class="mt-4 mb-0">{{lecture.lecture_name}}</h5>
+<!-- グラフ -->
 <hr class="mt-0" color="#808080" style="height:1px;width:200px"align="left">
 <div class="row">
 <div class="col-md-4 mt-5">
@@ -161,6 +188,7 @@ input[name="tab_item"] {
   <img src="data:image/png;base64, {{ dif_chart }}" width=350 height=280>
 </div>
 </div>
+
 <div class="row">
 <div class="col-md-4 mt-5">
 <div style="text-align: center">
@@ -168,25 +196,10 @@ input[name="tab_item"] {
 </div>
 <img src="data:image/png;base64, {{ eva_chart }}" width=350 height=280>
 </div>
-<div class="col-md-8 mt-5 mr-5">
-<table class="table">
-  <thead>
-    <tr>
-      <th>コメント一覧</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for eva in eva_list %}
-    <tr>
-      <td>{{eva.eva_comment}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
 </div>
 </div>
 
-    </div>
+
 <div class="tab_content" id="programming_content">
 <input id="acd-check1" class="acd-check" type="checkbox">
 <label class="acd-label" for="acd-check1">講義内容</label>
@@ -196,62 +209,98 @@ input[name="tab_item"] {
 <input id="acd-check2" class="acd-check" type="checkbox">
 <label class="acd-label" for="acd-check2">課題</label>
 <div class="acd-content">
-    <p>{{ lecture.homework}}</p>
+    <p>{{ lecture.homework }}</p>
 </div>
 <input id="acd-check2" class="acd-check" type="checkbox">
 <label class="acd-label" for="acd-check2">出席</label>
 <div class="acd-content">
-    <p>{{ lecture.Attendance}}</p>
+    <p>{{ lecture.Attendance }}</p>
 </div>
 <input id="acd-check2" class="acd-check" type="checkbox">
 <label class="acd-label" for="acd-check2">その他</label>
 <div class="acd-content">
-    <p>{{ lecture.others}}</p>
+    <p>{{ lecture.others }}</p>
 </div>
 </div>
-    <div class="tab_content" id="design_content">
-      <div class="vertical-scroll-table">
-      <table rules="rows">
-        <thead class="thead-dark">
-          <tr>
-            <th>Chat</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          <div class="scroll">
-              <div id="scroll-inner">
-          {% for chat in chat_list %}
-          <tr>
-            <td><span style="color:gray">{{chat.user.user_name}}  /  {{chat.created_at}}</span><br><p>{{chat.chat_text}}</P></td>
-          </tr>
-          {% empty %}
-          <td>課題やテストについてチャットで質問できます</td>
-          {% endfor %}
-        </div>
-        </div>
-        </tbody>
-      </table>
+
+<div class="tab_content" id="design_content">
+  <!-- チャット -->
+
+  <div class="vertical-scroll-table">
+  <table rules="rows">
+    <thead class="thead-dark">
+      <tr>
+        <th>Chat</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <div class="scroll">
+          <div id="scroll-inner">
+      {% for chat in chat_list %}
+      <tr>
+        <td><span style="color:gray">{{chat.user.user_name}}  /  {{chat.created_at}}</span><br><p>{{chat.chat_text}}</P></td>
+      </tr>
+      {% empty %}
+      <td>課題やテストについてチャットで質問できます</td>
+      {% endfor %}
+    </div>
+    </div>
+    </tbody>
+  </table>
+  </div>
+
+  <form action="" method="POST">
+    {{form.non_field_errors}}
+    {% for field in form %}
+    <div class="form-group" style="position:absolute;bottom:0;width:91.5%">
+      {{field}}
+      {{field.errors}}
+    </div>
+    {% endfor %}
+    {% csrf_token %}
+    <button type="submit" class="btn btn-link my-lg-4 my-1" style="position:absolute;bottom:15;right:15">
+      <i class="fas fa-paper-plane fa-lg"></i>
+    </button>
+  </form>
+
+  {% endblock %}
+
+
+
+  {% block content1 %}
+  <div class="mr-5">
+  <table class="table mb-5">
+    <thead class="thead-dark">
+      <tr>
+        <th>Chat</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for chat in chat_list %}
+      <tr>
+        <td><span style="color:gray">{{chat.user.user_name}}  /  {{chat.created_at}}</span><br><p>{{chat.chat_text}}</P></td>
+      </tr>
+      {% empty %}
+      <td>課題やテストについてチャットで質問できます</td>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  <footer style="position: fixed;bottom: 0; width:80%;background-color: white;">
+    <form action="" method="POST">
+      {{form.non_field_errors}}
+      {% for field in form %}
+      <div class="form-group">
+        {{field}}
+        {{field.errors}}
       </div>
-
-      <form action="" method="POST">
-        {{form.non_field_errors}}
-        {% for field in form %}
-        <div class="form-group" style="position:absolute;bottom:0;width:91.5%">
-          {{field}}
-          {{field.errors}}
-        </div>
-        {% endfor %}
-        {% csrf_token %}
-        <button type="submit" class="btn btn-link my-lg-4 my-1" style="position:absolute;bottom:15;right:15">
-          <i class="fas fa-paper-plane fa-lg"></i>
-        </button>
-      </form>
+      {% endfor %}
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-dark my-lg-4 my-4">チャットを投稿</button>
+    </form>
+  </footer>
 </div>
-
-
-<script>
-  /* acordion */
-
-</script>
 {% endblock %}

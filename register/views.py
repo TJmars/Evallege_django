@@ -16,9 +16,9 @@ from django.views import generic
 from django.db.models import Q
 from .forms import (
     LoginForm, UserCreateForm, UserUpdateForm, MyPasswordChangeForm,
-    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm,TextSaleForm,CircleCreateForm
+    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm,TextSaleForm,CircleCreateForm,LectureChatForm,BoardCreateForm,BoardCreateIndiForm
 )
-from .models import Lecture, LectureEva,UserLectureList, LectureChat, Text_product, Circle
+from .models import Lecture, LectureEva,UserLectureList, LectureChat, Text_product, Circle, Board
 import base64
 import datetime
 from django.contrib import messages
@@ -204,6 +204,49 @@ class LectureCreate(generic.CreateView):
             return redirect('register:create_lecture')
 
 
+class LectureTop(generic.CreateView):
+    """授業詳細ページ"""
+    model = LectureChat
+    template_name = 'register/lecture_top.html'
+    form_class = LectureChatForm
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lecture = Lecture.objects.get(id=self.kwargs['pk'])
+        context['lecture'] = lecture
+
+        """グラフ"""
+        context['gakunen_chart'] = gakunen_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['grade_chart'] = grade_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['eva_chart'] = eva_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['dif_chart'] = dif_chart(self.kwargs['pk'],self.kwargs['place'])
+
+        """詳細"""
+
+
+        """チャット"""
+        context['chat_list'] = LectureChat.objects.filter(lecture=lecture).order_by('-created_at')
+
+        return context
+
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        self.object_list = self.get_queryset()
+        form = self.get_form()
+        if form.is_valid():
+            user = self.request.user
+            lecture = Lecture.objects.get(id=self.kwargs['pk'])
+            chat = form.save(commit=False)
+            chat.user = user
+            chat.lecture = lecture
+            chat.save()
+            return self.form_invalid(form)
+        else:
+            return self.form_invalid(form)
+
+
 
 
 
@@ -222,6 +265,7 @@ class DetailView(generic.DetailView):
         context['eva_chart'] = eva_chart(self.kwargs['pk'],self.kwargs['place'])
         context['dif_chart'] = dif_chart(self.kwargs['pk'],self.kwargs['place'])
         lecture = Lecture.objects.get(id=self.kwargs['pk'])
+        context['chat_list'] = LectureChat.objects.filter(lecture=lecture).order_by('-created_at')
         eva_comment=''
         if self.kwargs['place'] == 0:
             eva_list = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="")
@@ -571,6 +615,10 @@ class CircleDetail(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
+        circle = Circle.objects.get(id=self.kwargs['pk'])
+        context['board_list'] = Board.objects.filter(circle=circle)
+        user = self.request.user
+        context['user'] = user
 
         return context
 
@@ -592,7 +640,50 @@ class CircleCreate(generic.CreateView):
         return redirect('register:text_product_list')
 
 
+class BoardCreate(generic.CreateView):
+    model = Board
+    template_name = 'register/board_create.html'
+    form_class = BoardCreateForm
 
+    def form_valid(self, form):
+        user = self.request.user
+        college = user.college_name
+        circle = Circle.objects.get(id=self.kwargs['pk'])
+        board = form.save(commit=False)
+        board.college = college
+        board.circle = circle
+        board.save()
+        return redirect('register:circle_detail',pk=self.kwargs['pk'])
+
+class BoardCreateIndi(generic.CreateView):
+    model = Board
+    template_name = 'register/board_create_indi.html'
+    form_class = BoardCreateIndiForm
+
+    def form_valid(self, form):
+        user = self.request.user
+        college = user.college_name
+        board = form.save(commit=False)
+        board.college = college
+        board.post_user = user
+        board.status_num = 1
+        board.save()
+        return redirect('register:board_list')
+
+
+
+class BoardList(generic.ListView):
+    model = Board
+    template_name = 'register/board_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        college = user.college_name
+        context['board_list'] = Board.objects.filter(college=college)
+        context['board_list_only_college'] = Board.objects.filter(college=college).filter(status_num=0)
+
+        return context
 
 
 class Login(LoginView):
