@@ -26,7 +26,6 @@ import random, string
 import re
 from django.shortcuts import render
 from django.views.generic import View
-import stripe
 from PIL import Image
 import qrcode
 from io import BytesIO
@@ -35,8 +34,6 @@ import shutil
 import os
 import cv2
 import matplotlib.pyplot as plt
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 User = get_user_model()
