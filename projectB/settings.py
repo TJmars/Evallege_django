@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_user_agents',
-
+    'import_export',
 ]
 
 # キャッシュを使うとdjango-user-agentsを素早く働かせることができる

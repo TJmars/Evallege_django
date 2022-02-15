@@ -1,17 +1,25 @@
 {% extends "register/base.html" %}
 {% block content2 %}
-<p>
-    本登録が完了しました。<br>
-    登録されたメールアドレスとパスワードでログインしてください。<br>
-    <a class="btn btn-primary btn-lg" href="{% url 'register:login' %}">ログイン</a>
-</p>
+<div class="my-3 mx-3">
+  <div class="alert alert-info" role="alert">
+  <h5 class="alert-heading" style="font-weight:bold">本登録が完了しました。</h5>
+  登録されたメールアドレスとパスワードでログインしてください。
+  </div>
+  <div style="text-align:center">
+    <a class="btn btn-outline-info" style="width:70%" href="{% url 'register:login' %}">ログイン画面へ</a>
+  </div>
+</div>
 {% endblock %}
 
 
 {% block content3 %}
-<p>
-    本登録が完了しました。<br>
-    登録されたメールアドレスとパスワードでログインしてください。<br>
-    <a class="btn btn-primary btn-lg" href="{% url 'register:login' %}">ログイン</a>
-</p>
+<div class="my-3 mx-3">
+  <div class="alert alert-info" role="alert">
+  <h5 class="alert-heading" style="font-weight:bold">本登録が完了しました。</h5>
+  登録されたメールアドレスとパスワードでログインしてください。
+  </div>
+  <div style="text-align:center">
+    <a class="btn btn-primary btn-lg" style="width:70%" href="{% url 'register:login' %}">ログイン画面へ</a>
+  </div>
+</div>
 {% endblock %}

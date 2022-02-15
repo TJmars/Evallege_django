@@ -43,7 +43,7 @@ class UserCreateForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('email','college_name','user_name','input_invi_code')
+        fields = ('email','college_name','user_age','user_name')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -108,6 +108,19 @@ class CreateLectureForm(forms.ModelForm):
     class Meta:
         model = Lecture
         fields = ('lecture_name','teacher_name')
+
+class LectureEditForm(forms.ModelForm):
+    """講義詳細編集フォーム"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+
+    class Meta:
+        model = Lecture
+        fields = ('contents','homework','Attendance','others')
+
 
 
 class EvaForm(forms.ModelForm):

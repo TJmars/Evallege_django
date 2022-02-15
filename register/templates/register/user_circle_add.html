@@ -1,0 +1,23 @@
+{% extends 'register/base.html' %}
+
+{% block content %}
+<h4>{{ circle }}</h4>
+<form class="form-inline mt-4" method="post" action="">
+<div class="modal-body">
+    <p class="card-text">追加したいサークルのパスワードを入力してください</p>
+ <div class="form-group">
+     {% csrf_token %}
+     <textarea id="textarea2" class="form-control" name="password" style="width:100%;height:40px;" placeholder="password"></textarea>
+</div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-outline-success my-2 my-sm-2" type="submit">
+    {% if user in circle.editor_list.all %}
+    登録解除
+    {% else %}
+    登録
+    {% endif %}
+  </button>
+</div>
+</form>
+{% endblock %}

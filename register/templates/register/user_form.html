@@ -1,4 +1,44 @@
 {% extends "register/base.html" %}
+{% block content %}
+<div class="mt-3">
+<form action="" method="POST">
+    {{ form.non_field_errors }}
+    <table class="table">
+        <tbody>
+            {% for field in form %}
+                <tr>
+                    <th><label for="{{ field.id_for_label }}">{{ field.label }}</label></th>
+                    <td>{{ field }} {{ field.errors }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% csrf_token %}
+    <div style="text-align:center">
+    <button type="submit" class="btn btn-outline-dark btn-lg my-4"style="width:70%;">送信</button>
+    </div>
+</form>
+</div>
+{% endblock %}
+
+{% block content1 %}
+<form action="" method="POST">
+    {{ form.non_field_errors }}
+    <table class="table">
+        <tbody>
+            {% for field in form %}
+                <tr>
+                    <th><label for="{{ field.id_for_label }}">{{ field.label }}</label></th>
+                    <td>{{ field }} {{ field.errors }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-dark btn-lg my-4" >送信</button>
+</form>
+{% endblock %}
+
 {% block content2 %}
 <form action="" method="POST">
     {{ form.non_field_errors }}

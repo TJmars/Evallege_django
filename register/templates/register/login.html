@@ -51,11 +51,11 @@
     </form>
 </div>
 <hr class="my-4" color="#696969" style="width:100%">
-    <a href="{% url 'register:user_create' %}" class="btn btn-outline-dark btn-lg btn-block" style="height:40px;font-size:16px">会員登録</a>
+    <a href="{% url 'register:terms' %}" class="btn btn-outline-dark btn-lg btn-block" style="height:40px;font-size:16px">会員登録</a>
     <a href="{% url 'register:password_reset' %}" class="btn btn-outline-dark btn-lg btn-block" style="height:40px;font-size:16px">パスワードを忘れた方</a>
 </div>
 <div style="text-align: center">
-<a href="#!">Evallegeとは？</a>
+<a href="{% url 'register:help_contents' 1 %}">Evallegeとは？</a>
 </div>
 </div>
 

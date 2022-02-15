@@ -2,138 +2,149 @@
 
 {% block header %}
 <style>
-  /*タブ切り替え全体のスタイル*/
-.tabs {
-  margin-top: 0px;
-  padding-bottom: 40px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  margin: 0 auto;}
+  .tab-wrap {
+  	display: flex;
+  	flex-wrap: wrap;
+  	overflow: hidden;
+  }
 
-/*タブのスタイル*/
-.tab_item {
-  width: calc(100%/3);
-  height: 50px;
-  border-bottom: 3px solid #5ab4bd;
-  background-color: #d9d9d9;
-  line-height: 50px;
-  font-size: 16px;
-  text-align: center;
-  color: #565656;
+  .tab-label {
+  	color: Gray;
+  	cursor: pointer;
+  	flex: 1;
+  	font-weight: bold;
+  	order: -1;
+  	padding: 12px 24px;
+  	position: relative;
+  	text-align: center;
+  	transition: cubic-bezier(0.4, 0, 0.2, 1) .2s;
+  	user-select: none;
+  	white-space: nowrap;
+  	-webkit-tap-highlight-color: transparent;
+  }
+
+  .tab-label:hover {
+  	background: rgba(0, 0, 0, 0);
+  }
+
+  .tab-switch:checked + .tab-label {
+  	color: rgba(1, 1, 1, 1);
+  }
+
+  .tab-label::after {
+  	background: rgba(1, 1, 1, 1);
+  	bottom: 0;
+  	content: '';
+  	display: block;
+  	height: 3px;
+  	left: 0;
+  	opacity: 0;
+  	pointer-events: none;
+  	position: absolute;
+  	transform: translateX(100%);
+  	transition: cubic-bezier(0.4, 0, 0.2, 1) .2s 80ms;
+  	width: 100%;
+  	z-index: 1;
+  }
+
+  .tab-switch:checked ~ .tab-label::after {
+  	transform: translateX(-100%);
+  }
+
+  .tab-switch:checked + .tab-label::after {
+  	opacity: 1;
+  	transform: translateX(0);
+  }
+
+  .tab-content {
+  	height:0;
+  	opacity:0;
+  	pointer-events:none;
+  	transform: translateX(-30%);
+  	transition: transform .3s 80ms, opacity .3s 80ms;
+  	width: 100%;
+  }
+
+  .tab-switch:checked ~ .tab-content {
+  	transform: translateX(30%);
+  }
+
+  .tab-switch:checked + .tab-label + .tab-content {
+  	height: auto;
+  	opacity: 1;
+  	order: 1;
+  	pointer-events:auto;
+  	transform: translateX(0);
+  }
+
+  .tab-wrap::after {
+  	content: '';
+  	height: 20px;
+  	order: -1;
+  	width: 100%;
+  }
+
+  .tab-switch {
+  	display: none;
+  }
+
+
+
+/* アコーディオンメニュー */
+.ac-menu:last-child {
+  margin-bottom: 60px; /* 最後の要素の下にだけ余白 */
+}
+.ac-menu input {
+  display: none;
+}
+.ac-menu label {
+  color: #000; /* 文字色 */
+  font-size: 17px; /* 文字サイズ */
+  line-height: 2; /* 行間 */
+  font-weight: bold; /* 文字を太く */
+  background: #474747; /* グラデーションの背景色 */
+  color: #ffffff;
+  padding: 10px; /* 内側の余白 */
+  cursor: pointer;
+  position: relative;
   display: block;
-  float: left;
-  text-align: center;
-  font-weight: bold;
-  transition: all 0.2s ease;
-}
-.tab_item:hover {
-  opacity: 0.75;
-}
 
-/*ラジオボタンを全て消す*/
-input[name="tab_item"] {
-  display: none;
 }
-
-/*タブ切り替えの中身のスタイル*/
-.tab_content {
-  display: none;
-  padding: 40px 40px 0;
-  clear: both;
+.ac-menu label:after {
+  position: absolute;
+  font-size: 20px;
+  right:20px;
+  top: 50%; /* 上下中央配置 */
+  -webkit-transform : translateY(-50%);
+  transform : translateY(-50%);
+  content: "＋"; /* アイコン */
+}
+.ac-menu input:checked ~ label::after {
+  font-size: 20px;
+  content: "ー"; /* クリック後のアイコン */
+}
+.ac-menu div {
+  height: 0;
   overflow: hidden;
+  opacity: 0;
+  transition: 0.3s; /* 開閉スピード */
+}
+.ac-menu input:checked ~ div {
+  height: auto;
+  opacity: 1;
+  padding: 10px; /* 中身の枠内の余白 */
+  border: solid 1px #474747;
+}
+.ac-menu-inside {
+  color: #333; /* 中身の文字色 */
+  font-size: 15px; /* 中身の文字サイズ */
+  line-height: 2; /* 行間 */
 }
 
-
-/*選択されているタブのコンテンツのみを表示*/
-#all:checked ~ #all_content,
-#programming:checked ~ #programming_content,
-#design:checked ~ #design_content {
-  display: block;
-}
-
-/*選択されているタブのスタイルを変える*/
-.tabs input:checked + .tab_item {
-  background-color: #5ab4bd;
-  color: #fff;
-}
-
-.acd-check{
-    display: none;
-}
-.acd-label{
-    background: #333;
-    color: #fff;
-    display: block;
-    margin-bottom: 1px;
-    padding: 10px;
-}
-.acd-content{
-    border: 1px solid #333;
-    height: 0;
-    opacity: 0;
-    padding: 0 10px;
-    transition: .5s;
-    visibility: hidden;
-}
-.acd-check:checked + .acd-label + .acd-content{
-    height: 40px;
-    opacity: 1;
-    padding: 10px;
-    visibility: visible;
-}
-
-
-.vertical-scroll-table{
-  color: #5e5e5e;
-    max-height: 70%;
-  overflow: auto;
-  overflow-x: hidden;
-}
-.vertical-scroll-table table{
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-.vertical-scroll-table table thead tr{
-  font-weight: bold;
-  text-align: center;
-  color: #ffffff;
-  background-color: #333333;
-}
-.vertical-scroll-table table tbody tr:nth-child(even){
-  background-color: #fafbfc;
-}
-.vertical-scroll-table table td{
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ddd;
-}
-
-.vertical-scroll-table{
-  color: #5e5e5e;
-    max-height: 70%;
-  overflow: auto;
-  overflow-x: hidden;
-}
-.vertical-scroll-table table{
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-.vertical-scroll-table table thead tr{
-  font-weight: bold;
-  text-align: center;
-  color: #ffffff;
-  background-color: #333333;
-}
-.vertical-scroll-table table tbody tr:nth-child(even){
-  background-color: #fafbfc;
-}
-.vertical-scroll-table table td{
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ddd;
+a.btn {
+color: #000;
+padding: 14px 19px;
+border: solid 1px #000;
 }
 
 </style>
@@ -141,129 +152,197 @@ input[name="tab_item"] {
 
 {% block content %}
 
-<h5 class="mt-4 mb-0">{{lecture.lecture_name}}</h5>
+<h5 class="mt-2 mx-2 mb-0"  style="font-weight:bold;font-size:18px;">{{lecture.lecture_name}}</h5>
+
+<hr class="mt-0 p-0" style="height:2px;background-color:#9a9a9a;">
 <!-- タブ -->
-<div class="tabs">
-    <input id="all" type="radio" name="tab_item" checked>
-    <label class="tab_item" for="all">グラフ</label>
-    <input id="programming" type="radio" name="tab_item">
-    <label class="tab_item" for="programming">詳細</label>
-    <input id="design" type="radio" name="tab_item">
-    <label class="tab_item" for="design">チャット</label>
-
-<div class="tab_content" id="all_content">
-  <!-- グラフページ -->
-  <!-- 授業方式切り替えボタン -->
-  <div style="text-align:right">
-<div class="dropdown mt-1">
-<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  授業方式
-</button>
-<div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-  <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 0 %}">全ての方式</a>
-  <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 1 %}">対面</a>
-  <a class="dropdown-item" href="{% url 'register:detail' lecture.pk 2 %}">オンライン</a>
-</div>
-</div>
-</div>
-<!-- グラフ -->
-<hr class="mt-0" color="#808080" style="height:1px;width:200px"align="left">
-<div class="row">
-<div class="col-md-4 mt-5">
-  <div style="text-align: center">
-    <h5>学年比率<h5>
-  </div>
-  <img src="data:image/png;base64, {{ gakunen_chart }}" width=350 height=280>
-</div>
-<div class="col-md-4 mt-5">
-  <div style="text-align: center">
-    <h5>成績<h5>
-  </div>
-  <img src="data:image/png;base64, {{ grade_chart }}" width=350 height=280>
-</div>
-<div class="col-md-4 mt-5">
-  <div style="text-align: center">
-    <h5>難易度<h5>
-  </div>
-  <img src="data:image/png;base64, {{ dif_chart }}" width=350 height=280>
-</div>
-</div>
-
-<div class="row">
-<div class="col-md-4 mt-5">
-<div style="text-align: center">
-  <h5>課題量<h5>
-</div>
-<img src="data:image/png;base64, {{ eva_chart }}" width=350 height=280>
-</div>
-</div>
-</div>
 
 
-<div class="tab_content" id="programming_content">
-<input id="acd-check1" class="acd-check" type="checkbox">
-<label class="acd-label" for="acd-check1">講義内容</label>
-<div class="acd-content">
-    <p>{{ lecture.contents }}</p>
+<div class="tab-wrap">
+    <input id="TAB-01" type="radio" name="TAB" class="tab-switch" checked="checked" /><label class="tab-label" for="TAB-01">グラフ</label>
+    <div class="tab-content">
+      <!-- グラフページ -->
+      <!-- 授業方式切り替えボタン -->
+
+    <!-- グラフ -->
+    <div style="text-align:right" class="mr-3">
+    <p style="font-size:18px;font-weight:bold;color:#979797" class="mb-0"><span style="color:#3f3f3f">{{user_count}}</span>人が履修中/<span style="color:#3f3f3f">{{eva_count}}</span>件のデータ</p>
+    </div>
+    <div style="position: relative;" class="mt-1 mx-2">
+        <img src="data:image/png;base64, {{ gakunen_chart }}" width=100% height=auto>
+        <div style="display:flex;position: absolute;top:40px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Freshman</p>
+        </div>
+        <div style="display:flex;position: absolute;top:80px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Freshman</p>
+        </div>
+        <div style="display:flex;position: absolute;top:120px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Junior</p>
+        </div>
+        <div style="display:flex;position: absolute;top:160px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Senior</p>
+        </div>
+    </div>
+
+    <div style="position: relative;" class="mt-3 mx-2">
+        <img src="data:image/png;base64, {{ grade_chart }}" width=100% height=auto>
+        <div style="display:flex;position: absolute;top:40px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">S</p>
+        </div>
+        <div style="display:flex;position: absolute;top:80px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#52C8ED" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">A</p>
+        </div>
+        <div style="display:flex;position: absolute;top:120px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">B</p>
+        </div>
+        <div style="display:flex;position: absolute;top:160px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">C</p>
+        </div>
+        <div style="display:flex;position: absolute;top:200px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">D</p>
+        </div>
+    </div>
+
+    <div style="position: relative;" class="mt-3 mx-2">
+        <img src="data:image/png;base64, {{ dif_chart }}" width=100% height=auto>
+        <div style="display:flex;position: absolute;top:40px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Very easy</p>
+        </div>
+        <div style="display:flex;position: absolute;top:80px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#52C8ED" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Eacy</p>
+        </div>
+        <div style="display:flex;position: absolute;top:120px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Normal</p>
+        </div>
+        <div style="display:flex;position: absolute;top:160px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Hard</p>
+        </div>
+        <div style="display:flex;position: absolute;top:200px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Very hard</p>
+        </div>
+    </div>
+
+    <div style="position: relative;border:solid 2px #E8EEFF" class="mt-3 mx-2">
+    <img src="data:image/png;base64, {{ time_week_chart }}" width=100% height=auto style="border-radius:10px">
+    </div>
+
+    <div style="position: relative;border:solid 2px #E8EEFF" class="mt-3 mx-2">
+    <img src="data:image/png;base64, {{ time_last_chart }}" width=100% height=auto style="border-radius:10px">
+    </div>
+
+    <div style="position: relative;" class="mt-3 mx-2">
+        <img src="data:image/png;base64, {{ eva_chart }}" width=100% height=auto>
+        <div style="display:flex;position: absolute;top:40px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">S</p>
+        </div>
+        <div style="display:flex;position: absolute;top:80px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#52C8ED" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">A</p>
+        </div>
+        <div style="display:flex;position: absolute;top:120px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">B</p>
+        </div>
+        <div style="display:flex;position: absolute;top:160px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">C</p>
+        </div>
+        <div style="display:flex;position: absolute;top:200px;left:62%;">
+        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
+        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">D</p>
+        </div>
+    </div>
+
+    </div>
+    <input id="TAB-02" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-02">詳細</label>
+    <div class="tab-content mx-2">
+      <!-- 詳細ページ -->
+
+      <div style="display: flex;margin-left: auto;width:70px;height:auto;">
+      <a href="{% url 'register:lecture_edit' lecture.pk %}" class="btn mx-2">
+      	<i class="fas fa-pen fa-lg"></i>
+      </a>
+      </div>
+
+      <div class="ac-menu mt-3">
+    <input id="ac-1" type="checkbox" />
+    <label for="ac-1">講義内容</label>
+    <div class="ac-menu-inside">
+          <p>{{lecture.contents| linebreaksbr}}</p>
+    </div>
 </div>
-<input id="acd-check2" class="acd-check" type="checkbox">
-<label class="acd-label" for="acd-check2">課題</label>
-<div class="acd-content">
-    <p>{{ lecture.homework }}</p>
+<div class="ac-menu">
+    <input id="ac-2" type="checkbox" />
+    <label for="ac-2">課題</label>
+    <div class="ac-menu-inside">
+        <p>{{lecture.homework| linebreaksbr}}</p>
+    </div>
 </div>
-<input id="acd-check2" class="acd-check" type="checkbox">
-<label class="acd-label" for="acd-check2">出席</label>
-<div class="acd-content">
-    <p>{{ lecture.Attendance }}</p>
+<div class="ac-menu">
+    <input id="ac-3" type="checkbox" />
+    <label for="ac-3">出席</label>
+    <div class="ac-menu-inside">
+        <p>{{lecture.Attendance| linebreaksbr}}</p>
+    </div>
 </div>
-<input id="acd-check2" class="acd-check" type="checkbox">
-<label class="acd-label" for="acd-check2">その他</label>
-<div class="acd-content">
-    <p>{{ lecture.others }}</p>
-</div>
+<div class="ac-menu">
+    <input id="ac-4" type="checkbox" />
+    <label for="ac-4">その他</label>
+    <div class="ac-menu-inside">
+        <p>{{lecture.others| linebreaksbr}}</p>
+    </div>
 </div>
 
 
-<div class="tab_content" id="design_content">
-  <!-- チャット -->
 
-  <div class="vertical-scroll-table">
-  <table rules="rows">
-    <thead class="thead-dark">
-      <tr>
-        <th>Chat</th>
-      </tr>
-    </thead>
+    </div>
+    <input id="TAB-03" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-03">チャット</label>
+    <div class="tab-content mx-2">
+      <!-- チャット -->
 
-    <tbody>
-      <div class="scroll">
-          <div id="scroll-inner">
+
+      <form action="" method="POST" style="position:fixed">
+         {{form.non_field_errors}}
+         <div style="display: flex;">
+         {% for field in form %}
+         <div class="form-group">
+           {{field}}
+           {{field.errors}}
+         </div>
+         {% endfor %}
+         {% csrf_token %}
+         <button type="submit" class="btn btn-outline-primary mb-3">
+           投稿
+         </button>
+         </div>
+       </form>
+
+      <div style="margin-top:70px">
       {% for chat in chat_list %}
-      <tr>
-        <td><span style="color:gray">{{chat.user.user_name}}  /  {{chat.created_at}}</span><br><p>{{chat.chat_text}}</P></td>
-      </tr>
-      {% empty %}
-      <td>課題やテストについてチャットで質問できます</td>
-      {% endfor %}
-    </div>
-    </div>
-    </tbody>
-  </table>
-  </div>
+       <p style="color:#606060;font-size:12px">{{chat.user.user_name}}  /  {{chat.created_at}}</p>
+       <p style="font-size:14px">{{chat.chat_text}}</P>
+         <hr>
+         {% empty %}
+         <div class="alert alert-primary" role="alert">講義内容や課題について質問しましょう</div>
+       {% endfor %}
+      </div>
 
-  <form action="" method="POST">
-    {{form.non_field_errors}}
-    {% for field in form %}
-    <div class="form-group" style="position:absolute;bottom:0;width:91.5%">
-      {{field}}
-      {{field.errors}}
     </div>
-    {% endfor %}
-    {% csrf_token %}
-    <button type="submit" class="btn btn-link my-lg-4 my-1" style="position:absolute;bottom:15;right:15">
-      <i class="fas fa-paper-plane fa-lg"></i>
-    </button>
-  </form>
 
   {% endblock %}
 

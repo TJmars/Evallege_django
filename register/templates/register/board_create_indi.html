@@ -1,6 +1,7 @@
 {% extends "register/base.html" %}
 {% block content %}
-<form action="" method="POST">
+<div class="mx-1"
+<form action="" method="POST" enctype="multipart/form-data">
     {{ form.non_field_errors }}
     {% for field in form %}
     <div class="form-group">
@@ -13,4 +14,5 @@
 
     <button type="submit" class="btn btn-outline-dark btn-lg">送信</button>
 </form>
+</div>
 {% endblock %}

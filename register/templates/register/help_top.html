@@ -1,10 +1,8 @@
 {% extends "register/base.html" %}
 {% block content %}
 
+<h5 style="font-weight:bold;font-size:18px;border-bottom:solid;">使い方ガイド</h5>
 <div class="list-group">
-  <a href="#" class="list-group-item list-group-item-action bg-dark text-white" aria-current="true">
-    使い方ガイド
-  </a>
   <a href="{% url 'register:help_contents' 0%}" class="list-group-item list-group-item-action">Evallegeの使い方</a>
   <a href="{% url 'register:help_contents' 1%}" class="list-group-item list-group-item-action">履修講義の登録/解除について</a>
   <a href="{% url 'register:help_contents' 2%}" class="list-group-item list-group-item-action">授業評価について</a>

@@ -1,106 +1,178 @@
 {% extends "register/base.html" %}
 {% block header %}
 <style>
-  /*タブ切り替え全体のスタイル*/
-.tabs {
-  margin-top: 50px;
-  padding-bottom: 40px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  margin: 0 auto;}
+  .tab-wrap {
+  	display: flex;
+  	flex-wrap: wrap;
+  	overflow: hidden;
+  }
 
-/*タブのスタイル*/
-.tab_item {
-  width: calc(100%/2);
-  height: 50px;
-  border-bottom: 3px solid #5ab4bd;
-  background-color: #d9d9d9;
-  line-height: 50px;
-  font-size: 16px;
-  text-align: center;
-  color: #565656;
-  display: block;
-  float: left;
-  text-align: center;
-  font-weight: bold;
-  transition: all 0.2s ease;
-}
-.tab_item:hover {
-  opacity: 0.75;
-}
+  .tab-label {
+  	color: Gray;
+  	cursor: pointer;
+  	flex: 1;
+  	font-weight: bold;
+  	order: -1;
+  	padding: 5px 24px;
+  	position: relative;
+  	text-align: center;
+  	transition: cubic-bezier(0.4, 0, 0.2, 1) .2s;
+  	user-select: none;
+  	white-space: nowrap;
+  	-webkit-tap-highlight-color: transparent;
+  }
 
-/*ラジオボタンを全て消す*/
-input[name="tab_item"] {
-  display: none;
-}
+  .tab-label:hover {
+  	background: rgba(0, 0, 0, 0);
+  }
 
-/*タブ切り替えの中身のスタイル*/
-.tab_content {
-  display: none;
-  clear: both;
-  overflow: hidden;
-}
+  .tab-switch:checked + .tab-label {
+  	color: rgba(1, 1, 1, 1);
+  }
 
+  .tab-label::after {
+  	background: rgba(1, 1, 1, 1);
+  	bottom: 0;
+  	content: '';
+  	display: block;
+  	height: 3px;
+  	left: 0;
+  	opacity: 0;
+  	pointer-events: none;
+  	position: absolute;
+  	transform: translateX(100%);
+  	transition: cubic-bezier(0.4, 0, 0.2, 1) .2s 80ms;
+  	width: 100%;
+  	z-index: 1;
+  }
 
-/*選択されているタブのコンテンツのみを表示*/
-#all:checked ~ #all_content,
-#programming:checked ~ #programming_content,
-#design:checked ~ #design_content {
-  display: block;
-}
+  .tab-switch:checked ~ .tab-label::after {
+  	transform: translateX(-100%);
+  }
 
-/*選択されているタブのスタイルを変える*/
-.tabs input:checked + .tab_item {
-  background-color: #5ab4bd;
-  color: #fff;
-}
+  .tab-switch:checked + .tab-label::after {
+  	opacity: 1;
+  	transform: translateX(0);
+  }
+
+  .tab-content {
+  	height:0;
+  	opacity:0;
+  	pointer-events:none;
+  	transform: translateX(-30%);
+  	transition: transform .3s 80ms, opacity .3s 80ms;
+  	width: 100%;
+  }
+
+  .tab-switch:checked ~ .tab-content {
+  	transform: translateX(30%);
+  }
+
+  .tab-switch:checked + .tab-label + .tab-content {
+  	height: auto;
+  	opacity: 1;
+  	order: 1;
+  	pointer-events:auto;
+  	transform: translateX(0);
+  }
+
+  .tab-wrap::after {
+  	content: '';
+  	height: 20px;
+  	order: -1;
+  	width: 100%;
+  }
+
+  .tab-switch {
+  	display: none;
+  }
 </style>
 {% endblock %}
 {% block content %}
 
-<div class="tabs">
-  <input id="all" type="radio" name="tab_item" checked>
-  <label class="tab_item" for="all">全て</label>
-  <input id="programming" type="radio" name="tab_item">
-  <label class="tab_item" for="programming">団体のみ</label>
-  <a href="{% url 'register:board_create_indi'%}" class="btn btn-outline-dark">投稿</a>
-  <div class="tab_content" id="all_content">
-    <div class="tab_content_description">
-      <p class="c-txtsp">
-        {% for board in board_list %}
-        <hr>
-        <p>{{ board.created_at }}</p>
-        <p>{{ board.title }}</P>
-        <p>{{ board.contents }}</P>
-        <img style="max-width:60%;height:auto;" src="/media/{{ board.image }}">
-        {% if user in board.good_user.all %}
-        <i class="fas fa-heart"></i>
-        {% else %}
-        <i class="far fa-heart"></i>
-        {% endif %}
-        {% endfor %}
-        </p>
+<div class="tab-wrap">
+
+    <input id="TAB-01" type="radio" name="TAB" class="tab-switch" checked="checked" /><label class="tab-label" for="TAB-01">全て</label>
+    <div class="tab-content">
+      <a href="{% url 'register:board_create_indi' %}" class="btn btn-outline-secondary" style="width:100%">投稿</a>
+      {% for board in board_list %}
+      <hr>
+      <p style="text-align:right;font-size:10px;color:#808080;margin:10px 10px 0px 10px">{{ board.created_at|date:"Y-m-j H:i" }}</p>
+        <div style="display: flex;margin:0px 0px 0px 10px;height:20px">
+          {% if board.status_num == 0 %}
+          <i class="fas fa-circle fa-xs" style="height:20px;color:#00fa9a"></i>
+          <a href="{% url 'register:circle_detail' board.circle.id %}" style="font-weight: bold;font-size:16px;margin:0px 0px 0px 10px;height:20px;line-height:0.8;text-decoration:none;color:black">{{ board.circle.circle_name }}</a>
+          {% else %}
+          <i class="fas fa-circle fa-xs" style="height:20px;color:#ff7f50"></i>
+          <p style="font-weight: bold;font-size:16px;margin:0px 0px 0px 10px;height:20px;line-height:0.8">{{ board.post_user.user_name }}</P>
+          {% endif %}
+        </div>
+        <p style="font-weight: bold;font-size:18px;margin:10px 10px 0px 10px">{{ board.title }}</P>
+        <p style="font-size:13px;margin:10px 10px 0px 10px">{{ board.contents }}</P>
+        <div style="width:100%">
+        <img style="max-width:60%;height:auto;margin:10px 10px 0px 10px" src="/media/{{ board.image }}">
+        </div>
+        <form action="" method='POST'>
+         {% if user in board.good_user.all %}
+         <div style="display: flex;">
+           <button class="btn btn-link" name="board" value="{{ board.id }}">
+             <i class="fas fa-heart fa-2x" style="margin:5px 0px 0px 10px;color:#ff5500;"></i>
+           </button>
+         <p style="margin:15px 10px 0px 0px;font-size:18px;font-weight: bold">{{ board.good }}</p>
+         </div>
+         {% else %}
+         <div style="display: flex;">
+           <button class="btn btn-link" name="board" value="{{ board.id }}">
+             <i class="far fa-heart fa-2x" style="margin:5px 0px 0px 10px;color:#ff5500;"></i>
+           </button>
+         <p style="margin:15px 10px 0px 0px;font-size:18px;font-weight: bold">{{ board.good }}</p>
+         </div>
+         {% endif %}
+         {% csrf_token %}
+         </form>
+      {% endfor %}
     </div>
-  </div>
-  <div class="tab_content" id="programming_content">
-    <div class="tab_content_description">
-      <p class="c-txtsp">
-        {% for board in board_list_only_college %}
-        <hr>
-        <p>{{ board.created_at }}</p>
-        <p>{{ board.title }}</P>
-        <p>{{ board.contents }}</P>
-        <img style="max-width:60%;height:auto;" src="/media/{{ board.image }}">
-        {% if user in board.good_user.all %}
-        <i class="fas fa-heart"></i>
-        {% else %}
-        <i class="far fa-heart"></i>
-        {% endif %}
-        {% endfor %}
-      </p>
+
+    <input id="TAB-02" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-02">公式</label>
+    <div class="tab-content">
+      {% for board in board_list_only_college %}
+      <hr>
+      <p style="text-align:right;font-size:10px;color:#808080;margin:10px 10px 0px 10px">{{ board.created_at|date:"Y-m-j H:i" }}</p>
+        <div style="display: flex;margin:0px 0px 0px 10px;height:20px">
+          {% if board.status_num == 0 %}
+          <i class="fas fa-circle fa-xs" style="height:20px;color:#00fa9a"></i>
+          <a href="{% url 'register:circle_detail' board.circle.id %}" style="font-weight: bold;font-size:16px;margin:0px 0px 0px 10px;height:20px;line-height:0.8;text-decoration:none;color:black">{{ board.circle.circle_name }}</a>
+          {% else %}
+          <i class="fas fa-circle fa-xs" style="height:20px;color:#ff7f50"></i>
+          <p style="font-weight: bold;font-size:16px;margin:0px 0px 0px 10px;height:20px;line-height:0.8">{{ board.post_user.user_name }}</P>
+          {% endif %}
+        </div>
+        <p style="font-weight: bold;font-size:18px;margin:10px 10px 0px 10px">{{ board.title }}</P>
+        <p style="font-size:13px;margin:10px 10px 0px 10px">{{ board.contents }}</P>
+        <div style="width:100%">
+        <img style="max-width:60%;height:auto;margin:10px 10px 0px 10px" src="/media/{{ board.image }}">
+        </div>
+        <form action="" method='POST'>
+         {% if user in board.good_user.all %}
+         <div style="display: flex;">
+           <button class="btn btn-link" name="board" value="{{ board.id }}">
+             <i class="fas fa-heart fa-2x" style="margin:5px 0px 0px 10px;color:#ff5500;"></i>
+           </button>
+         <p style="margin:15px 10px 0px 0px;font-size:18px;font-weight: bold">{{ board.good }}</p>
+         </div>
+         {% else %}
+         <div style="display: flex;">
+           <button class="btn btn-link" name="board" value="{{ board.id }}">
+             <i class="far fa-heart fa-2x" style="margin:5px 0px 0px 10px;color:#ff5500;"></i>
+           </button>
+         <p style="margin:15px 10px 0px 0px;font-size:18px;font-weight: bold">{{ board.good }}</p>
+         </div>
+         {% endif %}
+         {% csrf_token %}
+         </form>
+      {% endfor %}
     </div>
-  </div>
+
 </div>
 
 {% endblock %}

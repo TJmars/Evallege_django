@@ -1,8 +1,9 @@
-{{ user.email }} 様
-
+{{ user.user_name }} 様
+パスワード再設定のURLを送信いたします。
 下記URLよりサイトにアクセスの上、パスワードの再設定を行ってください。
 
 再設定用URL
 {{ protocol}}://{{ domain }}{% url 'register:password_reset_confirm' uid token %}
 
-ほにゃらら
+このメールに関してお心当たりがない場合は、下記メールアドレスへお問い合わせください
+evallege.public@gmail.com   (Evallege運営チーム)

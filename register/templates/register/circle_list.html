@@ -1,76 +1,325 @@
 
 {% extends 'register/base.html' %}
 
+{% block header %}
+<style>
+  .tab-wrap {
+  	display: flex;
+  	flex-wrap: wrap;
+  	overflow: hidden;
+  }
+
+  .tab-label {
+  	color: Gray;
+  	cursor: pointer;
+  	flex: 1;
+  	font-weight: bold;
+  	order: -1;
+  	padding: 5px 24px;
+  	position: relative;
+  	text-align: center;
+  	transition: cubic-bezier(0.4, 0, 0.2, 1) .2s;
+  	user-select: none;
+  	white-space: nowrap;
+  	-webkit-tap-highlight-color: transparent;
+  }
+
+  .tab-label:hover {
+  	background: rgba(0, 0, 0, 0);
+  }
+
+  .tab-switch:checked + .tab-label {
+  	color: rgba(1, 1, 1, 1);
+  }
+
+  .tab-label::after {
+  	background: rgba(1, 1, 1, 1);
+  	bottom: 0;
+  	content: '';
+  	display: block;
+  	height: 3px;
+  	left: 0;
+  	opacity: 0;
+  	pointer-events: none;
+  	position: absolute;
+  	transform: translateX(100%);
+  	transition: cubic-bezier(0.4, 0, 0.2, 1) .2s 80ms;
+  	width: 100%;
+  	z-index: 1;
+  }
+
+  .tab-switch:checked ~ .tab-label::after {
+  	transform: translateX(-100%);
+  }
+
+  .tab-switch:checked + .tab-label::after {
+  	opacity: 1;
+  	transform: translateX(0);
+  }
+
+  .tab-content {
+  	height:0;
+  	opacity:0;
+  	pointer-events:none;
+  	transform: translateX(-30%);
+  	transition: transform .3s 80ms, opacity .3s 80ms;
+  	width: 100%;
+  }
+
+  .tab-switch:checked ~ .tab-content {
+  	transform: translateX(30%);
+  }
+
+  .tab-switch:checked + .tab-label + .tab-content {
+  	height: auto;
+  	opacity: 1;
+  	order: 1;
+  	pointer-events:auto;
+  	transform: translateX(0);
+  }
+
+  .tab-wrap::after {
+  	content: '';
+  	height: 20px;
+  	order: -1;
+  	width: 100%;
+  }
+
+  .tab-switch {
+  	display: none;
+  }
+
+
+
+  /*--------------------
+  App
+  --------------------*/
+  .search-form {
+    position: relative;
+    top: 30px;
+    left: 50%;
+    width: 350px;
+    height: 40px;
+    border-radius: 10px;
+    border:solid 1px #f5f5f5;
+    box-shadow: 0px 3px 1px #dedede, 0px 3px 1px #B7B7B7;
+    transform: translate(-50%, -50%);
+    background: #fdfdfd;
+    transition: all 0.3s ease;
+  }
+
+  .search-input {
+    position: absolute;
+    top: 12px;
+    left: 38px;
+    font-size: 16px;
+    background: none;
+    color: #5a6674;
+    width: 195px;
+    height: 20px;
+    border: none;
+    appearance: none;
+    outline: none;
+
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  }
+
+  .search-button {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    height: 20px;
+    width: 20px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    outline: none!important;
+    cursor: pointer;
+
+    & svg {
+      width: 20px;
+      height: 20px;
+      fill: #5a6674;
+    }
+  }
+
+  .search-option {
+    position: absolute;
+    text-align: right;
+    top: 10px;
+    right: 15px;
+
+    div {
+      position: relative;
+      display: inline-block;
+      margin: 0 1px;
+      cursor: pointer;
+
+      input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0.01;
+        cursor: pointer;
+      }
+
+      span {
+        position: absolute;
+        display: block;
+        text-align: center;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        background: #929AA3;
+        color: #fff;
+        font-size: 9px;
+        letter-spacing: 1px;
+        line-height: 1;
+        text-transform: uppercase;
+        padding: 4px 7px;
+        border-radius: 12px;
+        top: -18px;
+        transition: all .2s ease-in-out;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -3px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-top: 4px solid #929AA3;
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          transition: all .2s ease-in-out;
+        }
+      }
+
+      &:hover span {
+        opacity: 1;
+        top: -21px;
+      }
+
+
+      input:checked + label svg {
+        fill: $color;
+        opacity: .9;
+      }
+
+      input:checked + label span {
+        background: $color;
+
+        &::after {
+          border-top-color: $color;
+        }
+      }
+    }
+
+</style>
+{% endblock %}
+
 {% block content %}
 
-
-  <button type="button" class="btn btn-link my-1" style="padding-left:85%"
-    data-toggle="modal" data-target="#exampleModalScrollable">
-    <i class="fas fa-edit fa-2x"></i>
+<form class="search-form">
+  <input class="search-input" type="text" placeholder="Search"
+    aria-label="Search" name="keyword">
+  <button type="submit" class="search-button">
+    <i class="fas fa-search"></i>
   </button>
-  <div class="modal" id="exampleModalScrollable" tabindex="-1" role="dialog"
-    aria-labelledby="exampleModalScrollableLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-      <div class="modal-content" stle="width:40%">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenteredLabel">ID/パスワード</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+</form>
 
-        <form class="form-inline mt-4" method="post" action="{% url 'register:circle_list' %}">
-        <div class="modal-body">
-            <p class="card-text">掲示板を編集するためには、ID、パスワードが必要です。</p>
-         <div class="form-group">
-             {% csrf_token %}
-             <textarea id="textarea1" class="form-control" name="ID" style="width:100%;height:40px;" placeholder="ID"></textarea>
-             <textarea id="textarea2" class="form-control" name="password" style="width:100%;height:40px;" placeholder="password"></textarea>
-        </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Edit</button>
-        </div>
-　　　　　</form>
 
+  <div class="tab-wrap mt-4">
+
+      <input id="TAB-01" type="radio" name="TAB" class="tab-switch" checked="checked" /><label class="tab-label" for="TAB-01">球技</label>
+      <div class="tab-content">
+  <ul class="list" style="list-style-type: none;padding: 0;margin: 0;">
+    {% for circle in circle_list_1 %}
+    <li class="item" style="float: left;width: calc(50%);">
+        <div class="col px-1 mt-2">
+          <a href="{% url 'register:circle_detail' circle.pk %}">
+            <img class="card-img-top m-0" style="object-fit:cover;width:100%;height:120px"src="/media/{{ circle.image }}" alt="Card image cap">
+          </a>
+          <div style="display:flex">
+          <div class="card-body p-1" style="font-size:13px;font-weight:bold"> {{ circle.circle_name }} </div>
+          <div style="display:flex;justify-content: flex-end;">
+          <i class="fas fa-user p-1 mr-1"></i>
+          <p style="font-size:13px;font-weight:bold;margin-top:3px">{{ circle.user_list.all|length }}</p>
+          </div>
+          </div>
+        </div>
+    </li>
+    {% endfor %}
+  </ul>
+      </div>
+
+      <input id="TAB-02" type="radio" name="TAB" class="tab-switch"  /><label class="tab-label" for="TAB-02">スポーツ</label>
+      <div class="tab-content">
+        <ul class="list" style="list-style-type: none;padding: 0;margin: 0;">
+          {% for circle in circle_list_2 %}
+          <li class="item" style="float: left;width: calc(50%);">
+              <div class="col px-1 mt-2">
+                <a href="{% url 'register:circle_detail' circle.pk %}">
+                  <img class="card-img-top m-0" style="object-fit:cover;width:100%;height:120px"src="/media/{{ circle.image }}" alt="Card image cap">
+                </a>
+                <div style="display:flex">
+                <div class="card-body p-1" style="font-size:13px;font-weight:bold"> {{ circle.circle_name }} </div>
+                <div style="display:flex;justify-content: flex-end;">
+                <i class="fas fa-user p-1 mr-1"></i>
+                <p style="font-size:13px;font-weight:bold;margin-top:3px">{{ circle.user_list.all|length }}</p>
+                </div>
+                </div>
+              </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <input id="TAB-03" type="radio" name="TAB" class="tab-switch"  /><label class="tab-label" for="TAB-03">学問</label>
+      <div class="tab-content">
+        <ul class="list" style="list-style-type: none;padding: 0;margin: 0;">
+          {% for circle in circle_list_3 %}
+          <li class="item" style="float: left;width: calc(50%);">
+              <div class="col px-1 mt-2">
+                <a href="{% url 'register:circle_detail' circle.pk %}">
+                  <img class="card-img-top m-0" style="object-fit:cover;width:100%;height:120px"src="/media/{{ circle.image }}" alt="Card image cap">
+                </a>
+                <div style="display:flex">
+                <div class="card-body p-1" style="font-size:13px;font-weight:bold"> {{ circle.circle_name }} </div>
+                <div style="display:flex;justify-content: flex-end;">
+                <i class="fas fa-user p-1 mr-1"></i>
+                <p style="font-size:13px;font-weight:bold;margin-top:3px">{{ circle.user_list.all|length }}</p>
+                </div>
+                </div>
+              </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <input id="TAB-04" type="radio" name="TAB" class="tab-switch"  /><label class="tab-label" for="TAB-04">その他</label>
+      <div class="tab-content">
+        <ul class="list" style="list-style-type: none;padding: 0;margin: 0;">
+          {% for circle in circle_list_4 %}
+          <li class="item" style="float: left;width: calc(50%);">
+              <div class="col px-1 mt-2">
+                <a href="{% url 'register:circle_detail' circle.pk %}">
+                  <img class="card-img-top m-0" style="object-fit:cover;width:100%;height:120px"src="/media/{{ circle.image }}" alt="Card image cap">
+                </a>
+                <div style="display:flex">
+                <div class="card-body p-1" style="font-size:13px;font-weight:bold"> {{ circle.circle_name }} </div>
+                <div style="display:flex;justify-content: flex-end;">
+                <i class="fas fa-user p-1 mr-1"></i>
+                <p style="font-size:13px;font-weight:bold;margin-top:3px">{{ circle.user_list.all|length }}</p>
+                </div>
+                </div>
+              </div>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
-  </div>
 
-  <form class="my-3 form-inline pr-0" method="GET" action="{% url 'register:circle_list' %}">
-    <div class="form-group w-75 mb-0">
-      <input class="form-control" style="height:30px" type="text" placeholder="Search"
-        aria-label="Search" name="keyword">
-    </div>
-    <div style="width: 5%;"></div>
-    <button class="btn btn-outline-success " style="height:30px; width: 20%;" type="submit">
-      <i class="fas fa-search pb-3"></i>
-    </button>
-  </form>
-
-　<form action="{% url 'register:circle_list' %}" method="GET">
-  <div class="btn-group d-flex" role="group" aria-label="...">
-    <button type="button" class="btn btn-secondary flex-fill" name="ball" style="background: transparent;color:#000000">球技</button>
-    <button type="button" class="btn btn-secondary flex-fill" name="sports" style="background: transparent;color:#000000">スポーツ</button>
-    <button type="button" class="btn btn-secondary flex-fill" name="academic" style="background: transparent;color:#000000">学問</button>
-    <button type="button" class="btn btn-secondary flex-fill" name="another" style="background: transparent;color:#000000">その他</button>
-  </div>
-  </form>
-
-<div class="container">
-  <div class="row">
-    {% for circle in circle_list %}
-<div class="col px-1">
-<div class="card">
-  <a href="{% url 'register:circle_detail' circle.pk %}">
-    <img class="card-img-top m-0" style="object-fit:cover;width:100%;height:120px"src="/media/{{ circle.image }}" alt="Card image cap">
-  </a>
-  <div style="text-align: center">
-  <div class="card-body p-1" style="font-size:15px"> {{ circle.circle_name }} </div>
-  </div>
-</div>
-    </div>
-    {% endfor %}
-  </div>
-</div>
 {% endblock %}

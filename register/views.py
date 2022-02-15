@@ -16,7 +16,7 @@ from django.views import generic
 from django.db.models import Q
 from .forms import (
     LoginForm, UserCreateForm, UserUpdateForm, MyPasswordChangeForm,
-    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm,TextSaleForm,CircleCreateForm,LectureChatForm,BoardCreateForm,BoardCreateIndiForm
+    MyPasswordResetForm, MySetPasswordForm, EmailChangeForm, CreateLectureForm, EvaForm,ChatForm,TextSaleForm,CircleCreateForm,LectureChatForm,BoardCreateForm,BoardCreateIndiForm,LectureEditForm
 )
 from .models import Lecture, LectureEva,UserLectureList, LectureChat, Text_product, Circle, Board
 import base64
@@ -33,15 +33,15 @@ from io import BytesIO
 import pathlib
 import shutil
 import os
+import cv2
+import matplotlib.pyplot as plt
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 User = get_user_model()
 
-class first(generic.TemplateView):
-    """最初のページ"""
-    template_name = 'register/first.html'
+
 
 class Top(generic.ListView):
 
@@ -85,7 +85,7 @@ class Top(generic.ListView):
                 if eva != 0:
                     self.request.user.lecture_list.remove(lecture)
                 else:
-                    messages.warning(request, 'この講義の履修を解除するには、授業評価を投稿する必要があります。')
+                    messages.warning(request, 'この講義の履修を解除するには、授業評価を投稿する必要があります。Lectureページのグッドボタンから授業評価画面へと進んでください。')
                     return redirect('register:top')
 
 
@@ -170,38 +170,36 @@ class SelectLecture(generic.ListView):
             time = user_lecture_list[0].created_at
             JST = datetime.timezone(datetime.timedelta(hours=9), "JST")
             elapsed_time = datetime.datetime.now(JST)-time
-            if elapsed_time.seconds < 10:
+            if elapsed_time.days < 30:
                 self.request.user.lecture_list.remove(lecture)
             else:
                 eva = LectureEva.objects.filter(user=self.request.user).filter(lecture=lecture).count()
                 if eva != 0:
                     self.request.user.lecture_list.remove(lecture)
                 else:
-                    messages.warning(request, 'この講義の履修を解除するには、授業評価を投稿する必要があります。')
+                    messages.warning(request, 'この講義の履修を解除するには、授業評価を投稿する必要があります。Lectureページのグッドボタンから授業評価画面へと進んでください。')
                     return redirect('register:select_lecture')
 
         return redirect('register:select_lecture')
 
 
 
-class LectureCreate(generic.CreateView):
-    """講義作成ページ"""
+
+
+
+class LectureEdit(generic.UpdateView):
+    """講義詳細編集ページ"""
     model = Lecture
-    template_name = 'register/create_lecture_form.html'
-    form_class = CreateLectureForm
+    template_name = 'register/lecture_edit.html'
+    form_class = LectureEditForm
+
+
 
     def form_valid(self, form):
-
-        college = self.request.user.college_name
         lecture = form.save(commit=False)
-        lecture.college_name = college
-        lecture_list = Lecture.objects.filter(college_name=college).filter(lecture_name=lecture.lecture_name).filter(teacher_name=lecture.teacher_name)
-        if lecture_list.count()==0:
-            lecture.save()
-            return redirect('register:select_lecture')
-        else:
-            messages.warning(self.request, '講義名、担当教員が一致する授業が存在しています。「講義を探す」より講義名、または担当教員名で検索してください。')
-            return redirect('register:create_lecture')
+        lecture.save()
+        return redirect('register:lecture_top',pk=self.kwargs['pk'],place=0)
+
 
 
 class LectureTop(generic.CreateView):
@@ -221,6 +219,12 @@ class LectureTop(generic.CreateView):
         context['grade_chart'] = grade_chart(self.kwargs['pk'],self.kwargs['place'])
         context['eva_chart'] = eva_chart(self.kwargs['pk'],self.kwargs['place'])
         context['dif_chart'] = dif_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['time_week_chart'] = time_week_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['time_last_chart'] = time_last_chart(self.kwargs['pk'],self.kwargs['place'])
+        context['eva_count'] = LectureEva.objects.filter(lecture=lecture).count()
+        context['user_count'] = UserLectureList.objects.filter(lecture=lecture).count()
+
+
 
         """詳細"""
 
@@ -250,38 +254,7 @@ class LectureTop(generic.CreateView):
 
 
 
-class DetailView(generic.DetailView):
-    """講義詳細ページ(グラフなど)"""
-    model = Lecture
-    template_name = 'register/lecture_detail.html'
 
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['pk'] = self.kwargs['pk']
-        context['user_lecture_list'] = self.request.user.lecture_list.all()
-        context['gakunen_chart'] = gakunen_chart(self.kwargs['pk'],self.kwargs['place'])
-        context['grade_chart'] = grade_chart(self.kwargs['pk'],self.kwargs['place'])
-        context['eva_chart'] = eva_chart(self.kwargs['pk'],self.kwargs['place'])
-        context['dif_chart'] = dif_chart(self.kwargs['pk'],self.kwargs['place'])
-        lecture = Lecture.objects.get(id=self.kwargs['pk'])
-        context['chat_list'] = LectureChat.objects.filter(lecture=lecture).order_by('-created_at')
-        eva_comment=''
-        if self.kwargs['place'] == 0:
-            eva_list = LectureEva.objects.filter(lecture=lecture).exclude(eva_comment__exact="")
-        elif self.kwargs['place'] == 1:
-            eva_list = LectureEva.objects.filter(lecture=lecture).filter(place=1).exclude(eva_comment__exact="")
-        else:
-            eva_list = LectureEva.objects.filter(lecture=lecture).filter(place=2).exclude(eva_comment__exact="")
-
-        if eva_list.count() > 11:
-            context['eva_list'] = eva_list.order_by('-created_at')[:9]
-        else:
-            context['eva_list'] = eva_list
-
-
-        context['eva_count'] = LectureEva.objects.filter(user=self.request.user).filter(lecture=lecture).count()
-        return context
 
 def gakunen_chart(pk,place):
     import matplotlib
@@ -290,6 +263,7 @@ def gakunen_chart(pk,place):
     import matplotlib.pyplot as plt
     import io
     from django.http import HttpResponse
+    import japanize_matplotlib
 
     lecture = Lecture.objects.get(id=pk)
 
@@ -310,19 +284,27 @@ def gakunen_chart(pk,place):
         dif_D = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=4).filter(place=2).count()
 
     datas = [dif_A, dif_B, dif_C, dif_D]
-    label3 = ['freshman', 'sophomore', 'junior', 'senior']
-    colors = ['magenta', 'skyblue', 'aqua', 'lime']
+    colors = ["#33D69F", "#6F52ED", "#FFB800", '#FF4C61']
+    plt.figure(facecolor="#F3F7FF")
     ax = plt.subplot()
     ax.axis("equal")
+
     pie = ax.pie(datas, #データ
                  startangle=90, #円グラフ開始軸を指定
-                 labels=label3, #ラベル
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
+                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
-    plt.legend()
+    plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
+    #ドーナツ型にするように白い円を上から描写
+    #radies:円グラフのサイズ
+    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
+    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
+    plt.pie([100],colors=['#ffffff'],radius=0.5)
+    plt.title('学年',x=0.5,y=0.45,size=20,color="#444444")
+
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
@@ -337,6 +319,7 @@ def grade_chart(pk,place):
     import matplotlib.pyplot as plt
     import io
     from django.http import HttpResponse
+    import japanize_matplotlib
 
     lecture = Lecture.objects.get(id=pk)
 
@@ -360,19 +343,25 @@ def grade_chart(pk,place):
         grade_D = LectureEva.objects.filter(lecture=lecture).filter(grade_lank=1).filter(place=2).count()
 
     datas = [grade_S, grade_A, grade_B, grade_C, grade_D]
-    label1 = ['S', 'A', 'B', 'C', 'D']
-    colors = ['lime', 'aqua', 'skyblue', 'magenta', 'yellow']
+    colors = ["#33D69F","#52C8ED", "#6F52ED", "#FFB800", '#FF4C61']
+    plt.figure(facecolor="#F3F7FF")
     ax = plt.subplot()
     ax.axis("equal")
     pie = ax.pie(datas, #データ
                  startangle=90, #円グラフ開始軸を指定
-                 labels=label1, #ラベル
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
+                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
-    plt.legend()
+    plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
+    #ドーナツ型にするように白い円を上から描写
+    #radies:円グラフのサイズ
+    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
+    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
+    plt.pie([100],colors=['#ffffff'],radius=0.5)
+    plt.title('成績',x=0.5,y=0.45,size=20,color="#444444")
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
@@ -385,6 +374,7 @@ def eva_chart(pk,place):
     import matplotlib.pyplot as plt
     import io
     from django.http import HttpResponse
+    import japanize_matplotlib
 
     lecture = Lecture.objects.get(id=pk)
 
@@ -408,23 +398,28 @@ def eva_chart(pk,place):
         eva_D = LectureEva.objects.filter(lecture=lecture).filter(eva_lank=1).filter(place=2).count()
 
     datas = [eva_S, eva_A, eva_B, eva_C, eva_D]
-    label2 = ['Very much', 'much', 'Neutral', 'little', 'Very little']
-    colors = ['lime', 'aqua', 'skyblue', 'magenta', 'yellow']
+    colors = ["#33D69F","#52C8ED", "#6F52ED", "#FFB800", '#FF4C61']
+    plt.figure(facecolor="#F3F7FF")
     ax = plt.subplot()
     ax.axis("equal")
     pie = ax.pie(datas, #データ
                  startangle=90, #円グラフ開始軸を指定
-                 labels=label2, #ラベル
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
+                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
-    plt.legend()
+    plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
+    #ドーナツ型にするように白い円を上から描写
+    #radies:円グラフのサイズ
+    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
+    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
+    plt.pie([100],colors=['#ffffff'],radius=0.5)
+    plt.title('総合評価',x=0.5,y=0.45,size=20,color="#444444")
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
-
 
 def dif_chart(pk,place):
     import matplotlib
@@ -433,6 +428,7 @@ def dif_chart(pk,place):
     import matplotlib.pyplot as plt
     import io
     from django.http import HttpResponse
+    import japanize_matplotlib
 
     lecture = Lecture.objects.get(id=pk)
     if place == 0:
@@ -455,82 +451,185 @@ def dif_chart(pk,place):
         dif_D = LectureEva.objects.filter(lecture=lecture).filter(dif_lank=1).filter(place=2).count()
 
     datas = [dif_S, dif_A, dif_B, dif_C, dif_D]
-    label3 = ['Very easy', 'Easy', 'Normal', 'Hard', 'Very hard']
-    colors = ['lime', 'aqua', 'skyblue', 'magenta', 'yellow']
+    colors = ["#33D69F","#52C8ED", "#6F52ED", "#FFB800", '#FF4C61']
+    plt.figure(facecolor="#F3F7FF")
     ax = plt.subplot()
     ax.axis("equal")
     pie = ax.pie(datas, #データ
                  startangle=90, #円グラフ開始軸を指定
-                 labels=label3, #ラベル
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
+                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
-    plt.legend()
+    plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
+    #ドーナツ型にするように白い円を上から描写
+    #radies:円グラフのサイズ
+    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
+    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
+    plt.pie([100],colors=['#ffffff'],radius=0.5)
+    plt.title('難易度',x=0.5,y=0.45,size=20,color="#444444")
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
 
 
-class Evaluate(generic.CreateView):
+
+def time_week_chart(pk,place):
+    import matplotlib
+    #バックエンドを指定
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import io
+    from django.http import HttpResponse
+    import japanize_matplotlib
+    import numpy as np
+
+    lecture = Lecture.objects.get(id=pk)
+    time_1 = LectureEva.objects.filter(lecture=lecture).filter(everyweek_time__lte=15).count()
+    time_2 = LectureEva.objects.filter(lecture=lecture).filter(everyweek_time__gt=15).filter(everyweek_time__lte=30).count()
+    time_3 = LectureEva.objects.filter(lecture=lecture).filter(everyweek_time__gt=30).filter(everyweek_time__lte=45).count()
+    time_4 = LectureEva.objects.filter(lecture=lecture).filter(everyweek_time__gt=45).filter(everyweek_time__lte=60).count()
+    time_5 = LectureEva.objects.filter(lecture=lecture).filter(everyweek_time__gt=60).count()
+
+
+
+    # figureを生成する
+    #fig = plt.figure(facecolor="#D6FFF1")
+    #plt.figure(facecolor="#D6FFF1")
+
+    fig = plt.figure()
+
+    # axをfigureに設定する
+    ax = fig.add_subplot(1, 1, 1)
+    plt.rcParams["axes.facecolor"] = (1,1,1,0)
+    # 対象データ
+    left = ['0-15', '16-30', '31-45', '46-60', '61-']  # 横軸(棒の左端の位置)
+    height = [time_1, time_2, time_3, time_4, time_5]  # 値
+    # 横軸のラベル
+    labels = ['0~15', '16~30', '31~45', '46~60', '60~']
+
+    plt.bar(left, height,color="#7C5BFF",width=0.6)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_linewidth(3)
+    ax.spines['bottom'].set_linewidth(3)
+    ax.spines['bottom'].set_color('#555555')
+    ax.spines['bottom'].set_color('#555555')
+    plt.title('課題/テスト勉強時間(毎週)',x=0.5,y=1,size=20,color="#444444")
+    plt.xticks(fontsize=18)
+    plt.yticks(fontsize=18)
+    plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', dpi=200)
+    plt.close()
+    return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
+
+
+def time_last_chart(pk,place):
+    import matplotlib
+    #バックエンドを指定
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import io
+    from django.http import HttpResponse
+    import japanize_matplotlib
+    import numpy as np
+
+    lecture = Lecture.objects.get(id=pk)
+    time_1 = LectureEva.objects.filter(lecture=lecture).filter(last_time__lte=30).count()
+    time_2 = LectureEva.objects.filter(lecture=lecture).filter(last_time__gt=30).filter(last_time__lte=60).count()
+    time_3 = LectureEva.objects.filter(lecture=lecture).filter(last_time__gt=60).filter(last_time__lte=90).count()
+    time_4 = LectureEva.objects.filter(lecture=lecture).filter(last_time__gt=90).filter(last_time__lte=120).count()
+    time_5 = LectureEva.objects.filter(lecture=lecture).filter(last_time__gt=120).count()
+
+
+    # figureを生成する
+    #fig = plt.figure(facecolor="#D6FFF1")
+    #plt.figure(facecolor="#D6FFF1")
+
+    fig = plt.figure()
+
+    # axをfigureに設定する
+    ax = fig.add_subplot(1, 1, 1)
+    plt.rcParams["axes.facecolor"] = (1,1,1,0)
+    # 対象データ
+    left = ['0-30', '30-60', '60-90', '90-120', '121-']  # 横軸(棒の左端の位置)
+    height = [time_1, time_2, time_3, time_4, time_5]  # 値
+    # 横軸のラベル
+    labels = ['A', 'B', 'C', 'D', 'E']
+
+    plt.bar(left, height,color="#7C5BFF",width=0.6)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_linewidth(3)
+    ax.spines['bottom'].set_linewidth(3)
+    ax.spines['bottom'].set_color('#555555')
+    ax.spines['bottom'].set_color('#555555')
+    plt.title('課題/テスト勉強時間(期末)',x=0.5,y=1,size=20,color="#444444")
+    plt.xticks(fontsize=18)
+    plt.yticks(fontsize=18)
+    plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', dpi=200)
+    plt.close()
+    return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
+
+
+
+
+class Evaluate(generic.TemplateView):
     """授業評価投稿ページ"""
     model = LectureEva
     template_name = 'register/eva_form.html'
-    form_class = EvaForm
-
-    def form_valid(self, form):
-        user = self.request.user
-        lecture = Lecture.objects.get(id=self.kwargs['pk'])
-        eva = form.save(commit=False)
-        eva.user = user
-        eva.lecture = lecture
-        eva.save()
-
-        user.user_point = user.user_point+1
-        user.save()
-        return redirect('register:select_lecture')
-
-
-
-class ChatList(generic.ListView,generic.edit.ModelFormMixin):
-    """コメント一覧/投稿ページ"""
-    model = LectureChat
-    form_class = ChatForm
-    template_name = 'register/chat.html'
-    paginate_by = 15
-
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pk'] = self.kwargs['pk']
-        lecture = Lecture.objects.get(id=self.kwargs['pk'])
-        chat_list = LectureChat.objects.filter(lecture=lecture)
-        if chat_list.count() > 21:
-            context['chat_list'] = LectureChat.objects.filter(lecture=lecture).order_by('-created_at')[:19]
-        else:
-            context['chat_list'] = LectureChat.objects.filter(lecture=lecture).order_by('-created_at')
+        context['lecture_list'] = self.request.user.lecture_list.all()#履修中の講義リスト
+        eva_list = LectureEva.objects.filter(user=self.request.user)#評価済みのレコード
+        lecture_list = []
+        for lecture_eva in eva_list:
+            lecture_list.append(lecture_eva.lecture)
+        context['user_lecture_eva_list'] = lecture_list#評価済みの講義のリストを作製
 
         return context
 
 
-    def post(self, request, *args, **kwargs):
-        self.object = None
-        self.object_list = self.get_queryset()
-        form = self.get_form()
-        if form.is_valid():
-            user = self.request.user
-            lecture = Lecture.objects.get(id=self.kwargs['pk'])
-            chat = form.save(commit=False)
-            chat.user = user
-            chat.lecture = lecture
-            chat.save()
-            return self.form_invalid(form)
-        else:
-            return self.form_invalid(form)
+    def post(self, request):
+        #履修中の講義リスト
+        lecture_list = self.request.user.lecture_list.all()
+        #評価投稿済
+        eva_list = LectureEva.objects.filter(user=self.request.user)
+        #対象リストの作成
+        eva_lecture_list = []
+        for lecture in eva_list:
+            eva_lecture_list.append(lecture.lecture)
+
+        for lecture in lecture_list:
+            if lecture not in eva_lecture_list:#評価済みの講義は処理を行わない
+                gakunen = self.request.user.user_age
+                grade_id = "grade{}".format(lecture.id)
+                grade = request.POST[grade_id]
+                eva_id = "eva{}".format(lecture.id)
+                eva = request.POST[eva_id]
+                dif_id = "dif{}".format(lecture.id)
+                dif = request.POST[dif_id]
+                week_time_id = "week{}".format(lecture.id)
+                week_time = request.POST[week_time_id]
+                last_time_id = "last{}".format(lecture.id)
+                last_time = request.POST[last_time_id]
+
+                #field値を指定して作成
+                LectureEva.objects.create(
+                gakunen_lank=gakunen,grade_lank=grade,eva_lank=eva,dif_lank=dif,everyweek_time=week_time,last_time=last_time,place=1,lecture=lecture,user=self.request.user
+                )
+
+
+        return redirect('register:top')
+
+
+
 
 class Help_top(generic.TemplateView):
     template_name = 'register/help_top.html'
@@ -544,40 +643,6 @@ class Help_contents(generic.TemplateView):
         return context
 
 
-class Text_product_list(generic.ListView):
-    model = Text_product
-    template_name = 'register/text_product_list.html'
-    def get_context_data(self, **kwargs,):
-        context = super().get_context_data(**kwargs)
-
-        keyword = self.request.GET.get('keyword')
-        queryset = Text_product.objects.all()
-        if keyword:
-            queryset = queryset.filter(product_name__icontains=keyword)
-
-        context['text_product_list'] = queryset
-
-
-        context['user_name'] = self.request.user
-        return context
-
-
-
-
-class Text_sale(generic.CreateView):
-    model = Text_product
-    template_name = 'register/text_sale.html'
-    form_class = TextSaleForm
-
-
-    def form_valid(self, form):
-        user = self.request.user
-        text_product = form.save(commit=False)
-        text_product.sale_user = user
-        text_product.save()
-
-        return redirect('register:text_product_list')
-
 
 
 
@@ -585,27 +650,25 @@ class CircleList(generic.ListView):
     model = Circle
     template_name = 'register/circle_list.html'
 
-    def get_queryset(self):
-        college = self.request.user.college_name.id
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        college = user.college_name
+
         keyword = self.request.GET.get('keyword')
-        queryset = Circle.objects.filter(college=college)
         if keyword:
-            queryset = queryset.filter(circle_name__icontains=keyword).filter(college=college)
+            circle_list = Circle.objects.filter(circle_name__icontains=keyword).filter(college=college)
+            context['circle_list_1'] = circle_list
+            context['circle_list_2'] = circle_list
+            context['circle_list_3'] = circle_list
+            context['circle_list_4'] = circle_list
+        else:
+            context['circle_list_1'] = Circle.objects.filter(college=college).filter(genre=1)
+            context['circle_list_2'] = Circle.objects.filter(college=college).filter(genre=2)
+            context['circle_list_3'] = Circle.objects.filter(college=college).filter(genre=3)
+            context['circle_list_4'] = Circle.objects.filter(college=college).filter(genre=4)
 
-        return queryset
-
-
-    def post(self, request):
-        id = request.POST['ID']
-        password = request.POST['password']
-        circle = Circle.objects.filter(circle_id=id)[0]
-        if circle.circle_password == password:
-            pk = circle.pk
-            return redirect('register:circle_create',pk=pk)
-
-        return redirect('register:circle_list')
-
-
+        return context
 
 
 class CircleDetail(generic.DetailView):
@@ -616,34 +679,83 @@ class CircleDetail(generic.DetailView):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
         circle = Circle.objects.get(id=self.kwargs['pk'])
-        context['board_list'] = Board.objects.filter(circle=circle)
+        context['board_list'] = Board.objects.filter(circle=circle).order_by('-created_at')
         user = self.request.user
         context['user'] = user
 
         return context
 
+    def post(self, request, pk):
+         if request.method == 'POST':
+             if 'circle' in request.POST:
+                 circle_id = request.POST['circle']
+                 circle = Circle.objects.get(id=circle_id)
+                 user = self.request.user
+                 if user in circle.user_list.all():
+                     circle.user_list.remove(user)
+                 else:
+                     circle.user_list.add(user)
+             elif 'board' in request.POST:
+                 board_id = request.POST['board']
+                 board = Board.objects.get(id=board_id)
+                 user = self.request.user
+
+                 if user in board.good_user.all():
+                     board.good_user.remove(user)
+                     board.good = board.good - 1
+                     board.save()
+                 else:
+                     board.good_user.add(user)
+                     board.good = board.good + 1
+                     board.save()
+             return redirect('register:circle_detail',pk=self.kwargs['pk'])
 
 
 
-class CircleCreate(generic.CreateView):
+
+
+
+class CircleCreate(generic.UpdateView):
     model = Circle
     template_name = 'register/circle_create.html'
     form_class = CircleCreateForm
 
 
-    def form_valid(self, form):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         user = self.request.user
-        text_product = form.save(commit=False)
-        text_product.sale_user = user
-        text_product.save()
+        circle = Circle.objects.get(id=self.kwargs['pk'])
+        user_bool = False
+        if user in circle.editor_list.all():
+            user_bool = True
+        context['user_bool'] = user_bool
+        return context
 
-        return redirect('register:text_product_list')
+    def form_valid(self, form):
+        circle = form.save(commit=False)
+        image = circle.image
+        print(image)
+        circle.save()
+
+        return redirect('register:circle_detail',pk=self.kwargs['pk'])
 
 
 class BoardCreate(generic.CreateView):
     model = Board
     template_name = 'register/board_create.html'
     form_class = BoardCreateForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pk'] = self.kwargs['pk']
+        user = self.request.user
+        circle = Circle.objects.get(id=self.kwargs['pk'])
+        user_bool = False
+        if user in circle.editor_list.all():
+            user_bool = True
+        context['user_bool'] = user_bool
+        return context
+
 
     def form_valid(self, form):
         user = self.request.user
@@ -680,10 +792,27 @@ class BoardList(generic.ListView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         college = user.college_name
-        context['board_list'] = Board.objects.filter(college=college)
-        context['board_list_only_college'] = Board.objects.filter(college=college).filter(status_num=0)
+        context['board_list'] = Board.objects.filter(college=college).order_by('-created_at')
+        context['board_list_only_college'] = Board.objects.filter(college=college).filter(status_num=0).order_by('-created_at')
 
         return context
+
+    def post(self, request):
+        board_id = request.POST['board']
+        board = Board.objects.get(id=board_id)
+        user = self.request.user
+
+        if user in board.good_user.all():
+            board.good_user.remove(user)
+            board.good = board.good - 1
+            board.save()
+        else:
+            board.good_user.add(user)
+            board.good = board.good + 1
+            board.save()
+
+        return redirect('register:board_list')
+
 
 
 class Login(LoginView):
@@ -707,36 +836,11 @@ class UserCreate(generic.CreateView):
         """仮登録と本登録用メールの発行."""
         # 仮登録と本登録の切り替えは、is_active属性を使うと簡単です。
         # 退会処理も、is_activeをFalseにするだけにしておくと捗ります。
-        def randomname(n):
-            return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
 
-        code = ""
-
-        while True:
-            def randomname(n):
-                return ''.join(random.choices(string.ascii_letters + string.digits, k=n))
-            code = randomname(6)
-            user = User.objects.filter(invi_code=code).count()
-            if user == 0:
-                break
 
         user = form.save(commit=False)
-        user.invi_code = code
         user.is_active = False
-
-        input_invi_code = form.cleaned_data['input_invi_code']
-        if input_invi_code != "":
-            invi_user=User.objects.filter(invi_code=input_invi_code)
-            if invi_user:
-                invi_user[0].invi_point = invi_user[0].invi_point+1
-                invi_user[0].save()
-                user.save()
-            else:
-                messages.warning(self.request, '該当する招待コードが存在しません。')
-                return redirect('register:user_create')
-        else:
-            user.save()
-
+        user.save()
 
         # アクティベーションURLの送付
         current_site = get_current_site(self.request)
@@ -809,6 +913,45 @@ class UserDetail(OnlyYouMixin, generic.DetailView):
     model = User
     template_name = 'register/user_detail.html'  # デフォルトユーザーを使う場合に備え、きちんとtemplate名を書く
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        circle_list = user.editor_list.all()
+        context['circle_list'] = circle_list
+        return context
+
+
+
+class UserCircleSearch(generic.TemplateView):
+    """サークルパスワード入力ページ"""
+    model = Circle
+    template_name = "register/user_circle_search.html"
+
+class UserCircleAdd(generic.TemplateView):
+    """編集ユーザ追加ページ"""
+    models = Circle
+    template_name = "register/user_circle_add.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        circle = Circle.objects.get(id=self.kwargs['pk'])
+        context['circle'] = circle
+        context['user'] = self.request.user
+        return context
+
+    def post(self, request,**kwargs):
+        circle = Circle.objects.get(id=self.kwargs['pk'])
+        password = request.POST['password']
+        if circle.circle_password == password:
+            user = self.request.user
+            if user in circle.editor_list.all():
+                circle.editor_list.remove(user)
+            else:
+                circle.editor_list.add(user)
+                circle.user_list.add(user)
+            return redirect('register:circle_detail',pk=self.kwargs['pk'])
+        else:
+            return redirect('register:user_circle_add',pk=self.kwargs['pk'])
 
 class UserUpdate(OnlyYouMixin, generic.UpdateView):
     """ユーザー情報更新ページ"""
@@ -913,3 +1056,8 @@ class EmailChangeComplete(LoginRequiredMixin, generic.TemplateView):
             request.user.email = new_email
             request.user.save()
             return super().get(request, **kwargs)
+
+
+class Terms(generic.TemplateView):
+    """利用規約ページ"""
+    template_name = 'register/terms.html'

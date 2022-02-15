@@ -2,45 +2,19 @@
 
 {% block header %}
 <style media="screen">
-	section {
-  max-width: 80px;
-	max-height:50px;
-  margin: 20px 10px auto auto;
+	a.btn {
+  color: #000;
+  padding: 14px 19px;
+  border: solid 1px #000;
 }
-a.btn_10 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 50px;
-  box-sizing: border-box;
-  background: #fff;
-  position: relative;
-}
-a.btn_10 span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 50px;
-  background: #fff;
-  box-sizing: border-box;
-  color: #333;
-  font-size: 14px;
-  letter-spacing: 0.1em;
-  text-decoration: none;
-  box-shadow: 0px 5px 12px #CAD4E2, -6px -6px 12px #FFF;
-  border-radius: 10px;
-  position: absolute;
-  top: -5px;
-  left: 0;
-  transition-duration: 0.2s;
-}
-a.btn_10:hover span {
-  left: 0;
-  top: 0;
-  box-shadow: 0 0 4px #CAD4E2, -2px -2px 4px #FFF;
-}
+
+/*追加*/
+  .right {
+    float: right;
+  }
+​
+
+​
 </style>
 {% endblock %}
 
@@ -53,99 +27,49 @@ a.btn_10:hover span {
 	</ul>
 {% endif %}
 
-<h4 class="mt-4">こんにちは、{{ user_name}}さん</h4>
-<section>
-  <a href="{% url 'register:select_lecture' %}" class="btn_10">
-		<span><i class="fas fa-plus" style="font-size:30px;align-items: center;display: flex;"></i></span></a>
-</section>
+<h5 class="mt-4 mx-1" style="font-weight:bold">こんにちは、{{ user_name }}さん</h5>
+
+
+<div style="display: flex;margin-left: auto;width:150px;height:auto;">
+<a href="{% url 'register:evaluate' %}" class="btn mx-2">
+	<i class="far fa-thumbs-up fa-lg"></i>
+</a>
+<a href="{% url 'register:select_lecture' %}" class="btn  mx-2">
+	<i class="fas fa-plus fa-lg"></i>
+</a>
+</div>
+
+
+
+
 
 {% if lecture_list %}
 {% for lecture in lecture_list %}
-<div class="card mt-2">
-	<div class="card-body">
-		<h4 class="card-title">{{lecture.lecture_name}}</h4>
-		<p class="card-text">担当教員：{{lecture.teacher_name}}<br>作成日：{{lecture.created_at}}</p>
-		<div style="display:inline-flex">
-		 <div class="btn-group" role="group" aria-label="Basic example">
-				<a href="{% url 'register:lecture_top' lecture.pk 0 %}" class="btn btn-outline-dark">
-					<i class="fas fa-chart-pie fa-lg"	></i>
-				</a>
-				<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">
-					<i class="far fa-comment-dots fa-lg"></i>
-				</a>
-				{% if lecture not in user_lecture_eva_list %}
-				<a href="{% url 'register:evaluate' lecture.pk%}" class="btn btn-outline-dark">
-					<i class="far fa-thumbs-up fa-lg"></i>
-				</a>
-				{% endif %}
-		</div>
- <form action="{% url 'register:top' %}" method='POST'> <!-- ここを変更 -->
-		{% if lecture in user_lecture_list %}
-		<button class="btn btn-outline-danger ml-3" name="lecture" value="{{ lecture.id }}">
-			<i class="fas fa-minus"></i>
-		</button>
-		{% endif %}
-		{% csrf_token %}
-</form>
+<div class="sample" ontouchstart="">
+  <a href="{% url 'register:lecture_top' lecture.pk 0 %} " style=" color:black;text-decoration: none;">
+    <div class="card  my-2 mx-1 ">
+      <div class="card-body  px-2 pt-2 pb-0">
+						<h5 class="card-title bold" style="display: inline-block;vertical-align: middle;width:calc(100% - 60px);font-size:20px;font-weight:bold">{{lecture.lecture_name}}</h5>
+					<div class="right">
+						<form action="{% url 'register:top' %}" method='POST'> <!-- ここを変更 -->
+								{% if lecture in user_lecture_list %}
+								<button class="btn btn-outline-danger ml-3" name="lecture" value="{{ lecture.id }}">
+									<i class="fas fa-minus"></i>
+								</button>
+								{% endif %}
+								{% csrf_token %}
+						</form>
+	        </div>
+					<p class="card-text" style="width:calc(100% - 60px);margin-bottom:0px">{{lecture.teacher_name}}</p>
+          <p style="text-align:right;margin:0px;font-size:12px;color:gray">{{ lecture.created_at|date:"Y-m-j" }}</p>
+      </div>
+    </div>
+  </a>
 </div>
-	</div>
-	</div>
 {% endfor %}
 {% else %}
-<div class="card">
-	<div class="card-body">
-		「講義を探す」ボタンから履修中の講義を登録してください
-	</div>
-</div>
+<div class="alert alert-primary mt-3" role="alert"> <strong>履修講義が登録されていません</strong><br>「＋」ボタンから履修講義を登録しましょう</div>
 {% endif %}
-{% include 'register/page5.html' %}
-{% endblock %}
-
-
-
-{% block content1 %}
-{% if messages %}
-	<ul class="messages_ul">
-		{% for message in messages %}
-			<li class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %} alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ message }}</li>
-		{% endfor %}
-	</ul>
-{% endif %}
-
-<h1>こんにちは、{{user_name}}さん</h1>
-
-{% if lecture_list %}
-{% for lecture in lecture_list %}
-<div class="card mr-5">
- <div class="card-body">
-	 <h4 class="card-title">{{lecture.lecture_name}}</h4>
-	 <p class="card-text">担当教員：{{lecture.teacher_name}}　　　　作成日：{{lecture.created_at}}</p>
-	 <div style="display:inline-flex">
-
-		 <div class="btn-group" role="group" aria-label="Basic example">
-				<a href="{% url 'register:detail' lecture.pk 0 %}" class="btn btn-outline-dark">詳細を表示</a>
-				<a href="{% url 'register:chat' lecture.pk %}" class="btn btn-outline-dark">チャット</a>
-				{% if lecture not in user_lecture_eva_list %}
-				<a href="{% url 'register:evaluate' lecture.pk %}" class="btn btn-outline-dark">授業評価</a>
-				{% endif %}
-		</div>
-
-		 <form action="{% url 'register:top' %}" method='POST'> <!-- ここを変更 -->
-				{% if lecture in user_lecture_list %}
-				<button class="btn btn-outline-danger mx-1" name="lecture" value="{{ lecture.id }}">登録解除</button>
-				{% endif %}
-				{% csrf_token %}
-		</form>
- </div>
- </div>
- </div>
-{% endfor %}
-{% else %}
-<div class="card">
-	<div class="card-body">
-		「講義を探す」ボタンから履修中の講義を登録してください
-	</div>
-</div>
-{% endif %}
+​
 {% include 'register/page5.html' %}
 {% endblock %}

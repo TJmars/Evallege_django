@@ -79,24 +79,14 @@ class User(AbstractBaseUser, PermissionsMixin):
                     College, verbose_name='大学名',
                     on_delete=models.PROTECT,blank=False
                )
+    USER_AGE = (
+        (1,'１年'),
+        (2,'２年'),
+        (3,'３年'),
+        (4,'４年'),
+    )
+    user_age = models.IntegerField(verbose_name='学年',choices=USER_AGE, )
     lecture_list = models.ManyToManyField(Lecture,through='UserLectureList', verbose_name='履修講義名',blank=True)
-
-    user_point = models.IntegerField(
-        verbose_name='ユーザーポイント',
-        default=0,
-    )
-
-
-    invi_code = models.CharField('自分の招待コード',max_length=200,blank=False)
-    input_invi_code = models.CharField('招待コード',max_length=200,blank=True)
-
-    invi_point = models.IntegerField(
-        verbose_name='被招待ポイント',
-        default=0,
-    )
-
-
-
 
     is_staff = models.BooleanField(
         _('staff status'),
@@ -164,20 +154,18 @@ class LectureEva(models.Model):
        (2, 'オンライン'),
     )
 
-
+    GAKUNEN_LANK = (
+        (1,'１年'),
+        (2,'２年'),
+        (3,'３年'),
+        (4,'４年'),
+    )
     GRADE_LANK = (
         (5, 'S'),
         (4, 'A'),
         (3, 'B'),
         (2, 'C'),
         (1, 'D'),
-    )
-    EVA_LANK = (
-        (5, '多い'),
-        (4, 'やや多い'),
-        (3, '普通'),
-        (2, 'やや少ない'),
-        (1, '少ない'),
     )
     DIF_LANK = (
         (5, '簡単'),
@@ -186,16 +174,21 @@ class LectureEva(models.Model):
         (2, 'やや難しい'),
         (1, '難しい'),
     )
-    GAKUNEN_LANK = (
-        (1,'１年'),
-        (2,'２年'),
-        (3,'３年'),
-        (4,'４年'),
+    EVA_LANK = (
+        (5, 'S'),
+        (4, 'A'),
+        (3, 'B'),
+        (2, 'C'),
+        (1, 'D'),
     )
-    grade_lank = models.IntegerField(verbose_name='成績',choices=GRADE_LANK, blank=False)
-    eva_lank = models.IntegerField(verbose_name='課題量',choices=EVA_LANK, blank=False)
-    dif_lank = models.IntegerField(verbose_name='授業の難易度',choices=DIF_LANK, blank=False)
+
+
     gakunen_lank = models.IntegerField(verbose_name='学年',choices=GAKUNEN_LANK, blank=False)
+    grade_lank = models.IntegerField(verbose_name='成績',choices=GRADE_LANK, blank=False)
+    dif_lank = models.IntegerField(verbose_name='難易度',choices=DIF_LANK, blank=False)
+    eva_lank = models.IntegerField(verbose_name='総合評価',choices=EVA_LANK, blank=False)
+    everyweek_time = models.IntegerField(verbose_name='課題/テスト勉強時間(毎週)', blank=False)
+    last_time = models.IntegerField(verbose_name='課題/テスト勉強時間(毎週)', blank=False)
     place = models.IntegerField(verbose_name='授業方式',choices=PLACE, blank=False)
 
     eva_comment = models.TextField(
@@ -269,12 +262,14 @@ class Circle(models.Model):
     cost = models.TextField(verbose_name='活動費用', blank=True)
     sns_mail = models.TextField(verbose_name='SNS/連絡先', blank=True)
     image = models.FileField(upload_to='circle_image/',verbose_name='画像',validators=[FileExtensionValidator(['pdf','jpg','jpeg','png','HEIC',])],blank=True)
+    user_list = models.ManyToManyField(User, verbose_name='所属ユーザー', blank=True,null=True,related_name = "user_list")
+    editor_list = models.ManyToManyField(User, verbose_name='編集ユーザー',blank=True,null=True,related_name='editor_list')
 
     college = models.ForeignKey(
                     College, verbose_name='大学名',
                     on_delete=models.PROTECT
                )
-    administrator = models.ForeignKey(User, verbose_name='管理者', on_delete=models.PROTECT)
+    administrator = models.ForeignKey(User, verbose_name='管理者',related_name = "administrator", on_delete=models.PROTECT)
     circle_id = models.IntegerField(verbose_name='ID')
     circle_password = models.CharField('パスワード', max_length=20)
 
@@ -288,13 +283,13 @@ class Board(models.Model):
     title = models.TextField(verbose_name='タイトル')
     contents = models.TextField(verbose_name='コンテンツ')
     created_at = models.DateTimeField('投稿日', default=timezone.now)
-    image = models.FileField(upload_to='board_images/',verbose_name='画像',validators=[FileExtensionValidator(['pdf','jpg','jpeg','png','HEIC',])],blank=True)
+    image = models.FileField(upload_to='board_images/',verbose_name='画像',blank=True)
     good = models.IntegerField(verbose_name='いいね', default=0)
     post_user = models.ForeignKey(User, verbose_name='投稿者',blank=True,null=True,on_delete=models.PROTECT,related_name = "post_user")
     circle = models.ForeignKey(Circle, verbose_name='サークル',blank=True,null=True,on_delete=models.PROTECT)
     college = models.ForeignKey(College, verbose_name='大学',blank=False,on_delete=models.PROTECT)
     good_user = models.ManyToManyField(User, verbose_name='いいねしたユーザー', blank=True,null=True,related_name = "good_user")
-    status_num = models.IntegerField(verbose_name='ステータス', default=0)
+    status_num = models.IntegerField(verbose_name='ステータス', default=0)#サークル=0
 
     def __str__(self):
         return self.title

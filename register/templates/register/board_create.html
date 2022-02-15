@@ -1,6 +1,10 @@
 {% extends "register/base.html" %}
+
+
 {% block content %}
-<form action="" method="POST">
+<div class="mx-1">
+{% if user_bool %}
+<form action="" method="POST" enctype="multipart/form-data">
     {{ form.non_field_errors }}
     {% for field in form %}
     <div class="form-group">
@@ -13,4 +17,13 @@
 
     <button type="submit" class="btn btn-outline-dark btn-lg">送信</button>
 </form>
+{% else %}
+<div class="alert alert-warning" role="alert">
+  <strong>公式団体のボードを投稿するには、パスワードを入力し、「編集ユーザ」になる必要があります。</strong>
+</div>
+<div style="display: flex;justify-content: center;">
+<a class="btn btn-outline-info mt-3" style="width:70%" href="{% url 'register:user_circle_add' pk %}">編集ユーザ登録</a>
+</div>
+{% endif %}
+</div>
 {% endblock %}
