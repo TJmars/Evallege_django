@@ -22,15 +22,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'qg8wj%&+enffck-xsjq*mfcm9uvm)bng!n@5s6vg_d^rj(zs38'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+try:
+    from .local_settings import *
+except ImportError:
+    pass
 
-STATIC_ROOT = '/home/ubuntu/projectB/static'
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
+
+#STATIC_ROOT = '/home/ubuntu/projectB/static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+if not DEBUG:
+    SECRET_KEY = os.environ['SECRET_KEY']
+    import django_heroku #追加
+    django_heroku.settings(locals()) #追加
 
 
 # Application definition
@@ -68,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'projectB.urls'
@@ -151,6 +160,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+#追加
+if not DEBUG:
+    SECRET_KEY = os.environ['SECRET_KEY']
+
 # カスタムユーザーを使う
 AUTH_USER_MODEL = 'register.User'
 
@@ -166,3 +179,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'spam@gmail.com'
 EMAIL_HOST_PASSWORD = 'Yachiyo871'
 EMAIL_USE_TLS = True
+db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES['default'].update(db_from_env)
