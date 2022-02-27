@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
     integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
   <title>Evallege - 大学講義の情報を検索</title>
+  <link rel="icon" href="/media/images/favicon.ico" id="favicon">
+  <link rel="apple-touch-icon" sizes="180x180" href="/media/images/apple-touch-icon-180x180.png">
 
   {% block style %}{% endblock %}
 
@@ -386,7 +388,9 @@ body{
       </div>
 
       <div class="main">
-        {% block content1 %}{% endblock %}
+        <div class="alert alert-warning mx-2 mt-3" role="alert">
+         <strong>Evallegeはモバイル版専用です。</strong> 申し訳ございません。EvallegeはPCでは使用できません。モバイルより再度ログインしてください。
+        </div>
       </div>
     </div>
   </div>

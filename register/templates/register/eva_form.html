@@ -103,6 +103,7 @@ input[type=radio]:checked ~ label{
 
 
 <form action="" method='POST'> <!-- ここを変更 -->
+  {% if lecture_list %}
    {% for lecture in lecture_list %}<!-- 履修中の講義リスト -->
    {% if lecture not in user_lecture_eva_list %}<!-- 評価済みの講義は表示しない -->
    <div class="card my-4 mx-2">
@@ -224,9 +225,13 @@ input[type=radio]:checked ~ label{
   </div>
   {% endif %}
    {% endfor %}
+
    <div style="text-align:center">
    <button type="submit" style="width:70%" class="btn btn-outline-info mb-3">送信</button>
    </div>
+   {% else %}
+   <div class="alert alert-primary mt-3 mx-2" role="alert"> <strong>履修講義が登録されていません</strong><br>Topページから履修中の講義を登録しましょう</div>
+   {% endif %}
    {% csrf_token %}
 </form>
 

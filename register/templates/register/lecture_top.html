@@ -169,104 +169,150 @@ border: solid 1px #000;
     <p style="font-size:18px;font-weight:bold;color:#979797" class="mb-0"><span style="color:#3f3f3f">{{user_count}}</span>人が履修中/<span style="color:#3f3f3f">{{eva_count}}</span>件のデータ</p>
     </div>
     <div style="position: relative;" class="mt-1 mx-2">
-        <img src="data:image/png;base64, {{ gakunen_chart }}" width=100% height=auto>
-        <div style="display:flex;position: absolute;top:40px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Freshman</p>
+        <img src="data:image/png;base64, {{ gakunen_chart }}" width=100% height=auto style="border:solid 2px #E8EEFF">
+        <div style="position:absolute;top:30%;left:14.5%;width:30%"><div style="width:100%;padding-top:100%;background-color:#ffffff;border-radius:50%;box-shadow: 0px  0px 10px 4px #eaeaea;"></div></div>
+        <p style="position:absolute;top:46%;left:24.5%;font-size:18px;font-weight:bold;color:#636363">学年</p>
+        <div style="position:absolute;top:0px;left:65%">
+          <div style="display:flex;margin-top:20px">
+            <i class="fas fa-circle" style="color:#33D69F" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Freshman</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#6F52ED" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Sophomore</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FFB800" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Junior</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FF4C61" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Senior</p>
+          </div>
         </div>
-        <div style="display:flex;position: absolute;top:80px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Freshman</p>
-        </div>
-        <div style="display:flex;position: absolute;top:120px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Junior</p>
-        </div>
-        <div style="display:flex;position: absolute;top:160px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Senior</p>
+
+        <div style="position:absolute;top:75%;left:55%;width:45%">
+          <p style="text-align:center"><span style="color:#828282;font-size:15px">最多履修学年</span><br><span style="font-size:25px">{{most_age}}</span></p>
         </div>
     </div>
 
-    <div style="position: relative;" class="mt-3 mx-2">
-        <img src="data:image/png;base64, {{ grade_chart }}" width=100% height=auto>
-        <div style="display:flex;position: absolute;top:40px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">S</p>
+    <div style="position: relative;" class="mt-2 mx-2">
+        <img src="data:image/png;base64, {{ grade_chart }}" width=100% height=auto style="border:solid 2px #E8EEFF">
+        <div style="position:absolute;top:30%;left:14.5%;width:30%"><div style="width:100%;padding-top:100%;background-color:#ffffff;border-radius:50%;box-shadow: 0px  0px 10px 4px #eaeaea;"></div></div>
+        <p style="position:absolute;top:46%;left:24.5%;font-size:18px;font-weight:bold;color:#636363">成績</p>
+        <div style="position:absolute;top:0px;left:65%">
+          <div style="display:flex;margin-top:20px">
+            <i class="fas fa-circle" style="color:#33D69F" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">S</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#52C8ED" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">A</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#6F52ED" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">B</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FFB800" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">C</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FF4C61" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">D</p>
+          </div>
         </div>
-        <div style="display:flex;position: absolute;top:80px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#52C8ED" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">A</p>
-        </div>
-        <div style="display:flex;position: absolute;top:120px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">B</p>
-        </div>
-        <div style="display:flex;position: absolute;top:160px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">C</p>
-        </div>
-        <div style="display:flex;position: absolute;top:200px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">D</p>
+
+        <div style="position:absolute;top:75%;left:55%;width:45%">
+          <p style="text-align:center"><span style="color:#828282;font-size:15px">平均GPA</span><br><span style="font-size:25px">{{grade_average}}</span></p>
         </div>
     </div>
 
-    <div style="position: relative;" class="mt-3 mx-2">
-        <img src="data:image/png;base64, {{ dif_chart }}" width=100% height=auto>
-        <div style="display:flex;position: absolute;top:40px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Very easy</p>
+
+    <div style="position: relative;" class="mt-2 mx-2">
+        <img src="data:image/png;base64, {{ dif_chart }}" width=100% height=auto style="border:solid 2px #E8EEFF">
+        <div style="position:absolute;top:30%;left:14.5%;width:30%"><div style="width:100%;padding-top:100%;background-color:#ffffff;border-radius:50%;box-shadow: 0px  0px 10px 4px #eaeaea;"></div></div>
+        <p style="position:absolute;top:46%;left:22%;font-size:18px;font-weight:bold;color:#636363">難易度</p>
+        <div style="position:absolute;top:0px;left:65%">
+          <div style="display:flex;margin-top:20px">
+            <i class="fas fa-circle" style="color:#33D69F" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Very easy</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#52C8ED" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Eacy</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#6F52ED" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Normal</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FFB800" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Hard</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FF4C61" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">Very hard</p>
+          </div>
         </div>
-        <div style="display:flex;position: absolute;top:80px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#52C8ED" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Eacy</p>
-        </div>
-        <div style="display:flex;position: absolute;top:120px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Normal</p>
-        </div>
-        <div style="display:flex;position: absolute;top:160px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Hard</p>
-        </div>
-        <div style="display:flex;position: absolute;top:200px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">Very hard</p>
+
+        <div style="position:absolute;top:75%;left:55%;width:45%">
+          <p style="text-align:center"><span style="color:#828282;font-size:15px">難易度レベル</span><br><span style="font-size:25px">{{dif_average}}</span><span style="font-size:17px;color:#828282"> / 5.0</span></p>
         </div>
     </div>
 
-    <div style="position: relative;border:solid 2px #E8EEFF" class="mt-3 mx-2">
-    <img src="data:image/png;base64, {{ time_week_chart }}" width=100% height=auto style="border-radius:10px">
+
+    <div style="position: relative;border:solid 2px #E8EEFF" class="mt-2 mx-2">
+      <p style="font-size:16px;color:#828282;text-align:center" class="mt-2">課題/テスト勉強時間(毎週)</p>
+      <div style="text-align:center"><p style="line-height:160%;"><span style="font-size:17px;color:#828282">平均時間</span><br><span style="font-size:30px">{{average_week_time}}</span><span style="font-size:20px">分</span></p></div>
+    <img src="data:image/png;base64, {{ time_week_chart }}" width=100% height=auto style="margin-top:-20px;">
+      <p style="position:absolute;top:33%;left:6%;font-size:12px;color:#747474">(人)</p>
+      <p style="position:absolute;bottom:-3.5%;right:5%;font-size:12px;color:#747474">(分)</p>
     </div>
 
-    <div style="position: relative;border:solid 2px #E8EEFF" class="mt-3 mx-2">
-    <img src="data:image/png;base64, {{ time_last_chart }}" width=100% height=auto style="border-radius:10px">
+    <div style="position: relative;border:solid 2px #E8EEFF" class="mt-2 mx-2">
+      <p style="font-size:16px;color:#828282;text-align:center" class="mt-2">課題/テスト勉強時間(期末)</p>
+      <div style="text-align:center"><p style="line-height:160%;"><span style="font-size:17px;color:#828282">平均時間</span><br><span style="font-size:30px">{{average_last_time}}</span><span style="font-size:20px">分</span></p></div>
+    <img src="data:image/png;base64, {{ time_last_chart }}" width=100% height=auto style="margin-top:-20px;">
+      <p style="position:absolute;top:33%;left:6%;font-size:12px;color:#747474">(人)</p>
+      <p style="position:absolute;bottom:-3.5%;right:5%;font-size:12px;color:#747474">(分)</p>
     </div>
 
-    <div style="position: relative;" class="mt-3 mx-2">
-        <img src="data:image/png;base64, {{ eva_chart }}" width=100% height=auto>
-        <div style="display:flex;position: absolute;top:40px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#33D69F" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">S</p>
+
+    <div style="position: relative;" class="mt-2 mx-2">
+        <img src="data:image/png;base64, {{ eva_chart }}" width=100% height=auto style="border:solid 2px #E8EEFF">
+        <div style="position:absolute;top:30%;left:14.5%;width:30%"><div style="width:100%;padding-top:100%;background-color:#ffffff;border-radius:50%;box-shadow: 0px  0px 10px 4px #eaeaea;"></div></div>
+        <p style="position:absolute;top:46%;left:19.5%;font-size:18px;font-weight:bold;color:#636363">総合評価</p>
+        <div style="position:absolute;top:0px;left:65%">
+          <div style="display:flex;margin-top:20px">
+            <i class="fas fa-circle" style="color:#33D69F" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">S</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#52C8ED" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">A</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#6F52ED" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">B</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FFB800" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">C</p>
+          </div>
+          <div style="display:flex;margin-top:-5px">
+            <i class="fas fa-circle" style="color:#FF4C61" ></i>
+            <p class="ml-2" style="font-size:17px;font-wight:bold;margin-top:-4px;color:#696969">D</p>
+          </div>
         </div>
-        <div style="display:flex;position: absolute;top:80px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#52C8ED" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">A</p>
-        </div>
-        <div style="display:flex;position: absolute;top:120px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#6F52ED" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">B</p>
-        </div>
-        <div style="display:flex;position: absolute;top:160px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FFB800" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">C</p>
-        </div>
-        <div style="display:flex;position: absolute;top:200px;left:62%;">
-        <i class="fas fa-circle fa-lg" style="color:#FF4C61" ></i>
-        <p class="ml-2" style="font-size:20px;font-wight:bold;margin-top:-6px;color:#696969">D</p>
+
+        <div style="position:absolute;top:75%;left:55%;width:45%">
+          <p style="text-align:center"><span style="color:#828282;font-size:15px">評価平均</span><br><span style="font-size:25px">{{eva_average}}</span><span style="font-size:17px;color:#828282"> / 5.0</span></p>
         </div>
     </div>
+
+    <div style="height:20px"></div>
+
 
     </div>
     <input id="TAB-02" type="radio" name="TAB" class="tab-switch" /><label class="tab-label" for="TAB-02">詳細</label>

@@ -34,6 +34,9 @@ import shutil
 import os
 import cv2
 import matplotlib.pyplot as plt
+import csv
+import re
+from csv import reader
 
 
 User = get_user_model()
@@ -103,45 +106,45 @@ class SelectLecture(generic.ListView):
         keyword = self.request.GET.get('keyword')
         keyword2 = self.request.GET.get('keyword2')
         queryset = Lecture.objects.filter(college_name=college)
-        if keyword:
+
+        if keyword2:
+            #講義一覧読み込み
+            #----------------------------------------------------
+            with open('register/Lecture-2022-02-04.csv', 'r') as csv_file:
+                csv_reader = reader(csv_file)
+                list_all = list(csv_reader)
+            #-----------------------------------------------------
+            #ユーザがコピペしたやつ読み込み
+            #------------------------------------------------
+            input_data = keyword2
+            lecture_list=[]
+            teacher_list=[]
+
+            split_data=re.split('\n',input_data)
+            resub_data=[]
+            for x in split_data:
+                resub_data.append(re.sub('\[.*\]','',x).strip())
+
+            for i in range(len(resub_data)):
+                for x in list_all:
+                    if x[1]==resub_data[i] and x[2]==resub_data[i+1]:
+                        lecture_list.append(resub_data[i])
+                        teacher_list.append(resub_data[i+1])
+                        break;
+
+            print(lecture_list)
+            print(teacher_list)
+
+            college = self.request.user.college_name
+
+            queryset=Lecture.objects.filter(lecture_name__in=lecture_list).filter(teacher_name__in=teacher_list).filter(college_name=college)
+
+        elif keyword:
             queryset = queryset.filter(
             Q(lecture_name__icontains=keyword) | Q(teacher_name__icontains=keyword)
             ).filter(college_name=college)
 
-        if keyword2:
-            keyword2=re.sub(r'開講曜日[\s　]+授業コード[\s　]+科目名[\s　]+教員氏名[\s　]+教室[\r\n]+','',keyword2)
-            keyword2=re.sub(r'開講区分[\s　]+授業コード[\s　]+科目名[\s　]+教員氏名[\s　]+教室[\s　]+単位[\s　]+エラー[\r\n]+','',keyword2)
-            keyword2=re.sub(r'開講曜日[\s　]+授業コード[\s　]+科目名[\s　]+教員氏名[\s　]+教室[\s　]+単位[\s　]+エラー[\r\n]+','',keyword2)
-            keyword2=keyword2.replace('集中講義／実習\r','')
 
-            #統一のため単位数を削除
-            keyword2=re.sub(r'\t\d\t+','',keyword2)
-            #改行&タブで分ける。
-            split_list = re.split('[\r\n\t]',keyword2)
-            data_split_list = []
-            result_lecture_list = []
-            result_teacher_list = []
-            count=0
-
-            #空白の要素を削除
-            for word in split_list:
-                if word != '':
-                    data_split_list.append(word)
-            for word in data_split_list:
-                if count%5==2:
-                    lecture = word
-                    # 「 [ 」の最初の位置を取得し、それ以前の文字情報を取得。かつ文字列前後の空白を削除 # マクロ経済学
-                    lecture = lecture[:lecture.find('[')].strip(' ')
-                    result_lecture_list.append(lecture)
-                elif count%5==3:
-                    teacher = word
-                    teacher=teacher.replace('\u3000', ' ') # 全角空白を半角空白へ変換
-                    result_teacher_list.append(teacher)
-                count+=1
-
-            queryset=Lecture.objects.filter(lecture_name__in=result_lecture_list).filter(teacher_name__in=result_teacher_list)
-            a=Lecture.objects.all()[3]
-            print("テストデータ：{0}です".format(a))
 
         return queryset
 
@@ -211,7 +214,25 @@ class LectureTop(generic.CreateView):
         lecture = Lecture.objects.get(id=self.kwargs['pk'])
         context['lecture'] = lecture
 
+
+
         """グラフ"""
+        lecture_eva_list = LectureEva.objects.filter(lecture=lecture)
+        eva_count = lecture_eva_list.count()
+        week_time_total = 0
+        last_time_total = 0
+        for eva in lecture_eva_list:
+            week_time_total += eva.everyweek_time
+            last_time_total += eva.last_time
+
+        if week_time_total!=0 and last_time_total!=0:
+            context['average_week_time'] = week_time_total/eva_count
+            context['average_last_time'] = last_time_total/eva_count
+        else:
+            context['average_week_time'] = 'No data'
+            context['average_last_time'] = 'No data'
+
+
         context['gakunen_chart'] = gakunen_chart(self.kwargs['pk'],self.kwargs['place'])
         context['grade_chart'] = grade_chart(self.kwargs['pk'],self.kwargs['place'])
         context['eva_chart'] = eva_chart(self.kwargs['pk'],self.kwargs['place'])
@@ -221,6 +242,59 @@ class LectureTop(generic.CreateView):
         context['eva_count'] = LectureEva.objects.filter(lecture=lecture).count()
         context['user_count'] = UserLectureList.objects.filter(lecture=lecture).count()
 
+
+        age_total = 0
+        grade_total = 0
+        dif_total = 0
+        eva_total = 0
+
+        freshman = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=1).count()
+        sophomore = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=2).count()
+        junior = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=3).count()
+        senior = LectureEva.objects.filter(lecture=lecture).filter(gakunen_lank=4).count()
+
+        if freshman!=0 or sophomore!=0 or junior!=0 or senior!=0:
+            age_list = [freshman,sophomore,junior,senior]
+            max_age = max(age_list)
+            max_age_index = age_list.index(max_age)+1
+
+            if max_age_index == 1:
+                context['most_age'] = "Freshman"
+            elif max_age_index == 2:
+                context['most_age'] = "Sophomore"
+            elif max_age_index == 3:
+                context['most_age'] = "Junior"
+            else:
+                context['most_age'] = "Senior"
+        else:
+            context['most_age'] = "No data"
+
+
+        for eva in lecture_eva_list:
+            age_total += eva.gakunen_lank
+            grade_total += eva.grade_lank
+            dif_total += eva.dif_lank
+            eva_total += eva.eva_lank
+
+        if age_total!=0:
+            context['age_average'] = age_total/eva_count
+        else:
+            context['age_average'] = 'No data'
+
+        if grade_total!=0:
+            context['grade_average'] = grade_total/eva_count-1
+        else:
+            context['grade_average'] = 'No data'
+
+        if dif_total!=0:
+            context['dif_average'] = dif_total/eva_count
+        else:
+            context['dif_average'] = 'No data'
+
+        if eva_total!=0:
+            context['eva_average'] = eva_total/eva_count
+        else:
+            context['eva_average'] = 'No data'
 
 
         """詳細"""
@@ -282,7 +356,7 @@ def gakunen_chart(pk,place):
 
     datas = [dif_A, dif_B, dif_C, dif_D]
     colors = ["#33D69F", "#6F52ED", "#FFB800", '#FF4C61']
-    plt.figure(facecolor="#F3F7FF")
+    plt.figure(facecolor="#fcfcfc")
     ax = plt.subplot()
     ax.axis("equal")
 
@@ -291,17 +365,13 @@ def gakunen_chart(pk,place):
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
-                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
+                 wedgeprops={'linewidth': 4, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
     plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
     #ドーナツ型にするように白い円を上から描写
     #radies:円グラフのサイズ
-    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
-    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
-    plt.pie([100],colors=['#ffffff'],radius=0.5)
-    plt.title('学年',x=0.5,y=0.45,size=20,color="#444444")
-
+    plt.pie([100],colors=['#f9f9f9'],radius=0.82)
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
     return base64.b64encode(buf.getvalue()).decode("utf-8").replace("\n", "")
@@ -341,7 +411,7 @@ def grade_chart(pk,place):
 
     datas = [grade_S, grade_A, grade_B, grade_C, grade_D]
     colors = ["#33D69F","#52C8ED", "#6F52ED", "#FFB800", '#FF4C61']
-    plt.figure(facecolor="#F3F7FF")
+    plt.figure(facecolor="#fcfcfc")
     ax = plt.subplot()
     ax.axis("equal")
     pie = ax.pie(datas, #データ
@@ -349,15 +419,13 @@ def grade_chart(pk,place):
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
-                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
+                 wedgeprops={'linewidth': 4, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
     plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
     #ドーナツ型にするように白い円を上から描写
     #radies:円グラフのサイズ
-    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
-    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
-    plt.pie([100],colors=['#ffffff'],radius=0.5)
+    plt.pie([100],colors=['#f9f9f9'],radius=0.82)
     plt.title('成績',x=0.5,y=0.45,size=20,color="#444444")
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
@@ -396,7 +464,7 @@ def eva_chart(pk,place):
 
     datas = [eva_S, eva_A, eva_B, eva_C, eva_D]
     colors = ["#33D69F","#52C8ED", "#6F52ED", "#FFB800", '#FF4C61']
-    plt.figure(facecolor="#F3F7FF")
+    plt.figure(facecolor="#fcfcfc")
     ax = plt.subplot()
     ax.axis("equal")
     pie = ax.pie(datas, #データ
@@ -404,15 +472,13 @@ def eva_chart(pk,place):
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
-                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
+                 wedgeprops={'linewidth': 4, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
     plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
     #ドーナツ型にするように白い円を上から描写
     #radies:円グラフのサイズ
-    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
-    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
-    plt.pie([100],colors=['#ffffff'],radius=0.5)
+    plt.pie([100],colors=['#f9f9f9'],radius=0.82)
     plt.title('総合評価',x=0.5,y=0.45,size=20,color="#444444")
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
@@ -449,7 +515,7 @@ def dif_chart(pk,place):
 
     datas = [dif_S, dif_A, dif_B, dif_C, dif_D]
     colors = ["#33D69F","#52C8ED", "#6F52ED", "#FFB800", '#FF4C61']
-    plt.figure(facecolor="#F3F7FF")
+    plt.figure(facecolor="#fcfcfc")
     ax = plt.subplot()
     ax.axis("equal")
     pie = ax.pie(datas, #データ
@@ -457,15 +523,13 @@ def dif_chart(pk,place):
                  colors=colors, #色指定
                  counterclock=False, #逆時計回り
                  labeldistance=None,
-                 wedgeprops={'linewidth': 3, 'edgecolor':"white"}
+                 wedgeprops={'linewidth': 4, 'edgecolor':"white"}
                  )
     buf = io.BytesIO()
     plt.subplots_adjust(left=-0.06, right=0.65, bottom=0.05, top=0.95)
     #ドーナツ型にするように白い円を上から描写
     #radies:円グラフのサイズ
-    plt.pie([100],colors=['#E8EEFF'],radius=0.82)
-    plt.pie([100],colors=['#f0f0f0'],radius=0.52)
-    plt.pie([100],colors=['#ffffff'],radius=0.5)
+    plt.pie([100],colors=['#f9f9f9'],radius=0.82)
     plt.title('難易度',x=0.5,y=0.45,size=20,color="#444444")
     plt.savefig(buf, format='png', dpi=200)
     plt.close()
@@ -482,6 +546,7 @@ def time_week_chart(pk,place):
     from django.http import HttpResponse
     import japanize_matplotlib
     import numpy as np
+    from matplotlib.ticker import MaxNLocator
 
     lecture = Lecture.objects.get(id=pk)
     time_1 = LectureEva.objects.filter(lecture=lecture).filter(everyweek_time__lte=15).count()
@@ -496,7 +561,7 @@ def time_week_chart(pk,place):
     #fig = plt.figure(facecolor="#D6FFF1")
     #plt.figure(facecolor="#D6FFF1")
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7,4))
 
     # axをfigureに設定する
     ax = fig.add_subplot(1, 1, 1)
@@ -507,16 +572,20 @@ def time_week_chart(pk,place):
     # 横軸のラベル
     labels = ['0~15', '16~30', '31~45', '46~60', '60~']
 
-    plt.bar(left, height,color="#7C5BFF",width=0.6)
+    plt.bar(left, height,color="#2F80EC",width=0.6)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
-    ax.spines['left'].set_linewidth(3)
-    ax.spines['bottom'].set_linewidth(3)
-    ax.spines['bottom'].set_color('#555555')
-    ax.spines['bottom'].set_color('#555555')
-    plt.title('課題/テスト勉強時間(毎週)',x=0.5,y=1,size=20,color="#444444")
-    plt.xticks(fontsize=18)
-    plt.yticks(fontsize=18)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.tick_params(bottom=False,
+               left=False,
+               right=False,
+               top=False)
+    ax.yaxis.set_major_locator(MaxNLocator(5))
+    plt.xticks(fontsize=15,color="#747474")
+    plt.yticks(fontsize=15,color="#747474")
+    plt.grid(axis='y',color = "#e3e3e3", linewidth=1)
+    plt.rcParams['axes.axisbelow'] = True
     plt.show()
     buf = io.BytesIO()
     plt.savefig(buf, format='png', dpi=200)
@@ -533,6 +602,7 @@ def time_last_chart(pk,place):
     from django.http import HttpResponse
     import japanize_matplotlib
     import numpy as np
+    from matplotlib.ticker import MaxNLocator
 
     lecture = Lecture.objects.get(id=pk)
     time_1 = LectureEva.objects.filter(lecture=lecture).filter(last_time__lte=30).count()
@@ -546,7 +616,7 @@ def time_last_chart(pk,place):
     #fig = plt.figure(facecolor="#D6FFF1")
     #plt.figure(facecolor="#D6FFF1")
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7,4))
 
     # axをfigureに設定する
     ax = fig.add_subplot(1, 1, 1)
@@ -557,16 +627,20 @@ def time_last_chart(pk,place):
     # 横軸のラベル
     labels = ['A', 'B', 'C', 'D', 'E']
 
-    plt.bar(left, height,color="#7C5BFF",width=0.6)
+    plt.bar(left, height,color="#2F80EC",width=0.6)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
-    ax.spines['left'].set_linewidth(3)
-    ax.spines['bottom'].set_linewidth(3)
-    ax.spines['bottom'].set_color('#555555')
-    ax.spines['bottom'].set_color('#555555')
-    plt.title('課題/テスト勉強時間(期末)',x=0.5,y=1,size=20,color="#444444")
-    plt.xticks(fontsize=18)
-    plt.yticks(fontsize=18)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.tick_params(bottom=False,
+               left=False,
+               right=False,
+               top=False)
+    ax.yaxis.set_major_locator(MaxNLocator(5))
+    plt.xticks(fontsize=15,color="#747474")
+    plt.yticks(fontsize=15,color="#747474")
+    plt.grid(axis='y',color = "#e3e3e3", linewidth=1)
+    plt.rcParams['axes.axisbelow'] = True
     plt.show()
     buf = io.BytesIO()
     plt.savefig(buf, format='png', dpi=200)
